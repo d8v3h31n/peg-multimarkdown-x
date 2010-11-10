@@ -1,7 +1,7 @@
 ALL : markdown
 
 PROGRAM=markdown
-CFLAGS ?= -Wall -O3 -ansi
+CFLAGS ?= -Wall -O3 -ansi -arch i386
 OBJS=markdown_parser.o markdown_output.o markdown_lib.o
 PEGDIR=peg-0.1.4
 LEG=$(PEGDIR)/leg
