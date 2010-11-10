@@ -337,7 +337,7 @@ Inline  = Str
         | Image
         | Link
         | NoteReference
-        | InlineNote
+ #       | InlineNote			# Not used in MultiMarkdown
         | Code
         | RawHtml
         | Entity
