@@ -1,0 +1,11 @@
+.DS_Store
+
+manual.*
+test.*
+
+*.o
+markdown_parser.c
+
+peg-0.1.4/peg
+peg-0.1.4/leg
+
