@@ -334,6 +334,7 @@ Inline  = Str
         | Space
         | Strong
         | Emph
+        | CitationReference
         | Image
         | Link
         | NoteReference
@@ -494,7 +495,7 @@ Reference = NonindentSpace !"[]" l:Label ':' Spnl s:RefSrc Spnl t:RefTitle Blank
               free(l);
               $$->key = REFERENCE; }
 
-Label = '[' ( !'^' &{ extension(EXT_NOTES) } | &. &{ !extension(EXT_NOTES) } )
+Label = '[' ( !'^' !'#' &{ extension(EXT_NOTES) } | &. &{ !extension(EXT_NOTES) } )
         a:StartList
         ( !']' Inline { a = cons($$, a); } )*
         ']'
@@ -638,7 +639,7 @@ NoteReference = &{ extension(EXT_NOTES) }
                     }
                 }
 
-RawNoteReference = "[^" < ( !Newline !']' . )+ > ']'
+RawNoteReference = ( "[^" | "[#" ) < ( !Newline !']' . )+ > ']'
                    { $$ = mk_str(yytext); }
 
 Note =          &{ extension(EXT_NOTES) }
@@ -668,6 +669,48 @@ RawNoteBlock =  a:StartList
                 {   $$ = mk_str_from_list(a, true);
                     $$->key = RAW;
                 }
+
+
+# MultiMarkdown Citations
+
+CitationReference = CitationReferenceDouble | CitationReferenceSingle
+
+CitationReferenceDouble = b:Label < Spnl > !"[]" ref:RawCitationReference
+				{   element *match;
+				    if (find_note(&match, ref->contents.str)) {
+				        $$ = mk_element(CITATION);
+				        assert(match->children != NULL);
+				        $$->children = match->children;
+				        $$->contents.str = 0;
+				    } else {
+				        char *s;
+				        s = malloc(strlen(ref->contents.str) + 4);
+				        sprintf(s, "[#%s]", ref->contents.str);
+				        $$ = mk_str(s);
+				        free(s);
+				    }
+				}
+
+CitationReferenceSingle =  ref:RawCitationReference < (Spnl "[]")? >
+                {   element *match;
+                    if (find_note(&match, ref->contents.str)) {
+                        $$ = mk_element(CITATION);
+                        assert(match->children != NULL);
+                        $$->children = match->children;
+                        $$->contents.str = 0;
+                    } else {
+                        char *s;
+                        s = malloc(strlen(ref->contents.str) + 4);
+                        sprintf(s, "[#%s]", ref->contents.str);
+                        $$ = mk_str(s);
+                        free(s);
+                    }
+                }
+
+
+RawCitationReference = "[#" < ( !Newline !']' . )+ > ']'
+                   { $$ = mk_str(yytext); }
+
 
 %%
 

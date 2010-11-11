@@ -278,6 +278,15 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
                 notenumber, notenumber, notenumber, notenumber);
         }
         break;
+    case CITATION:
+		/* Treat as footnote for now */
+		if (elt->contents.str == 0) {
+			add_endnote(elt);
+			++notenumber;
+			g_string_append_printf(out, "<a class=\"citation\" id=\"fnref%d\" href=\"#fn%d\" title=\"Jump to citation %d\">[%d]</a>",
+				notenumber, notenumber, notenumber, notenumber);
+		}
+		break;
     default: 
         fprintf(stderr, "print_html_element encountered unknown element key = %d\n", elt->key); 
         exit(EXIT_FAILURE);
