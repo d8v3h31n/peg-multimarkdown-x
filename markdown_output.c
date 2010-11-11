@@ -274,7 +274,7 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
         if (elt->contents.str == 0) {
             add_endnote(elt);
             ++notenumber;
-            g_string_append_printf(out, "<a href=\"#fn:%d\" id=\"fnref:%d\" title=\"see footnote\" class=\"footnote\">%d</a>",
+            g_string_append_printf(out, "<a href=\"#fn:%d\" id=\"fnref:%d\" title=\"see footnote\" class=\"footnote\">[%d]</a>",
                 notenumber, notenumber, notenumber);
         }
         break;
