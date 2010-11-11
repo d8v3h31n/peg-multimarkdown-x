@@ -274,8 +274,8 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
         if (elt->contents.str == 0) {
             add_endnote(elt);
             ++notenumber;
-            g_string_append_printf(out, "<a class=\"noteref\" id=\"fnref%d\" href=\"#fn%d\" title=\"Jump to note %d\">[%d]</a>",
-                notenumber, notenumber, notenumber, notenumber);
+            g_string_append_printf(out, "<a href=\"#fn:%d\" id=\"fnref:%d\" title=\"see footnote\" class=\"footnote\">%d</a>",
+                notenumber, notenumber, notenumber);
         }
         break;
     case CITATION:
@@ -300,15 +300,15 @@ static void print_html_endnotes(GString *out) {
     if (endnotes == NULL) 
         return;
     note = g_slist_reverse(endnotes);
-    g_string_append_printf(out, "<hr/>\n<ol id=\"notes\">");
+    g_string_append_printf(out, "<div class=\"footnotes\">\n<hr />\n<ol>");
     while (note != NULL) {
         note_elt = note->data;
         counter++;
         pad(out, 1);
-        g_string_append_printf(out, "<li id=\"fn%d\">\n", counter);
+        g_string_append_printf(out, "<li id=\"fn:%d\">\n", counter);
         padded = 2;
-        print_html_element_list(out, note_elt->children, false);
-        g_string_append_printf(out, " <a href=\"#fnref%d\" title=\"Jump back to reference\">[back]</a>", counter);
+       print_html_element_list(out, note_elt->children, false);
+        g_string_append_printf(out, " <a href=\"#fnref:%d\" title=\"return to article\" class=\"reversefootnote\">&#160;&#8617;</a>", counter);
         pad(out, 1);
         g_string_append_printf(out, "</li>");
         note = note->next;
