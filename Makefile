@@ -29,7 +29,11 @@ distclean: clean
 
 test: $(PROGRAM)
 	cd MarkdownTest_1.0.3; \
-	./MarkdownTest.pl --script=../$(PROGRAM) --tidy
+	./MarkdownTest.pl --Script=../$(PROGRAM) --Tidy
+
+mmdtest: $(PROGRAM)
+	cd MarkdownTest_1.0.3; \
+	./MarkdownTest.pl --Script=../$(PROGRAM) --Tidy --testdir=MultiMarkdownTests
 
 leak-check: $(PROGRAM)
 	valgrind --leak-check=full ./markdown README
