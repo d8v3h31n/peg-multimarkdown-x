@@ -76,7 +76,7 @@ static void print_raw_element_list(GString *out, element *list) {
 
 /* print_raw_element - print an element as original text */
 static void print_raw_element(GString *out, element *elt) {
-    print_latex_string(out, elt->contents.str);
+    g_string_append_printf(out, "%s", elt->contents.str);
 }
 
 /**********************************************************************
