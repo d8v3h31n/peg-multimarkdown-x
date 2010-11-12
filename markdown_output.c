@@ -35,6 +35,50 @@ static void print_groff_string(GString *out, char *str);
 static void print_groff_mm_element_list(GString *out, element *list);
 static void print_groff_mm_element(GString *out, element *elt, int count);
 
+
+/* peg-multimarkdown additions */
+static void print_label_from_string(GString *out, char *str, bool obfuscate);
+static void print_raw_element_list(GString *out, element *list);
+static void print_raw_element(GString *out, element *elt);
+
+
+static void print_label_from_string(GString *out, char *str, bool obfuscate) {
+	bool valid = FALSE;
+
+    while (*str != '\0') {
+		if (valid) {
+		/* can relax on following characters */
+	        if ((*str >= '0' && *str <= '9') || (*str >= 'A' && *str <= 'Z')
+	            || (*str >= 'a' && *str <= 'z') || (*str == '.') || (*str== '_')
+	            || (*str== '-') || (*str== ':'))
+	        {
+	            g_string_append_c(out, tolower(*str));
+	        }			
+		} else {
+		/* need alpha as first character */
+		    if ((*str >= 'A' && *str <= 'Z') || (*str >= 'a' && *str <= 'z'))
+		    {
+		        g_string_append_c(out, tolower(*str));
+				valid = TRUE;
+		    }		
+		}
+    str++;
+    }
+}
+
+/* print_raw_element_list - print a list of elements as original text */
+static void print_raw_element_list(GString *out, element *list) {
+    while (list != NULL) {
+        print_raw_element(out, list);
+        list = list->next;
+    }
+}
+
+/* print_raw_element - print an element as original text */
+static void print_raw_element(GString *out, element *elt) {
+    print_latex_string(out, elt->contents.str);
+}
+
 /**********************************************************************
 
   Utility functions for printing
@@ -196,7 +240,16 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
     case H1: case H2: case H3: case H4: case H5: case H6:
         lev = elt->key - H1 + 1;  /* assumes H1 ... H6 are in order */
         pad(out, 2);
-        g_string_append_printf(out, "<h%1d>", lev);
+
+        /* generate a label for each header (MMD)*/
+        GString *headLabel;
+        headLabel = g_string_new("");
+        print_raw_element_list(headLabel, elt->children);
+        g_string_append_printf(out, "<h%1d id=\"", lev);
+        print_label_from_string(out, headLabel->str, 0);
+        g_string_append_printf(out, "\">");
+        g_string_free(headLabel, TRUE);
+
         print_html_element_list(out, elt->children, obfuscate);
         g_string_append_printf(out, "</h%1d>", lev);
         padded = 0;
