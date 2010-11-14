@@ -353,7 +353,7 @@ Space = Spacechar+
 Str = < NormalChar (NormalChar | '_'+ &NormalChar)* >
         { $$ = mk_str(yytext); }
 
-EscapedChar =   '\\'  < ( "\\" | "`" | "*" | "_" | "{" | "}" | "[" | "]" | "(" | ")" | "#" | "+" | "-" | "." | "!" | ">" | "<") >
+EscapedChar =   '\\' !Newline < [-\\`|*_{}[\]()#+.!><] >
                 { $$ = mk_str(yytext); }
 
 Entity =    ( HexEntity | DecEntity | CharEntity )
