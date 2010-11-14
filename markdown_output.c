@@ -336,7 +336,7 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
 		if (elt->contents.str == 0) {
 			add_endnote(elt);
 			++notenumber;
-			g_string_append_printf(out, "<a class=\"citation\" id=\"fnref%d\" href=\"#fn%d\" title=\"Jump to citation %d\">[%d]</a>",
+			g_string_append_printf(out, "<a class=\"citation\" id=\"fnref:%d\" href=\"#fn:%d\" title=\"Jump to citation %d\">[%d]</a>",
 				notenumber, notenumber, notenumber, notenumber);
 		}
 		break;
