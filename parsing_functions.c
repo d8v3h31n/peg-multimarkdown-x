@@ -102,3 +102,20 @@ element * parse_markdown(char *string, int extensions, element *reference_list, 
     return parse_result;
 
 }
+
+element * parse_markdown_with_metadata(char *string, int extensions, element *reference_list, element *note_list) {
+
+    char *oldcharbuf;
+    syntax_extensions = extensions;
+    references = reference_list;
+    notes = note_list;
+
+    oldcharbuf = charbuf;
+    charbuf = string;
+
+    yyparsefrom(yy_DocWithMetaData);
+
+    charbuf = oldcharbuf;          /* restore charbuf to original value */
+    return parse_result;
+
+}

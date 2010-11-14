@@ -31,6 +31,21 @@
 Doc =       a:StartList ( Block { a = cons($$, a); } )*
             { parse_result = reverse(a); }
 
+DocWithMetaData = MetaData? a:StartList ( Block { a = cons($$, a); } )*
+            { parse_result = reverse(a); }
+
+MetaData = 	MetaDataKeyValue
+
+MetaDataKeyValue = MetaDataKey Sp ":" Sp MetaDataValue
+
+MetaDataKey = Alphanumeric ( Sp ( Alphanumeric | "_" | " " | "-")+)* 
+
+MetaDataValue =  (!Newline .)+ Newline 			# Grab everything after : 
+			(!BlankLine RawLine)*
+
+
+# Match next line unless blank or a keyvalue line
+
 Block =     BlankLine*
             ( BlockQuote
             | Verbatim
