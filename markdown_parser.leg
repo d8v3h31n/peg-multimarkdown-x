@@ -31,6 +31,9 @@
 Doc =       a:StartList ( Block { a = cons($$, a); } )*
             { parse_result = reverse(a); }
 
+DocWithMetaData = MetaData? a:StartList ( Block { a = cons($$, a); } )*
+            { parse_result = reverse(a); }
+
 MetaData = 	MetaDataKeyValue
 
 MetaDataKeyValue = MetaDataKey Sp ":" Sp MetaDataValue

@@ -154,7 +154,7 @@ GString * markdown_to_g_string(char *text, int extensions, int output_format) {
 
     references = parse_references(formatted_text->str, extensions);
     notes = parse_notes(formatted_text->str, extensions, references);
-    result = parse_markdown(formatted_text->str, extensions, references, notes);
+    result = parse_markdown_with_metadata(formatted_text->str, extensions, references, notes);
 
     result = process_raw_blocks(result, extensions, references, notes);
 
