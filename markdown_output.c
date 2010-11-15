@@ -22,6 +22,7 @@
 #include <assert.h>
 #include <glib.h>
 #include "markdown_peg.h"
+#include "utility_functions.c"
 
 static int extensions;
 
@@ -240,16 +241,19 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
     case H1: case H2: case H3: case H4: case H5: case H6:
         lev = elt->key - H1 + 1;  /* assumes H1 ... H6 are in order */
         pad(out, 2);
-
-        /* generate a label for each header (MMD)*/
-        GString *headLabel;
-        headLabel = g_string_new("");
-        print_raw_element_list(headLabel, elt->children);
-        g_string_append_printf(out, "<h%1d id=\"", lev);
-        print_label_from_string(out, headLabel->str, 0);
-        g_string_append_printf(out, "\">");
-        g_string_free(headLabel, TRUE);
-
+        if ( extension(EXT_COMPATIBILITY) ) {
+            /* Use regular Markdown header format */
+            g_string_append_printf(out, "<h%1d>", lev);
+        } else {
+            /* generate a label for each header (MMD)*/
+            GString *headLabel;
+            headLabel = g_string_new("");
+            print_raw_element_list(headLabel, elt->children);
+            g_string_append_printf(out, "<h%1d id=\"", lev);
+            print_label_from_string(out, headLabel->str, 0);
+            g_string_append_printf(out, "\">");
+            g_string_free(headLabel, TRUE);
+        }
         print_html_element_list(out, elt->children, obfuscate);
         g_string_append_printf(out, "</h%1d>", lev);
         padded = 0;
