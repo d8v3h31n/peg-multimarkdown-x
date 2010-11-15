@@ -67,7 +67,7 @@ int main(int argc, char * argv[]) {
     static gboolean opt_version = FALSE;
     static gchar *opt_output = 0;
     static gchar *opt_to = 0;
-    static gboolean opt_smart = FALSE;
+    static gboolean opt_smart = TRUE;
     static gboolean opt_notes = TRUE;
     static gboolean opt_filter_html = FALSE;
     static gboolean opt_filter_styles = FALSE;
@@ -129,6 +129,11 @@ int main(int argc, char * argv[]) {
         extensions = extensions | EXT_FILTER_HTML;
     if (opt_filter_styles)
         extensions = extensions | EXT_FILTER_STYLES;
+
+    /* Compatibility mode turns off extensions and most 
+        MultiMarkdown-specific features */
+    if (opt_compatibility)
+        extensions = 0x000000;
     if (opt_compatibility)
         extensions = extensions | EXT_COMPATIBILITY;
 
