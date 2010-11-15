@@ -72,6 +72,7 @@ int main(int argc, char * argv[]) {
     static gboolean opt_filter_html = FALSE;
     static gboolean opt_filter_styles = FALSE;
     static gboolean opt_allext = FALSE;
+    static gboolean opt_compatibility = FALSE;
 
     static GOptionEntry entries[] =
     {
@@ -81,6 +82,7 @@ int main(int argc, char * argv[]) {
       { "extensions", 'x', 0, G_OPTION_ARG_NONE, &opt_allext, "use all syntax extensions", NULL },
       { "filter-html", 0, 0, G_OPTION_ARG_NONE, &opt_filter_html, "filter out raw HTML (except styles)", NULL },
       { "filter-styles", 0, 0, G_OPTION_ARG_NONE, &opt_filter_styles, "filter out HTML styles", NULL },
+      { "comptability", 'c', 0, G_OPTION_ARG_NONE, &opt_compatibility, "markdown compatibility mode", NULL },
       { NULL }
     };
 
@@ -127,6 +129,8 @@ int main(int argc, char * argv[]) {
         extensions = extensions | EXT_FILTER_HTML;
     if (opt_filter_styles)
         extensions = extensions | EXT_FILTER_STYLES;
+    if (opt_compatibility)
+        extensions = extensions | EXT_COMPATIBILITY;
 
     if (opt_to == NULL)
         output_format = HTML_FORMAT;
