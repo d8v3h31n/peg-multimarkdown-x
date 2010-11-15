@@ -12,7 +12,7 @@ Auto-links should not occur here: `<user67@example.com>`
 	or here: <user67@example.com>
 
 
-And with the mailto bit...
+And with the mailto bit:
 
 Link: <mailto:user67@example.com>.
 
