@@ -29,7 +29,7 @@ distclean: clean
 
 test: $(PROGRAM)
 	cd MarkdownTest_1.0.3; \
-	./MarkdownTest.pl --Script=../$(PROGRAM) --Tidy
+	./MarkdownTest.pl --Script=../$(PROGRAM) --Tidy  --Flags="-c"
 
 mmdtest: $(PROGRAM)
 	cd MarkdownTest_1.0.3; \

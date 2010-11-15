@@ -20,12 +20,14 @@ my $test_dir = "Tests";
 my $script  = "./Markdown.pl";
 my $use_tidy = 0;
 my ($flag_version);
+my $flags = "";
 
 GetOptions (
 			"script=s"   => \$script,
 			"testdir=s"  => \$test_dir,
 			"tidy"       => \$use_tidy,
 			"version"    => \$flag_version,
+			"flags=s"	=> \$flags,
 			);
 
 if($flag_version) {
@@ -61,7 +63,7 @@ foreach my $testfile (glob "$test_dir/*.text") {
 	# my $t_input = <TEST>;
 	my $t_result = <RESULT>;
 
-	my $t_output = `'$script' '$testfile'`;
+	my $t_output = `'$script' $flags '$testfile'`;
 
 	# Normalize the output and expected result strings:
 	$t_result =~ s/\s+\z//; # trim trailing whitespace
