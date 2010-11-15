@@ -55,7 +55,7 @@ static char *charbuf = "";     /* Buffer of characters to be parsed. */
 static element *references = NULL;    /* List of link references found. */
 static element *notes = NULL;         /* List of footnotes found. */
 static element *parse_result;  /* Results of parse. */
-static int syntax_extensions;  /* Syntax extensions selected. */
+int syntax_extensions;  /* Syntax extensions selected. */
 
 /**********************************************************************
 
