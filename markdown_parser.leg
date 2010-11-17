@@ -72,16 +72,22 @@ AtxStart =  < ( "######" | "#####" | "####" | "###" | "##" | "#" ) >
             { $$ = mk_element(H1 + (strlen(yytext) - 1)); }
 
 AtxHeading = s:AtxStart Sp a:StartList ( AtxInline { a = cons($$, a); } )+ (Sp '#'* Sp)?  Newline
-            { $$ = mk_list(s->key, a);
-              free(s); }
+            {
+			  $$ = mk_list(s->key, a);
+               labels = reverse(a);
+free(s); }
 
 SetextHeading = SetextHeading1 | SetextHeading2
 
 SetextHeading1 =  a:StartList ( !Endline Inline { a = cons($$, a); } )+ Newline "===" '='* Newline
-                  { $$ = mk_list(H1, a); }
+                  { 
+				    $$ = mk_list(H1, a); 
+				labels = reverse(a);}
 
 SetextHeading2 =  a:StartList ( !Endline Inline { a = cons($$, a); } )+ Newline "---" '-'* Newline
-                  { $$ = mk_list(H2, a); }
+                  {
+					$$ = mk_list(H2, a); 
+					labels = reverse(a);}
 
 Heading = AtxHeading | SetextHeading
 
@@ -449,7 +455,18 @@ ReferenceLinkDouble =  a:Label < Spnl > !"[]" b:Label
                                $$ = mk_link(a->children, match.url, match.title);
                                free(a);
                                free_element_list(b);
-                           } else {
+                           } else if ( !extension(EXT_COMPATIBILITY) && 
+                            find_label(&match, b->children)) {
+                                GString *text = g_string_new("");
+                                print_raw_element_list(text, b->children);
+                                GString *label = g_string_new(label_from_string(text->str,0));
+                                g_string_prepend(label,"#");
+                                $$ = mk_link(a->children, label->str, "");
+                                g_string_free(text, TRUE);
+                                g_string_free(label, TRUE);
+                                free(a);
+                                free_element_list(b);
+                            } else {
                                element *result;
                                result = mk_element(LIST);
                                result->children = cons(mk_str("["), cons(a, cons(mk_str("]"), cons(mk_str(yytext),
@@ -463,8 +480,17 @@ ReferenceLinkSingle =  a:Label < (Spnl "[]")? >
                            if (find_reference(&match, a->children)) {
                                $$ = mk_link(a->children, match.url, match.title);
                                free(a);
-                           }
-                           else {
+                           } else if ( !extension(EXT_COMPATIBILITY) && 
+                            find_label(&match, a->children)) {
+                                GString *text = g_string_new("");
+                                print_raw_element_list(text, a->children);
+                                GString *label = g_string_new(label_from_string(text->str,0));
+                                g_string_prepend(label,"#");
+                                $$ = mk_link(a->children, label->str, "");
+                                g_string_free(text, TRUE);
+                                g_string_free(label, TRUE);
+                                free(a);
+                           } else {
                                element *result;
                                result = mk_element(LIST);
                                result->children = cons(mk_str("["), cons(a, cons(mk_str("]"), mk_str(yytext))));
