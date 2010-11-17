@@ -747,9 +747,14 @@ RawCitationReference = "[#" < ( !Newline !']' . )+ > ']'
                    { $$ = mk_str(yytext); }
 
 
-AutoLabels = 	a:StartList
-				( b:Heading { a = cons(b, a);} | SkipBlock )*
-                { labels = reverse(a); }
+AutoLabels = a:StartList ( b:Heading
+            { 
+                GString *label = g_string_new("");
+                print_raw_element_list(label, b->children);
+                a = cons(mk_str(label_from_string(label->str,0)), a);
+                g_string_free(label,true);
+            } | SkipBlock )*
+            { labels = reverse(a); }
 
 
 %%
