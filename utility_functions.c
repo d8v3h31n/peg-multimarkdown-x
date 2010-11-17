@@ -278,20 +278,19 @@ static void print_raw_element_list(GString *out, element *list) {
  * 'link' is modified with the matching url and title. */
 static bool find_label(link *result, element *label) {
     element *cur = labels;  /* pointer to walk up list of references */
-
     GString *text = g_string_new("");
     print_raw_element_list(text, label);
     GString *query = g_string_new(label_from_string(text->str,0));
-	return true;
-	fprintf(stderr, "\nTrying to match %s\n",query->str);
+
 	while (cur != NULL) {
-		fprintf(stderr, "Comparing to %s.\n", cur->contents.str);
-        if (strcmp(query->str,cur->contents.str) == 0) {
+		GString *test = g_string_new("");
+		print_raw_element_list(test, cur->children);
+		GString *testlabel = g_string_new(label_from_string(test->str,0));
+        if (strcmp(query->str,testlabel->str) == 0) {
             return true;
         }
         else
-            cur = cur->next;
+           cur = cur->next;
     }
-	fprintf(stderr, "Failed to match\n");
     return false;
 }

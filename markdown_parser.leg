@@ -748,7 +748,7 @@ RawCitationReference = "[#" < ( !Newline !']' . )+ > ']'
 
 
 AutoLabels = 	a:StartList
-				( b:Heading { a = cons(b, a); fprintf(stderr, "Found label\n");} | SkipBlock )*
+				( b:Heading { a = cons(b, a);} | SkipBlock )*
                 { labels = reverse(a); }
 
 
