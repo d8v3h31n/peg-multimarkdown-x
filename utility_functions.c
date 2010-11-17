@@ -282,7 +282,7 @@ static bool find_label(link *result, element *label) {
     GString *text = g_string_new("");
     print_raw_element_list(text, label);
     GString *query = g_string_new(label_from_string(text->str,0));
-
+	return true;
 	fprintf(stderr, "\nTrying to match %s\n",query->str);
 	while (cur != NULL) {
 		fprintf(stderr, "Comparing to %s.\n", cur->contents.str);
