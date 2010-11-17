@@ -281,16 +281,21 @@ static bool find_label(link *result, element *label) {
     GString *text = g_string_new("");
     print_raw_element_list(text, label);
     GString *query = g_string_new(label_from_string(text->str,0));
+	g_string_free(text, true);
 
 	while (cur != NULL) {
 		GString *test = g_string_new("");
 		print_raw_element_list(test, cur->children);
 		GString *testlabel = g_string_new(label_from_string(test->str,0));
         if (strcmp(query->str,testlabel->str) == 0) {
+			g_string_free(query, true);
+			g_string_free(testlabel, true);
             return true;
         }
         else
            cur = cur->next;
+		g_string_free(testlabel, true);
     }
+	g_string_free(query, true);
     return false;
 }
