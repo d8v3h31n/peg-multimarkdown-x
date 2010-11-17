@@ -57,6 +57,8 @@ static element *notes = NULL;         /* List of footnotes found. */
 static element *parse_result;  /* Results of parse. */
 int syntax_extensions;  /* Syntax extensions selected. */
 
+static element *labels = NULL;		/* List of labels found in document. */
+
 /**********************************************************************
 
   Auxiliary functions for parsing actions.
@@ -228,24 +230,6 @@ static bool find_note(element **result, char *label) {
 
 /* peg-multimarkdown additions */
 
-/* find_label - return true if header, table, etc is found matching label.
- * 'link' is modified with the matching url and title. */
-static bool find_label(link *result, element *label) {
-    element *cur = references;  /* pointer to walk up list of references */
-    link *curitem;
-	return true;
-	
-	while (cur != NULL) {
-        curitem = cur->contents.link;
-        if (match_inlines(label, curitem->label)) {
-            *result = *curitem;
-            return true;
-        }
-        else
-            cur = cur->next;
-    }
-    return false;
-}
 
 /* label_from_string - strip spaces and illegal characters to generate valid 
     HTML id */
@@ -274,4 +258,39 @@ static char *label_from_string(char *str, bool obfuscate) {
     }
 
     return out->str;
+}
+
+
+/* print_raw_element - print an element as original text */
+static void print_raw_element(GString *out, element *elt) {
+    g_string_append_printf(out, "%s", elt->contents.str);
+}
+
+/* print_raw_element_list - print a list of elements as original text */
+static void print_raw_element_list(GString *out, element *list) {
+    while (list != NULL) {
+        print_raw_element(out, list);
+        list = list->next;
+    }
+}
+
+/* find_label - return true if header, table, etc is found matching label.
+ * 'link' is modified with the matching url and title. */
+static bool find_label(link *result, element *label) {
+    element *cur = labels;  /* pointer to walk up list of references */
+
+    GString *text = g_string_new("");
+    print_raw_element_list(text, label);
+    GString *query = g_string_new(label_from_string(text->str,0));
+
+	fprintf(stderr, "\nTrying to match %s\n",query->str);
+	while (cur != NULL) {
+		fprintf(stderr, "Comparing to %s.\n", cur->contents.str);
+        if (strcmp(query->str,cur->contents.str) == 0) {
+            return true;
+        }
+        else
+            cur = cur->next;
+    }
+    return false;
 }

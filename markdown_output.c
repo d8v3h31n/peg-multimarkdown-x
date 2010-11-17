@@ -37,23 +37,6 @@ static void print_groff_mm_element_list(GString *out, element *list);
 static void print_groff_mm_element(GString *out, element *elt, int count);
 
 
-/* peg-multimarkdown additions */
-static void print_raw_element_list(GString *out, element *list);
-static void print_raw_element(GString *out, element *elt);
-
-
-/* print_raw_element_list - print a list of elements as original text */
-static void print_raw_element_list(GString *out, element *list) {
-    while (list != NULL) {
-        print_raw_element(out, list);
-        list = list->next;
-    }
-}
-
-/* print_raw_element - print an element as original text */
-static void print_raw_element(GString *out, element *elt) {
-    g_string_append_printf(out, "%s", elt->contents.str);
-}
 
 /**********************************************************************
 
