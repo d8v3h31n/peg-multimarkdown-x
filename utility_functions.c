@@ -199,6 +199,8 @@ static bool find_note(element **result, char *label) {
    return false;
 }
 
+
+
 /**********************************************************************
 
   Definitions for leg parser generator.
@@ -224,3 +226,52 @@ static bool find_note(element **result, char *label) {
 }
 
 
+/* peg-multimarkdown additions */
+
+/* find_label - return true if header, table, etc is found matching label.
+ * 'link' is modified with the matching url and title. */
+static bool find_label(link *result, element *label) {
+    element *cur = references;  /* pointer to walk up list of references */
+    link *curitem;
+	return true;
+	
+	while (cur != NULL) {
+        curitem = cur->contents.link;
+        if (match_inlines(label, curitem->label)) {
+            *result = *curitem;
+            return true;
+        }
+        else
+            cur = cur->next;
+    }
+    return false;
+}
+
+/* label_from_string - strip spaces and illegal characters to generate valid 
+    HTML id */
+static char *label_from_string(char *str, bool obfuscate) {
+    bool valid = FALSE;
+    GString *out = g_string_new("");
+
+    while (*str != '\0') {
+        if (valid) {
+        /* can relax on following characters */
+            if ((*str >= '0' && *str <= '9') || (*str >= 'A' && *str <= 'Z')
+                || (*str >= 'a' && *str <= 'z') || (*str == '.') || (*str== '_')
+                || (*str== '-') || (*str== ':'))
+            {
+                g_string_append_c(out, tolower(*str));
+            }           
+        } else {
+        /* need alpha as first character */
+            if ((*str >= 'A' && *str <= 'Z') || (*str >= 'a' && *str <= 'z'))
+            {
+                g_string_append_c(out, tolower(*str));
+                valid = TRUE;
+            }
+        }
+    str++;
+    }
+
+    return out->str;
+}

@@ -38,34 +38,9 @@ static void print_groff_mm_element(GString *out, element *elt, int count);
 
 
 /* peg-multimarkdown additions */
-static void print_label_from_string(GString *out, char *str, bool obfuscate);
 static void print_raw_element_list(GString *out, element *list);
 static void print_raw_element(GString *out, element *elt);
 
-
-static void print_label_from_string(GString *out, char *str, bool obfuscate) {
-	bool valid = FALSE;
-
-    while (*str != '\0') {
-		if (valid) {
-		/* can relax on following characters */
-	        if ((*str >= '0' && *str <= '9') || (*str >= 'A' && *str <= 'Z')
-	            || (*str >= 'a' && *str <= 'z') || (*str == '.') || (*str== '_')
-	            || (*str== '-') || (*str== ':'))
-	        {
-	            g_string_append_c(out, tolower(*str));
-	        }			
-		} else {
-		/* need alpha as first character */
-		    if ((*str >= 'A' && *str <= 'Z') || (*str >= 'a' && *str <= 'z'))
-		    {
-		        g_string_append_c(out, tolower(*str));
-				valid = TRUE;
-		    }		
-		}
-    str++;
-    }
-}
 
 /* print_raw_element_list - print a list of elements as original text */
 static void print_raw_element_list(GString *out, element *list) {
@@ -250,7 +225,7 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
             headLabel = g_string_new("");
             print_raw_element_list(headLabel, elt->children);
             g_string_append_printf(out, "<h%1d id=\"", lev);
-            print_label_from_string(out, headLabel->str, 0);
+            g_string_append(out, label_from_string(headLabel->str, 0));
             g_string_append_printf(out, "\">");
             g_string_free(headLabel, TRUE);
         }
