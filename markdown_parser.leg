@@ -72,22 +72,16 @@ AtxStart =  < ( "######" | "#####" | "####" | "###" | "##" | "#" ) >
             { $$ = mk_element(H1 + (strlen(yytext) - 1)); }
 
 AtxHeading = s:AtxStart Sp a:StartList ( AtxInline { a = cons($$, a); } )+ (Sp '#'* Sp)?  Newline
-            {
-			  $$ = mk_list(s->key, a);
-               labels = reverse(a);
-free(s); }
+            { $$ = mk_list(s->key, a);
+			free(s); }
 
 SetextHeading = SetextHeading1 | SetextHeading2
 
 SetextHeading1 =  a:StartList ( !Endline Inline { a = cons($$, a); } )+ Newline "===" '='* Newline
-                  { 
-				    $$ = mk_list(H1, a); 
-				labels = reverse(a);}
+                  { $$ = mk_list(H1, a); }
 
 SetextHeading2 =  a:StartList ( !Endline Inline { a = cons($$, a); } )+ Newline "---" '-'* Newline
-                  {
-					$$ = mk_list(H2, a); 
-					labels = reverse(a);}
+                  { $$ = mk_list(H2, a); }
 
 Heading = AtxHeading | SetextHeading
 
@@ -751,6 +745,11 @@ CitationReferenceSingle =  ref:RawCitationReference < (Spnl "[]")? >
 
 RawCitationReference = "[#" < ( !Newline !']' . )+ > ']'
                    { $$ = mk_str(yytext); }
+
+
+AutoLabels = 	a:StartList
+				( b:Heading { a = cons(b, a); fprintf(stderr, "Found label\n");} | SkipBlock )*
+                { labels = reverse(a); }
 
 
 %%

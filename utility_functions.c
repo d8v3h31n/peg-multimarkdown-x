@@ -292,5 +292,6 @@ static bool find_label(link *result, element *label) {
         else
             cur = cur->next;
     }
+	fprintf(stderr, "Failed to match\n");
     return false;
 }

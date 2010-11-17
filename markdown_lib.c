@@ -110,7 +110,7 @@ static void print_tree(element * elt, int indent) {
 /* process_raw_blocks - traverses an element list, replacing any RAW elements with
  * the result of parsing them as markdown text, and recursing into the children
  * of parent elements.  The result should be a tree of elements without any RAWs. */
-static element * process_raw_blocks(element *input, int extensions, element *references, element *notes) {
+static element * process_raw_blocks(element *input, int extensions, element *references, element *notes, element *labels) {
     element *current = NULL;
     element *last_child = NULL;
     char *contents;
@@ -123,18 +123,18 @@ static element * process_raw_blocks(element *input, int extensions, element *ref
              * each chunk separately. */
             contents = strtok(current->contents.str, "\001");
             current->key = LIST;
-            current->children = parse_markdown(contents, extensions, references, notes);
+            current->children = parse_markdown(contents, extensions, references, notes, labels);
             last_child = current->children;
             while ((contents = strtok(NULL, "\001"))) {
                 while (last_child->next != NULL)
                     last_child = last_child->next;
-                last_child->next = parse_markdown(contents, extensions, references, notes);
+                last_child->next = parse_markdown(contents, extensions, references, notes, labels);
             }
             free(current->contents.str);
             current->contents.str = NULL;
         }
         if (current->children != NULL)
-            current->children = process_raw_blocks(current->children, extensions, references, notes);
+            current->children = process_raw_blocks(current->children, extensions, references, notes, labels);
         current = current->next;
     }
     return input;
@@ -146,6 +146,7 @@ GString * markdown_to_g_string(char *text, int extensions, int output_format) {
     element *result;
     element *references;
     element *notes;
+	element *labels;
     GString *formatted_text;
     GString *out;
     out = g_string_new("");
@@ -154,9 +155,10 @@ GString * markdown_to_g_string(char *text, int extensions, int output_format) {
 
     references = parse_references(formatted_text->str, extensions);
     notes = parse_notes(formatted_text->str, extensions, references);
-    result = parse_markdown_with_metadata(formatted_text->str, extensions, references, notes);
+	labels = parse_labels(formatted_text->str, extensions, references, notes);
+    result = parse_markdown_with_metadata(formatted_text->str, extensions, references, notes, labels);
 
-    result = process_raw_blocks(result, extensions, references, notes);
+    result = process_raw_blocks(result, extensions, references, notes, labels);
 
     g_string_free(formatted_text, TRUE);
 
@@ -164,6 +166,7 @@ GString * markdown_to_g_string(char *text, int extensions, int output_format) {
 
     free_element_list(result);
     free_element_list(references);
+	free_element_list(labels);
     return out;
 }
 
