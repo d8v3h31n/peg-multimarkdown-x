@@ -34,14 +34,14 @@ Doc =       a:StartList ( Block { a = cons($$, a); } )*
 DocWithMetaData = ( &{ !extension(EXT_COMPATIBILITY) } MetaData)? a:StartList ( Block { a = cons($$, a); } )*
             { parse_result = reverse(a); }
 
-MetaData = 	MetaDataKeyValue
+MetaData =  MetaDataKeyValue
 
 MetaDataKeyValue = MetaDataKey Sp ':' Sp MetaDataValue
 
 MetaDataKey = Alphanumeric ( Sp ( Alphanumeric | '_' | ' ' | '-')+)* 
 
-MetaDataValue =  (!Newline .)+ Newline 			# Grab everything after : 
-			(!BlankLine RawLine)*
+MetaDataValue =  (!Newline .)+ Newline          # Grab everything after : 
+            (!BlankLine RawLine)*
 
 
 # Match next line unless blank or a keyvalue line
@@ -49,7 +49,7 @@ MetaDataValue =  (!Newline .)+ Newline 			# Grab everything after :
 Block =     BlankLine*
             ( BlockQuote
             | Verbatim
-			| DefinitionList
+            | DefinitionList
             | Note
             | Reference
             | HorizontalRule
@@ -72,7 +72,7 @@ AtxInline = !Newline !( &{ !extension(EXT_COMPATIBILITY) } Sp ReferenceLinkSingl
 AtxStart =  < ( "######" | "#####" | "####" | "###" | "##" | "#" ) >
             { $$ = mk_element(H1 + (strlen(yytext) - 1)); }
 
-AtxHeading = s:AtxStart Sp a:StartList ( AtxInline { a = cons($$, a); } )+ ( Sp ReferenceLinkSingle )? (Sp '#'* Sp)?  Newline
+AtxHeading = s:AtxStart Sp a:StartList ( AtxInline { a = cons($$, a); } )+ ( Sp b:ReferenceLinkSingle )? (Sp '#'* Sp)?  Newline
             { $$ = mk_list(s->key, a);
             free(s); }
 
@@ -354,7 +354,7 @@ Inline  = Str
         | Image
         | Link
         | NoteReference
- #       | InlineNote			# Not used in MultiMarkdown
+ #       | InlineNote           # Not used in MultiMarkdown
         | Code
         | RawHtml
         | Entity
@@ -712,20 +712,20 @@ RawNoteBlock =  a:StartList
 CitationReference = CitationReferenceDouble | CitationReferenceSingle
 
 CitationReferenceDouble = b:Label < Spnl > !"[]" ref:RawCitationReference
-				{   element *match;
-				    if (find_note(&match, ref->contents.str)) {
-				        $$ = mk_element(CITATION);
-				        assert(match->children != NULL);
-				        $$->children = match->children;
-				        $$->contents.str = 0;
-				    } else {
-				        char *s;
-				        s = malloc(strlen(ref->contents.str) + 4);
-				        sprintf(s, "[#%s]", ref->contents.str);
-				        $$ = mk_str(s);
-				        free(s);
-				    }
-				}
+                {   element *match;
+                    if (find_note(&match, ref->contents.str)) {
+                        $$ = mk_element(CITATION);
+                        assert(match->children != NULL);
+                        $$->children = match->children;
+                        $$->contents.str = 0;
+                    } else {
+                        char *s;
+                        s = malloc(strlen(ref->contents.str) + 4);
+                        sprintf(s, "[#%s]", ref->contents.str);
+                        $$ = mk_str(s);
+                        free(s);
+                    }
+                }
 
 CitationReferenceSingle =  ref:RawCitationReference < (Spnl "[]")? >
                 {   element *match;
