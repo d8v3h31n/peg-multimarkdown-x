@@ -36,9 +36,9 @@ DocWithMetaData = ( &{ !extension(EXT_COMPATIBILITY) } MetaData)? a:StartList ( 
 
 MetaData = 	MetaDataKeyValue
 
-MetaDataKeyValue = MetaDataKey Sp ":" Sp MetaDataValue
+MetaDataKeyValue = MetaDataKey Sp ':' Sp MetaDataValue
 
-MetaDataKey = Alphanumeric ( Sp ( Alphanumeric | "_" | " " | "-")+)* 
+MetaDataKey = Alphanumeric ( Sp ( Alphanumeric | '_' | ' ' | '-')+)* 
 
 MetaDataValue =  (!Newline .)+ Newline 			# Grab everything after : 
 			(!BlankLine RawLine)*
@@ -49,6 +49,7 @@ MetaDataValue =  (!Newline .)+ Newline 			# Grab everything after :
 Block =     BlankLine*
             ( BlockQuote
             | Verbatim
+			| DefinitionList
             | Note
             | Reference
             | HorizontalRule
@@ -755,6 +756,29 @@ AutoLabels = a:StartList ( b:Heading
                 g_string_free(label,true);
             } | SkipBlock )*
             { labels = reverse(a); }
+
+DefinitionList =  a:StartList
+                (Term { a = cons($$, a); } )+
+                BlankLine* 
+                (Definition { a = cons($$, a);})+
+                { $$ = mk_list(LIST, a);
+                    $$->key = DEFLIST;
+                }
+
+Term =  a:StartList 
+        (!BlankLine !':' Line { a = cons($$, a);})
+        { $$ = mk_str_from_list(a, false);
+            $$->key = TERM;
+        }
+
+Definition = (a:StartList
+                 ( ':' Sp Line { a = cons($$, a);}) 
+                 ( !':' Sp !BlankLine Line { a = cons($$, a);})*
+                 ( BlankLine)?
+             )
+             { $$ = mk_list(LIST, a);
+                 $$->key = DEFINITION;
+             }
 
 
 %%

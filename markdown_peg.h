@@ -49,7 +49,10 @@ enum keys { LIST,   /* A generic list of values.  For ordered and bullet lists, 
             HRULE,
             REFERENCE,
             NOTE,
-            CITATION
+            CITATION,
+            DEFLIST,
+            TERM,
+            DEFINITION
           };
 
 /* Semantic value of a parsing action. */

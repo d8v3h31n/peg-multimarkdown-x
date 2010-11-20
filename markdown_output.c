@@ -302,6 +302,21 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
 				notenumber, notenumber, notenumber, notenumber);
 		}
 		break;
+    case DEFLIST:
+        g_string_append_printf(out, "<dl>\n");
+        print_html_element_list(out, elt->children, obfuscate);
+        g_string_append_printf(out, "</dl>\n");
+        break;
+    case TERM:
+        g_string_append_printf(out, "<dt>");
+        print_html_string(out, elt->contents.str, obfuscate);
+        g_string_append_printf(out, "</dt>\n");
+        break;
+    case DEFINITION:
+        g_string_append_printf(out, "<dd>");
+        print_html_element_list(out, elt->children, obfuscate);
+        g_string_append_printf(out, "</dd>\n");
+        break;
     default: 
         fprintf(stderr, "print_html_element encountered unknown element key = %d\n", elt->key); 
         exit(EXIT_FAILURE);
