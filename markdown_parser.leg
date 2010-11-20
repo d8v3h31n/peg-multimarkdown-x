@@ -67,21 +67,21 @@ Para =      NonindentSpace a:Inlines BlankLine+
 Plain =     a:Inlines
             { $$ = a; $$->key = PLAIN; }
 
-AtxInline = !Newline !(Sp '#'* Sp Newline) Inline
+AtxInline = !Newline !( &{ !extension(EXT_COMPATIBILITY) } Sp ReferenceLinkSingle ) !(Sp '#'* Sp Newline) Inline
 
 AtxStart =  < ( "######" | "#####" | "####" | "###" | "##" | "#" ) >
             { $$ = mk_element(H1 + (strlen(yytext) - 1)); }
 
-AtxHeading = s:AtxStart Sp a:StartList ( AtxInline { a = cons($$, a); } )+ (Sp '#'* Sp)?  Newline
+AtxHeading = s:AtxStart Sp a:StartList ( AtxInline { a = cons($$, a); } )+ ( Sp ReferenceLinkSingle )? (Sp '#'* Sp)?  Newline
             { $$ = mk_list(s->key, a);
-			free(s); }
+            free(s); }
 
 SetextHeading = SetextHeading1 | SetextHeading2
 
-SetextHeading1 =  a:StartList ( !Endline Inline { a = cons($$, a); } )+ Newline "===" '='* Newline
+SetextHeading1 =  a:StartList ( !Endline !( &{ !extension(EXT_COMPATIBILITY) } Sp ReferenceLinkSingle ) Inline { a = cons($$, a); } )+ ( Sp ReferenceLinkSingle Sp )?Newline "===" '='* Newline
                   { $$ = mk_list(H1, a); }
 
-SetextHeading2 =  a:StartList ( !Endline Inline { a = cons($$, a); } )+ Newline "---" '-'* Newline
+SetextHeading2 =  a:StartList ( !Endline !( &{ !extension(EXT_COMPATIBILITY) } Sp ReferenceLinkSingle ) Inline { a = cons($$, a); } )+ ( Sp ReferenceLinkSingle Sp)? Newline "---" '-'* Newline
                   { $$ = mk_list(H2, a); }
 
 Heading = AtxHeading | SetextHeading
