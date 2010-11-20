@@ -27,3 +27,13 @@ And [Setext 2].
 And [Atx 1].
 
 And [Atx 2] should fail.
+
+
+# Manual Header [label] #
+
+
+Manual Header 2 [label2]
+========================
+
+Manual Header 3 [label3]
+------------------------
