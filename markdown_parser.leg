@@ -34,14 +34,14 @@ Doc =       a:StartList ( Block { a = cons($$, a); } )*
 DocWithMetaData = ( &{ !extension(EXT_COMPATIBILITY) } MetaData)? a:StartList ( Block { a = cons($$, a); } )*
             { parse_result = reverse(a); }
 
-MetaData =  MetaDataKeyValue
+MetaData =  MetaDataKeyValue+
 
 MetaDataKeyValue = MetaDataKey Sp ':' Sp MetaDataValue
 
 MetaDataKey = Alphanumeric ( Sp ( Alphanumeric | '_' | ' ' | '-')+)* 
 
 MetaDataValue =  (!Newline .)+ Newline          # Grab everything after : 
-            (!BlankLine RawLine)*
+            (!BlankLine !MetaDataKeyValue RawLine)*
 
 
 # Match next line unless blank or a keyvalue line
