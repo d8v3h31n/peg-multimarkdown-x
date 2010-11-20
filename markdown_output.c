@@ -317,6 +317,16 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
         print_html_element_list(out, elt->children, obfuscate);
         g_string_append_printf(out, "</dd>\n");
         break;
+	case METAKEY:
+		g_string_append_printf(out, "metakey:");
+		print_html_string(out, elt->contents.str, obfuscate);
+		g_string_append_printf(out, "\n");
+		break;
+	case METAVALUE:
+		g_string_append_printf(out, "metavalue:");
+		print_html_string(out, elt->contents.str, obfuscate);
+		g_string_append_printf(out, "\n");
+		break;
     default: 
         fprintf(stderr, "print_html_element encountered unknown element key = %d\n", elt->key); 
         exit(EXIT_FAILURE);
