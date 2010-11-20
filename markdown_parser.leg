@@ -49,6 +49,7 @@ MetaDataValue =  (!Newline .)+ Newline          # Grab everything after :
 Block =     BlankLine*
             ( BlockQuote
             | Verbatim
+            | Table
             | DefinitionList
             | Note
             | Reference
@@ -779,6 +780,15 @@ Definition = (a:StartList
              { $$ = mk_list(LIST, a);
                  $$->key = DEFINITION;
              }
+
+Table = a:StartList	(TableRow {a = cons($$, a);} )+
+	{ $$ = mk_list(LIST, a);
+		$$->key = TABLE;
+	}
+
+TableRow = a:StartList NonindentSpace (!'|' Inline {a = cons($$, a);} )+ Newline
+	{ $$ = mk_list(LIST, a);
+	}
 
 
 %%
