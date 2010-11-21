@@ -25,6 +25,7 @@
 #include "utility_functions.c"
 
 static int extensions;
+static int base_header_level = 1;
 
 static void print_html_string(GString *out, char *str, bool obfuscate);
 static void print_html_element_list(GString *out, element *list, bool obfuscate);
@@ -197,7 +198,7 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
         assert(elt->key != RAW);
         break;
     case H1: case H2: case H3: case H4: case H5: case H6:
-        lev = elt->key - H1 + 1;  /* assumes H1 ... H6 are in order */
+        lev = elt->key - H1 + base_header_level;  /* assumes H1 ... H6 are in order */
         pad(out, 2);
         if ( extension(EXT_COMPATIBILITY) ) {
             /* Use regular Markdown header format */
@@ -346,7 +347,7 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
             print_raw_element_list(out, elt->children);
             g_string_append_printf(out, "\n");
         } else if (strcmp(elt->contents.str, "baseheaderlevel") == 0) {
-            
+			base_header_level = atoi(elt->children->contents.str);
         } else {
             g_string_append_printf(out, "\t<meta name=\"");
             print_html_string(out, elt->contents.str, obfuscate);
