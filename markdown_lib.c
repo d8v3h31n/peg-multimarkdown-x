@@ -146,7 +146,7 @@ GString * markdown_to_g_string(char *text, int extensions, int output_format) {
     element *result;
     element *references;
     element *notes;
-	element *labels;
+    element *labels;
     GString *formatted_text;
     GString *out;
     out = g_string_new("");
@@ -155,7 +155,7 @@ GString * markdown_to_g_string(char *text, int extensions, int output_format) {
 
     references = parse_references(formatted_text->str, extensions);
     notes = parse_notes(formatted_text->str, extensions, references);
-	labels = parse_labels(formatted_text->str, extensions, references, notes);
+    labels = parse_labels(formatted_text->str, extensions, references, notes);
     result = parse_markdown_with_metadata(formatted_text->str, extensions, references, notes, labels);
 
     result = process_raw_blocks(result, extensions, references, notes, labels);
@@ -166,7 +166,7 @@ GString * markdown_to_g_string(char *text, int extensions, int output_format) {
 
     free_element_list(result);
     free_element_list(references);
-	free_element_list(labels);
+    free_element_list(labels);
     return out;
 }
 
