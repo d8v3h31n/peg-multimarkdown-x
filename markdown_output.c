@@ -357,6 +357,9 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
     case METAVALUE:
         print_html_string(out, elt->contents.str, obfuscate);
         break;
+    case ENDHTML:
+        g_string_append_printf(out, "\n</body>\n</html>");
+        break;
     default: 
         fprintf(stderr, "print_html_element encountered unknown element key = %d\n", elt->key); 
         exit(EXIT_FAILURE);
