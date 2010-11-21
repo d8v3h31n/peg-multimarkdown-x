@@ -35,29 +35,29 @@ DocWithMetaData = a:StartList ( &{ !extension(EXT_COMPATIBILITY) } MetaData { a 
             { parse_result = reverse(a); }
 
 MetaData =  a:StartList (MetaDataKeyValue { a = cons($$, a); })+
-            { $$ = mk_list(LIST, a);}
+            { $$ = mk_list(LIST, a);
+                $$->key = METADATA;
+            }
 
-MetaDataKeyValue = a:StartList MetaDataKey { a = cons($$, a); }
-            Sp ':' Sp MetaDataValue { a = cons($$, a); }
-            {  
-                $$ = mk_list(LIST, a);
-                }
+MetaDataKeyValue = a:MetaDataKey
+            Sp ':' Sp b:MetaDataValue
+            { $$ = a;
+                $$->children = b;
+            }
 
 MetaDataKey = < Alphanumeric ( Sp ( Alphanumeric | '_' | ' ' | '-')+)* >
-            { $$ = mk_str(yytext);
+            { $$ = mk_str(label_from_string(yytext,0));
                 $$->key = METAKEY;
             }
 
 MetaDataValue = a:StartList < (!Newline .)+ > { a = cons(mk_str(yytext), a); }
-                Newline { a = cons(mk_str("\n"), a);}
+                (Newline &(!BlankLine !MetaDataKeyValue Sp RawLine)
+                    { a = cons(mk_str("\n"), a);} | Newline)
                 (!BlankLine !MetaDataKeyValue Sp RawLine
                     { a = cons(mk_str(yytext), a);} )*
                 { $$ = mk_str_from_list(a,false);
                     $$->key = METAVALUE;
                 }
-
-
-# Match next line unless blank or a keyvalue line
 
 Block =     BlankLine*
             ( BlockQuote

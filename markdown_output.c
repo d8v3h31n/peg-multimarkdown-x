@@ -317,16 +317,46 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
         print_html_element_list(out, elt->children, obfuscate);
         g_string_append_printf(out, "</dd>\n");
         break;
-	case METAKEY:
-		g_string_append_printf(out, "metakey:\t");
-		print_html_string(out, elt->contents.str, obfuscate);
-		g_string_append_printf(out, "\n");
-		break;
-	case METAVALUE:
-		g_string_append_printf(out, "metavalue:\t");
-		print_html_string(out, elt->contents.str, obfuscate);
-		g_string_append_printf(out, "\n");
-		break;
+    case METADATA:
+        /* Metadata is present, so this should be a "complete" document */
+        g_string_append_printf(out,
+            "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n");
+
+        g_string_append_printf(out,
+            "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\n");
+
+        g_string_append_printf(out, 
+            "<html xmlns=\"http://www.w3.org/1999/xhtml\">\n");
+
+        g_string_append_printf(out, "<head>\n");
+        print_html_element_list(out, elt->children, obfuscate);
+        g_string_append_printf(out, "</head>\n");
+        g_string_append_printf(out, "<body>\n");
+        break;
+    case METAKEY:
+        if (strcmp(elt->contents.str, "title") == 0) {
+            g_string_append_printf(out, "\t<title>");
+            print_html_element_list(out, elt->children, obfuscate);
+            g_string_append_printf(out, "</title>\n");
+        } else if (strcmp(elt->contents.str, "css") == 0) {
+            g_string_append_printf(out, "\t<link type=\"text/css\" rel=\"stylesheet\" href=\"");
+            print_html_element_list(out, elt->children, obfuscate);
+            g_string_append_printf(out, "\"/>\n");
+        } else if (strcmp(elt->contents.str, "xhtmlheader") == 0) {
+            print_html_element_list(out, elt->children, obfuscate);
+        } else if (strcmp(elt->contents.str, "baseheaderlevel") == 0) {
+            
+        } else {
+            g_string_append_printf(out, "\t<meta name=\"");
+            print_html_string(out, elt->contents.str, obfuscate);
+            g_string_append_printf(out, "\" content=\"");
+            print_html_element_list(out, elt->children, obfuscate);
+            g_string_append_printf(out, "\"/>\n");
+        }
+        break;
+    case METAVALUE:
+        print_html_string(out, elt->contents.str, obfuscate);
+        break;
     default: 
         fprintf(stderr, "print_html_element encountered unknown element key = %d\n", elt->key); 
         exit(EXIT_FAILURE);
