@@ -1,0 +1,6 @@
+Title:			This should be a <title> element
+CSS:			http://fletcherpenney.net/css/document.css
+XHTML HEADER:	<meta name="testing" 
+				content="This should be valid meta element"/>
+
+And this should be the main text.

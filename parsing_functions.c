@@ -90,9 +90,9 @@ element * parse_labels(char *string, int extensions, element *reference_list, el
 
     char *oldcharbuf;
     syntax_extensions = extensions;
-	references = reference_list;
-	notes = note_list;
-	labels = NULL;
+    references = reference_list;
+    notes = note_list;
+    labels = NULL;
 
     oldcharbuf = charbuf;
     charbuf = string;
@@ -108,7 +108,7 @@ element * parse_markdown(char *string, int extensions, element *reference_list, 
     syntax_extensions = extensions;
     references = reference_list;
     notes = note_list;
-	labels = label_list;
+    labels = label_list;
 
     oldcharbuf = charbuf;
     charbuf = string;
@@ -126,7 +126,7 @@ element * parse_markdown_with_metadata(char *string, int extensions, element *re
     syntax_extensions = extensions;
     references = reference_list;
     notes = note_list;
-	labels = label_list;
+    labels = label_list;
 
     oldcharbuf = charbuf;
     charbuf = string;

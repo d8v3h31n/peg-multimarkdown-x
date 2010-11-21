@@ -57,7 +57,7 @@ static element *notes = NULL;         /* List of footnotes found. */
 static element *parse_result;  /* Results of parse. */
 int syntax_extensions;  /* Syntax extensions selected. */
 
-static element *labels = NULL;		/* List of labels found in document. */
+static element *labels = NULL;      /* List of labels found in document. */
 
 /**********************************************************************
 
