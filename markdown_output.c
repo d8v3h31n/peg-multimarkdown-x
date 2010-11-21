@@ -343,7 +343,8 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
             print_html_element_list(out, elt->children, obfuscate);
             g_string_append_printf(out, "\"/>\n");
         } else if (strcmp(elt->contents.str, "xhtmlheader") == 0) {
-            print_html_element_list(out, elt->children, obfuscate);
+            print_raw_element_list(out, elt->children);
+            g_string_append_printf(out, "\n");
         } else if (strcmp(elt->contents.str, "baseheaderlevel") == 0) {
             
         } else {
