@@ -318,12 +318,12 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
         g_string_append_printf(out, "</dd>\n");
         break;
 	case METAKEY:
-		g_string_append_printf(out, "metakey:");
+		g_string_append_printf(out, "metakey:\t");
 		print_html_string(out, elt->contents.str, obfuscate);
 		g_string_append_printf(out, "\n");
 		break;
 	case METAVALUE:
-		g_string_append_printf(out, "metavalue:");
+		g_string_append_printf(out, "metavalue:\t");
 		print_html_string(out, elt->contents.str, obfuscate);
 		g_string_append_printf(out, "\n");
 		break;

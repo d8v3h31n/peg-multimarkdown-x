@@ -31,27 +31,30 @@
 Doc =       a:StartList ( Block { a = cons($$, a); } )*
             { parse_result = reverse(a); }
 
-DocWithMetaData = ( &{ !extension(EXT_COMPATIBILITY) } a:StartList  MetaData { a = cons($$, a);})? ( Block { a = cons($$, a); } )*
+DocWithMetaData = a:StartList ( &{ !extension(EXT_COMPATIBILITY) } MetaData { a = cons($$, a);})? ( Block { a = cons($$, a); } )*
             { parse_result = reverse(a); }
 
 MetaData =  a:StartList (MetaDataKeyValue { a = cons($$, a); })+
-			{ $$ = mk_list(LIST, a);}
+            { $$ = mk_list(LIST, a);}
 
 MetaDataKeyValue = a:StartList MetaDataKey { a = cons($$, a); }
-			Sp ':' Sp < MetaDataValue > { a = cons($$, a); }
-			{  element *b;
-				b = mk_str(yytext);
-				b->key = METAVALUE;
-				a = reverse(cons($$, b));
-				$$ = mk_list(LIST, a);
-				}
+            Sp ':' Sp MetaDataValue { a = cons($$, a); }
+            {  
+                $$ = mk_list(LIST, a);
+                }
 
 MetaDataKey = < Alphanumeric ( Sp ( Alphanumeric | '_' | ' ' | '-')+)* >
-			{ $$ = mk_str(yytext);
-				$$->key = METAKEY;
-			}
-	
-MetaDataValue = (!Newline !Endline .)+ Newline (!BlankLine !MetaDataKeyValue RawLine)* 
+            { $$ = mk_str(yytext);
+                $$->key = METAKEY;
+            }
+
+MetaDataValue = a:StartList < (!Newline .)+ > { a = cons(mk_str(yytext), a); }
+                Newline { a = cons(mk_str("\n"), a);}
+                (!BlankLine !MetaDataKeyValue Sp RawLine
+                    { a = cons(mk_str(yytext), a);} )*
+                { $$ = mk_str_from_list(a,false);
+                    $$->key = METAVALUE;
+                }
 
 
 # Match next line unless blank or a keyvalue line
