@@ -38,6 +38,10 @@ static void print_groff_mm_element_list(GString *out, element *list);
 static void print_groff_mm_element(GString *out, element *elt, int count);
 
 
+/* MultiMarkdown Routines */
+static void print_html_header(GString *out, element *elt, bool obfuscate);
+static void print_html_footer(GString *out, bool obfuscate);
+
 
 /**********************************************************************
 
@@ -320,19 +324,7 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
         break;
     case METADATA:
         /* Metadata is present, so this should be a "complete" document */
-        g_string_append_printf(out,
-            "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n");
-
-        g_string_append_printf(out,
-            "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\n");
-
-        g_string_append_printf(out, 
-            "<html xmlns=\"http://www.w3.org/1999/xhtml\">\n");
-
-        g_string_append_printf(out, "<head>\n");
-        print_html_element_list(out, elt->children, obfuscate);
-        g_string_append_printf(out, "</head>\n");
-        g_string_append_printf(out, "<body>\n");
+        print_html_header(out, elt, obfuscate);
         break;
     case METAKEY:
         if (strcmp(elt->contents.str, "title") == 0) {
@@ -347,7 +339,7 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
             print_raw_element_list(out, elt->children);
             g_string_append_printf(out, "\n");
         } else if (strcmp(elt->contents.str, "baseheaderlevel") == 0) {
-			base_header_level = atoi(elt->children->contents.str);
+            base_header_level = atoi(elt->children->contents.str);
         } else {
             g_string_append_printf(out, "\t<meta name=\"");
             print_html_string(out, elt->contents.str, obfuscate);
@@ -360,7 +352,7 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
         print_html_string(out, elt->contents.str, obfuscate);
         break;
     case ENDHTML:
-        g_string_append_printf(out, "\n</body>\n</html>");
+        print_html_footer(out, obfuscate);
         break;
     default: 
         fprintf(stderr, "print_html_element encountered unknown element key = %d\n", elt->key); 
@@ -837,4 +829,25 @@ void print_element_list(GString *out, element *elt, int format, int exts) {
         fprintf(stderr, "print_element - unknown format = %d\n", format); 
         exit(EXIT_FAILURE);
     }
+}
+
+
+/**********************************************************************
+
+  MultiMarkdown Routines - Used for generating "complete" documents
+
+ ***********************************************************************/
+
+
+void print_html_header(GString *out, element *elt, bool obfuscate) {
+    g_string_append_printf(out,
+"<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\n<html xmlns=\"http://www.w3.org/1999/xhtml\">\n<head>\n");
+
+    print_html_element_list(out, elt->children, obfuscate);
+    g_string_append_printf(out, "</head>\n<body>\n");    
+}
+
+
+void print_html_footer(GString *out, bool obfuscate) {
+    g_string_append_printf(out, "\n</body>\n</html>");
 }
