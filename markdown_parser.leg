@@ -33,7 +33,7 @@ Doc =       a:StartList ( Block { a = cons($$, a); } )*
 
 DocWithMetaData = a:StartList b:StartList 
 ( &{ !extension(EXT_COMPATIBILITY) } MetaData
-    { a = cons($$, a); b = mk_element(ENDHTML);})?
+    { a = cons($$, a); b = mk_element(FOOTER);})?
     ( Block { a = cons($$, a); } )*
     { if (b != NULL) a = cons(b, a);
         parse_result = reverse(a);

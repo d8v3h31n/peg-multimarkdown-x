@@ -351,7 +351,7 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
     case METAVALUE:
         print_html_string(out, elt->contents.str, obfuscate);
         break;
-    case ENDHTML:
+    case FOOTER:
         print_html_footer(out, obfuscate);
         break;
     default: 
