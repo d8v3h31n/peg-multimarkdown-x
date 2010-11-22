@@ -26,6 +26,7 @@
 
 static int extensions;
 static int base_header_level = 1;
+static char *latex_footer;
 
 static void print_html_string(GString *out, char *str, bool obfuscate);
 static void print_html_element_list(GString *out, element *list, bool obfuscate);
@@ -640,9 +641,15 @@ static void print_latex_element(GString *out, element *elt) {
             g_string_append_printf(out, "}\n");
         } else if (strcmp(elt->contents.str, "baseheaderlevel") == 0) {
             base_header_level = atoi(elt->children->contents.str);
-        }else {
+        } else if (strcmp(elt->contents.str, "latexinclude") == 0) {
+            g_string_append_printf(out, "\\include{");
+            print_latex_string(out, elt->children->contents.str);
+            g_string_append_printf(out, "}\n");
+        } else if (strcmp(elt->contents.str, "latexfooter") == 0) {
+			latex_footer = elt->children->contents.str;
+        } else {
         }
-        break;
+		break;
     case METAVALUE:
         print_latex_string(out, elt->contents.str);
         break;
@@ -911,20 +918,12 @@ void print_html_footer(GString *out, bool obfuscate) {
 
 
 void print_latex_header(GString *out, element *elt) {
-    g_string_append_printf(out,
-"\\documentclass[10pt,oneside]{memoir}\n\\usepackage{layouts}[2001/04/29]\n\n\\def\\mytitle{Title}\n\\def\\myauthor{Author}\n\\def\\mykeywords{}\n\n");
-
-	g_string_append_printf(out,
-"\\usepackage[\n\tplainpages=false,\n\tpdfpagelabels,\n\tpdftitle={\\mytitle},\n\tpagebackref,\n\tpdfauthor={\\myauthor},\n\tpdfkeywords={\\mykeywords}\n\t]{hyperref}\n\\usepackage{memhfixc}\n\n");
-
-	g_string_append_printf(out,
-"\\usepackage{graphicx}\n");
-
     print_latex_element_list(out, elt->children);
-    g_string_append_printf(out, "\\begin{document}\n\\mainmatter\n");    
 }
 
 
 void print_latex_footer(GString *out) {
-    g_string_append_printf(out, "\\end{document}\n");
+    if (latex_footer != NULL) {
+		g_string_append_printf(out, "\n\n\\include{%s}\n", latex_footer);
+	}
 }
