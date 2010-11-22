@@ -57,7 +57,9 @@ enum keys { LIST,   /* A generic list of values.  For ordered and bullet lists, 
             METAVALUE,
             METADATA,
             ENDHTML,
-            TABLE
+            TABLE,
+            TABLEROW,
+            TABLECELL
           };
 
 /* Semantic value of a parsing action. */

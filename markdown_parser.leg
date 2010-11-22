@@ -804,10 +804,16 @@ Table = a:StartList	(TableRow {a = cons($$, a);} )+
 		$$->key = TABLE;
 	}
 
-TableRow = a:StartList NonindentSpace (!'|' Inline {a = cons($$, a);} )+ Newline
-	{ $$ = mk_list(LIST, a);
-	}
+TableRow = a:StartList (CellDivider | TableCell { a = cons($$, a); }) 
+		(TableCell { a = cons($$, a); })+ Newline
+		{ $$ = mk_list(LIST, a);
+			$$->key = TABLEROW;}
 
+TableCell = NonindentSpace < (!Newline !CellDivider .)+ > ( ' '* CellDivider ' '* )?
+	{ $$ = mk_str(yytext);
+		$$->key = TABLECELL}
+
+CellDivider = '|'
 
 %%
 
