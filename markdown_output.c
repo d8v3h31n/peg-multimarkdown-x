@@ -510,27 +510,26 @@ static void print_latex_element(GString *out, element *elt) {
     case H1: case H2: case H3: case H4: case H5: case H6:
         pad(out, 2);
         lev = elt->key - H1 + base_header_level;  /* assumes H1 ... H6 are in order */
-		
-		switch (lev) {
-			case 1:
-				g_string_append_printf(out, "\\part{");
-				break;
-			case 2:
-				g_string_append_printf(out, "\\chapter{");
-				break;
-			case 3:
-				g_string_append_printf(out, "\\section{");
-				break;
-			case 4:
-				g_string_append_printf(out, "\\subsection{");
-				break;
-			case 5:
-				g_string_append_printf(out, "\\subsubsection{");
-				break;
-			default:
-				g_string_append_printf(out, "{\\itshape ");
-				break;
-		}
+        switch (lev) {
+            case 1:
+                g_string_append_printf(out, "\\part{");
+                break;
+            case 2:
+                g_string_append_printf(out, "\\chapter{");
+                break;
+            case 3:
+                g_string_append_printf(out, "\\section{");
+                break;
+            case 4:
+                g_string_append_printf(out, "\\subsection{");
+                break;
+            case 5:
+                g_string_append_printf(out, "\\subsubsection{");
+                break;
+            default:
+                g_string_append_printf(out, "{\\itshape ");
+                break;
+        }
         print_latex_element_list(out, elt->children);
         g_string_append_printf(out, "}");
         padded = 0;
@@ -646,10 +645,10 @@ static void print_latex_element(GString *out, element *elt) {
             print_latex_string(out, elt->children->contents.str);
             g_string_append_printf(out, "}\n");
         } else if (strcmp(elt->contents.str, "latexfooter") == 0) {
-			latex_footer = elt->children->contents.str;
+            latex_footer = elt->children->contents.str;
         } else {
         }
-		break;
+        break;
     case METAVALUE:
         print_latex_string(out, elt->contents.str);
         break;
@@ -924,6 +923,6 @@ void print_latex_header(GString *out, element *elt) {
 
 void print_latex_footer(GString *out) {
     if (latex_footer != NULL) {
-		g_string_append_printf(out, "\n\n\\include{%s}\n", latex_footer);
-	}
+        g_string_append_printf(out, "\n\n\\include{%s}\n", latex_footer);
+    }
 }
