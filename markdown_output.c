@@ -26,6 +26,7 @@
 
 static int extensions;
 static int base_header_level = 1;
+static char *latex_footer;
 
 static void print_html_string(GString *out, char *str, bool obfuscate);
 static void print_html_element_list(GString *out, element *list, bool obfuscate);
@@ -41,6 +42,9 @@ static void print_groff_mm_element(GString *out, element *elt, int count);
 /* MultiMarkdown Routines */
 static void print_html_header(GString *out, element *elt, bool obfuscate);
 static void print_html_footer(GString *out, bool obfuscate);
+
+static void print_latex_header(GString *out, element *elt);
+static void print_latex_footer(GString *out);
 
 
 /**********************************************************************
@@ -477,12 +481,31 @@ static void print_latex_element(GString *out, element *elt) {
         /* don't print HTML */
         break;
     case LINK:
-        g_string_append_printf(out, "\\href{%s}{", elt->contents.link->url);
-        print_latex_element_list(out, elt->contents.link->label);
-        g_string_append_printf(out, "}");
+        if (elt->contents.link->url[0] == '#') {
+            /* This is a link to anchor within document */
+            if (elt->contents.link->label != NULL) {
+                print_latex_element_list(out, elt->contents.link->label);
+                g_string_append_printf(out, " (\\autoref\{%s})", label_from_string(elt->contents.link->url,0));             
+            } else {
+                g_string_append_printf(out, "\\autoref\{%s}", label_from_string(elt->contents.link->url,0));
+            }
+        } else if ( strcmp(elt->contents.link->label->contents.str, elt->contents.link->url) == 0 ) {
+            /* This is a <link> */
+            g_string_append_printf(out, "\\url{%s}", elt->contents.link->url);
+        } else if ( strcmp(&elt->contents.link->url[7], elt->contents.link->label->contents.str) == 0 ) {
+            /* This is a <mailto> */
+            g_string_append_printf(out, "\\href{%s}{%s}", elt->contents.link->url, &elt->contents.link->url[7]);
+        } else {
+            /* This is a [text](link) */
+            g_string_append_printf(out, "\\href{%s}{", elt->contents.link->url);
+            print_latex_element_list(out, elt->contents.link->label);
+            g_string_append_printf(out, "}\\footnote{\\href{%s}{", elt->contents.link->url);
+            print_latex_string(out, elt->contents.link->url);
+            g_string_append_printf(out, "}}");
+        }
         break;
     case IMAGE:
-        g_string_append_printf(out, "\\includegraphics{%s}", elt->contents.link->url);
+        g_string_append_printf(out, "\\begin{figure}\n\\begin{center}\n\\resizebox{1\\linewidth}{!}{\\includegraphics{%s}}\n\\end{center}\n\\end{figure}\n", elt->contents.link->url);
         break;
     case EMPH:
         g_string_append_printf(out, "\\emph{");
@@ -501,22 +524,38 @@ static void print_latex_element(GString *out, element *elt) {
         /* Shouldn't occur - these are handled by process_raw_blocks() */
         assert(elt->key != RAW);
         break;
-    case H1: case H2: case H3:
+    case H1: case H2: case H3: case H4: case H5: case H6:
         pad(out, 2);
-        lev = elt->key - H1 + 1;  /* assumes H1 ... H6 are in order */
-        g_string_append_printf(out, "\\");
-        for (i = elt->key; i > H1; i--)
-            g_string_append_printf(out, "sub");
-        g_string_append_printf(out, "section{");
+        lev = elt->key - H1 + base_header_level;  /* assumes H1 ... H6 are in order */
+        switch (lev) {
+            case 1:
+                g_string_append_printf(out, "\\part{");
+                break;
+            case 2:
+                g_string_append_printf(out, "\\chapter{");
+                break;
+            case 3:
+                g_string_append_printf(out, "\\section{");
+                break;
+            case 4:
+                g_string_append_printf(out, "\\subsection{");
+                break;
+            case 5:
+                g_string_append_printf(out, "\\subsubsection{");
+                break;
+            default:
+                g_string_append_printf(out, "{\\itshape ");
+                break;
+        }
         print_latex_element_list(out, elt->children);
-        g_string_append_printf(out, "}");
-        padded = 0;
-        break;
-    case H4: case H5: case H6:
-        pad(out, 2);
-        g_string_append_printf(out, "\\noindent\\textbf{");
-        print_latex_element_list(out, elt->children);
-        g_string_append_printf(out, "}");
+        g_string_append_printf(out, "}\n\\label{");
+        /* generate a label for each header (MMD)*/
+        GString *headLabel;
+        headLabel = g_string_new("");
+        print_raw_element_list(headLabel, elt->children);
+        g_string_append(out, label_from_string(headLabel->str, 0));
+        g_string_append_printf(out, "}\n");
+        g_string_free(headLabel, TRUE);
         padded = 0;
         break;
     case PLAIN:
@@ -539,9 +578,9 @@ static void print_latex_element(GString *out, element *elt) {
         break;
     case VERBATIM:
         pad(out, 1);
-        g_string_append_printf(out, "\\begin{verbatim}\n");
-        print_latex_string(out, elt->contents.str);
-        g_string_append_printf(out, "\n\\end{verbatim}");
+        g_string_append_printf(out, "\n\\begin{adjustwidth}{2.5em}{2.5em}\n\\begin{verbatim}\n\n");
+        print_raw_element(out, elt);
+        g_string_append_printf(out, "\n\\end{verbatim}\n\\end{adjustwidth}");
         padded = 0;
         break;
     case BULLETLIST:
@@ -591,6 +630,50 @@ static void print_latex_element(GString *out, element *elt) {
         break;
     case REFERENCE:
         /* Nonprinting */
+        break;
+    case CITATION:
+		/* Treat as footnote for now */
+		break;
+    case DEFLIST:
+        g_string_append_printf(out, "\\begin{description}\n");
+        print_latex_element_list(out, elt->children);
+        g_string_append_printf(out, "\\end{description}\n");
+        break;
+    case TERM:
+        g_string_append_printf(out, "\\item[%s] ", elt->contents.str);
+        break;
+    case DEFINITION:
+        print_latex_element_list(out, elt->children);
+        break;
+    case METADATA:
+        /* Metadata is present, so this should be a "complete" document */
+        print_latex_header(out, elt);
+        break;
+    case METAKEY:
+        if (strcmp(elt->contents.str, "title") == 0) {
+            g_string_append_printf(out, "\\def\\mytitle{");
+            print_latex_element_list(out, elt->children);
+            g_string_append_printf(out, "}\n");
+        } else if (strcmp(elt->contents.str, "author") == 0) {
+            g_string_append_printf(out, "\\def\\myauthor{");
+            print_latex_element_list(out, elt->children);
+            g_string_append_printf(out, "}\n");
+        } else if (strcmp(elt->contents.str, "baseheaderlevel") == 0) {
+            base_header_level = atoi(elt->children->contents.str);
+        } else if (strcmp(elt->contents.str, "latexinclude") == 0) {
+            g_string_append_printf(out, "\\input{");
+            print_latex_string(out, elt->children->contents.str);
+            g_string_append_printf(out, "}\n");
+        } else if (strcmp(elt->contents.str, "latexfooter") == 0) {
+            latex_footer = elt->children->contents.str;
+        } else {
+        }
+        break;
+    case METAVALUE:
+        print_latex_string(out, elt->contents.str);
+        break;
+    case FOOTER:
+        print_latex_footer(out);
         break;
     default: 
         fprintf(stderr, "print_latex_element encountered unknown element key = %d\n", elt->key); 
@@ -850,4 +933,16 @@ void print_html_header(GString *out, element *elt, bool obfuscate) {
 
 void print_html_footer(GString *out, bool obfuscate) {
     g_string_append_printf(out, "\n</body>\n</html>");
+}
+
+
+void print_latex_header(GString *out, element *elt) {
+    print_latex_element_list(out, elt->children);
+}
+
+
+void print_latex_footer(GString *out) {
+    if (latex_footer != NULL) {
+        g_string_append_printf(out, "\n\n\\include{%s}\n", latex_footer);
+    }
 }
