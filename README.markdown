@@ -1,214 +1,159 @@
-What is this?
-=============
+Title:				peg-multimarkdown User's Guide  
+Author:				Fletcher T. Penney  
+Base Header Level:	2  
 
-This is an implementation of John Gruber's [markdown][] in C. It uses a
-[parsing expression grammar (PEG)][] to define the syntax. This should
-allow easy modification and extension. It currently supports output in
-HTML, LaTeX, or groff_mm formats, and adding new formats is relatively
-easy.
+# Introduction #
 
-[parsing expression grammar (PEG)]: http://en.wikipedia.org/wiki/Parsing_expression_grammar 
-[markdown]: http://daringfireball.net/projects/markdown/
+Markdown is a simple markup language used to convert plain text into HTML.
 
-It is pretty fast. A 179K text file that takes 5.7 seconds for
-Markdown.pl (v. 1.0.1) to parse takes less than 0.2 seconds for this
-markdown. It does, however, use a lot of memory (up to 4M of heap space
-while parsing the 179K file, and up to 80K for a 4K file). (Note that
-the memory leaks in earlier versions of this program have now been
-plugged.)
+MultiMarkdown is a derivative of Markdown that adds new syntax features, such
+as footnotes, tables, and metadata. Additionally, it offers mechanisms to
+convert plain text into LaTeX in addition to HTML.
 
-Both a library and a standalone program are provided.
+peg-multimarkdown is an implementation of MultiMarkdown derived from John
+MacFarlane's peg-markdown. It makes use of a parsing expression grammar (PEG),
+and is written in C. Once it's finished, it should be possible to compile it
+for any major OS.
 
-peg-markdown is written and maintained by John MacFarlane (jgm on
-github), with significant contributions by Ryan Tomayko (rtomayko).
-It is released under both the GPL and the MIT license; see LICENSE for
-details.
 
-Installing
-==========
+# Installation #
 
-On a linux or unix-based system
--------------------------------
+For now - assume that if you can't figure it out, it's not for you. If you can
+compile the original peg-markdown, this should work just fine. There are two
+major hurdles at the moment:
 
-This program is written in portable ANSI C. It requires
-[glib2](http://www.gtk.org/download.html). Most *nix systems will have
-this installed already. The build system requires GNU make.
+* You need to have `glib2` installed - John MacFarlane used this to make use
+  of GStrings, which now means you need a big huge library in order to compile
+  this one simple program. I will work on removing this dependency, but need
+  an alternative means of using dynamic strings in C --- I am not a C expert,
+  and any pointers would be appreciated!
 
-The other required dependency, [Ian Piumarta's peg/leg PEG parser
-generator](http://piumarta.com/software/peg/), is included in the source
-directory. It will be built automatically. (However, it is not as portable
-as peg-markdown itself, and seems to require gcc.)
+* The original makefile didn't work for me on my Mac. I have tweaked the
+  makefile for this project to compile on a Mac, but it probably won't compile
+  on other architectures. Again - any help on resolving this would be
+  appreciated.
 
-To make the 'markdown' executable:
+My goal is for this project to be able to compiled as a standalone binary so
+that I can distribute pre-compiled binaries for Mac and Windows users. Linux
+users probably won't have any problem, and it should be relatively easy for it
+to be ported to many of the package maintenance systems out there once it's
+finished.
 
-    make
 
-(Or, on some systems, `gmake`.) Then, for usage instructions:
+# Usage #
 
-    ./markdown --help
+Once installed, you simply do something like the following:
 
-To run John Gruber's Markdown 1.0.3 test suite:
+* `markdown file.txt` --- process text into HTML.
 
-    make test
+* `markdown -c file.txt` --- use a compatibility mode that emulates the
+  original Markdown.
 
-The test suite will fail on one of the list tests.  Here's why.
-Markdown.pl encloses "item one" in the following list in `<p>` tags:
+* `markdown -t latex file.txt` --- output the results as LaTeX instead of
+  HTML. This can then be processed into a PDF if you have LaTeX installed.
 
-    1.  item one
-        * subitem
-        * subitem
-    
-    2.  item two
+* `markdown -h` --- display help and additional options.
 
-    3.  item three
 
-peg-markdown does not enclose "item one" in `<p>` tags unless it has a
-following blank line. This is consistent with the official markdown
-syntax description, and lets the author of the document choose whether
-`<p>` tags are desired.
+# Why create another version of MultiMarkdown? #
 
-Cross-compiling for Windows with MinGW on a linux box
------------------------------------------------------
+* Maintaining a growing collection of nested regular expressions was going to
+  become increasingly difficult. I don't plan on adding much (if any) in the
+  way of new syntax features, but it was a mess.
 
-Prerequisites:
+* Performance on longer documents was poor. The nested perl regular
+  expressions was slow, even on a relatively fast computer. Performance on
+  something like an iPhone would probably have been miserable.
 
-*   Linux system with MinGW cross compiler For Ubuntu:
+* The reliance on Perl made installation fairly complex on Windows. That
+  didn't bother me too much, but it is a factor.
 
-        sudo apt-get install mingw32
+* Perl can't be run on an iPhone/iPad, and I would like to be able to have
+  MultiMarkdown on an iOS device, and not just regular Markdown (which exists
+  in C versions).
 
-*   [Windows glib-2.0 binary & development files](http://www.gtk.org/download-windows.html).
-    Unzip files into cross-compiler directory tree (e.g., `/usr/i586-mingw32msvc`).
+* I was interested in learning about PEG's and revisiting C programming.
 
-Steps:
+* The syntax has been fairly stable, and it would be nice to be able to
+  formalize is a bit better --- which happens by definition when using a PEG.
 
-1.  Create the markdown parser using Linux-compiled `leg` from peg-0.1.4:
+* I wanted to revisit the syntax and features and clean it up a bit.
 
-        ./peg-0.1.4/leg markdown_parser.leg >markdown_parser.c
+* Did I mention how much faster this is? And that it could (eventually) run on
+  an iPhone?
 
-    (Note: The same thing could be accomplished by cross-compiling leg,
-    executing it on Windows, and copying the resulting C file to the Linux
-    cross-compiler host.)
 
-2.  Run the cross compiler with include flag for the Windows glib-2.0 headers:
-    for example,
+# What's different? #
 
-        /usr/bin/i586-mingw32msvc-cc -c \
-        -I/usr/i586-mingw32msvc/include/glib-2.0 \
-        -I/usr/i586-mingw32msvc/lib/glib-2.0/include -Wall -O3 -ansi markdown*.c
+## "Complete" documents vs. "snippets" ##
 
-3.  Link against Windows glib-2.0 headers: for example,
+A "snippet" is a section of HTML (or LaTeX) that is not a complete, fully-formed document.  It doesn't contain the header information to make it a valid XML document.  It can't be compiled with LaTeX into a PDF without further commands.
 
-        /usr/bin/i586-mingw32msvc-cc markdown*.o \
-        -Wl,-L/usr/i586-mingw32msvc/lib/glib,--dy,--warn-unresolved-symbols,-lglib-2.0 \
-        -o markdown.exe
+For example:
 
-The resulting executable depends on the glib dll file, so be sure to
-load the glib binary on the Windows host.
+	# This is a header #
+	
+	And a paragraph.
 
-Compiling with MinGW on Windows
--------------------------------
+becomes the following HTML snippet:
 
-These directions assume that MinGW is installed in `c:\MinGW` and glib-2.0
-is installed in the MinGW directory hierarchy (with the mingw bin directory
-in the system path).
+	<h1 id="thisisaheader">This is a header</h1>
+	
+	<p>And a paragraph.</p>
 
-Unzip peg-markdown in a temp directory. From the directory with the
-peg-markdown source, execute:
+and the following LaTeX snippet:
 
-    cd peg-0.1.4
-    for %i in (*.c) do @gcc -g -Wall -O3 -DNDEBUG -c -o %~ni.o %i
-    gcc -o leg.exe leg.o tree.o compile.o
-    cd ..
-    peg-0.1.4\leg.exe markdown_parser.leg >markdown_parser.c
-    @for %i in (markdown*.c) do @gcc -mms-bitfields -Ic:/MinGW/include/glib-2.0 -Ic:/MinGW/lib/glib-2.0/include -c -o %~ni.o %i
-    gcc -O3 -Lc:/MinGW/lib/glib-2.0 -lglib-2.0 -lintl markdown.o markdown_lib.o markdown_output.o markdown_parser.o -o markdown.exe -Wl,--dy,--warn-unresolved-symbols,-lglib-2.0,-Lc:/MinGW/lib/glib-2.0,-lglib-2.0,-lintl
+	\part{This is a header}
+	\label{thisisaheader}
+	
+	
+	And a paragraph.
 
-(Windows instructions courtesy of Matt Wolf.)
+It was not possible to create a LaTeX snippet with the original MultiMarkdown,
+because it relied on having a complete XHTML document that was then converted
+to LaTeX via an XSLT document (requiring a whole separate program). This was
+powerful, but complicated.
 
-Extensions
-==========
+Now, I have come full-circle. peg-multimarkdown will now output LaTeX
+directly, without requiring XSLT. This allows the creation of LaTeX snippets,
+or complete documents, as necessary.
 
-peg-markdown supports extensions to standard markdown syntax.
-These can be turned on using the command line flag `-x` or
-`--extensions`.  `-x` by itself turns on all extensions.  Extensions
-can also be turned on selectively, using individual command-line
-options. To see the available extensions:
+To create a complete document, simply include metadata. You can include a
+title, author, date, or whatever you like. If you don't want to include any
+real metadata, including "format: complete" will still trigger a complete
+document, just like it used to.
 
-    ./markdown --help-extensions
- 
-The `--smart` extension provides "smart quotes", dashes, and ellipses.
+The old approach (even though it was hidden from most users) was a bit of a
+kludge, and this should be more elegant, and more flexible.
 
-The `--notes` extension provides a footnote syntax like that of
-Pandoc or PHP Markdown Extra.
 
-Using the library
-=================
+## Creating LaTeX Documents ##
 
-The library exports two functions:
+LaTeX documents are created a bit differently than under the old system. You
+no longer have to use an XSLT file to convert from XHTML to LaTeX. You can go
+straight from MultiMarkdown to LaTeX, which is faster and more flexible.
 
-    GString * markdown_to_g_string(char *text, int extensions, int output_format);
-    char * markdown_to_string(char *text, int extensions, int output_format);
+**NOTE:** You can still use the old approach if you like. It was slow, but
+powerful and allowed for fairly detailed customizations in your output.
 
-The only difference between these is that `markdown_to_g_string` returns a
-`GString` (glib's automatically resizable string), while `markdown_to_string`
-returns a regular character pointer.  The memory allocated for these must be
-freed by the calling program, using `g_string_free()` or `free()`.
+To create a complete LaTeX document, you can process your file as a snippet,
+and then place it in a LaTeX template that you already have. Alternatively,
+you can use metadata to trigger the creation of a complete document. You can
+use the `LaTeX Include` metadata to insert a `\include{file}` command. You can
+then store various template files in your texmf directory and call them with
+metadata, or with embedded raw LaTeX commands in your document. For example:
 
-`text` is the markdown-formatted text to be converted.  Note that tabs will
-be converted to spaces, using a four-space tab stop.  Character encodings are
-ignored.
+	Latex include:		mmd-memoir-header
+	Latex include:		mmd-memoir-layout
+	Title:				Sample MultiMarkdown Document  
+	Author:				Fletcher T. Penney  
+	latex include:		mmd-memoir-frontmatter
+	latex footer:		mmd-memoir-footer
 
-`extensions` is a bit-field specifying which syntax extensions should be used.
-If `extensions` is 0, no extensions will be used.  If it is `0xFFFFFF`,
-all extensions will be used.  To set extensions selectively, use the
-bitwise `&` operator and the following constants:
+This would include several template files in the order that you see. The
+`LaTeX Footer` metadata inserts a template at the end of your document.
 
- - `EXT_SMART` turns on smart quotes, dashes, and ellipses.
- - `EXT_NOTES` turns on footnote syntax.  [Pandoc's footnote syntax][] is used here.
- - `EXT_FILTER_HTML` filters out raw HTML (except for styles).
- - `EXT_FILTER_STYLES` filters out styles in HTML.
-
-  [Pandoc's footnote syntax]: http://johnmacfarlane.net/pandoc/README.html#footnotes
-
-`output_format` is either `HTML_FORMAT`, `LATEX_FORMAT`, or `GROFF_MM_FORMAT`.
-
-To use the library, include `markdown_lib.h`.  See `markdown.c` for an example.
-
-Hacking
-=======
-
-It should be pretty easy to modify the program to produce other formats
-than HTML or LaTeX, and to parse syntax extensions.  A quick guide:
-
-  * `markdown_parser.leg` contains the grammar itself.
-
-  * `markdown_output.c` contains functions for printing the `Element`
-    structure in various output formats.
-
-  * To add an output format, add the format to `markdown_formats` in
-    `markdown_lib.h`.  Then modify `print_element` in `markdown_output.c`,
-    and add functions `print_XXXX_string`, `print_XXXX_element`, and
-    `print_XXXX_element_list`. Also add an option in the main program
-    that selects the new format. Don't forget to add it to the list of
-    formats in the usage message.
-
-  * To add syntax extensions, define them in the PEG grammar
-    (`markdown_parser.leg`), using existing extensions as a guide. New
-    inline elements will need to be added to `Inline =`; new block
-    elements will need to be added to `Block =`. (Note: the order
-    of the alternatives does matter in PEG grammars.)
-
-  * If you need to add new types of elements, modify the `keys`
-    enum in `markdown_peg.h`.
-
-  * By using `&{ }` rules one can selectively disable extensions
-    depending on command-line options. For example,
-    `&{ extension(EXT_SMART) }` succeeds only if the `EXT_SMART` bit
-    of the global `syntax_extensions` is set. Add your option to
-    `markdown_extensions` in `markdown_lib.h`, and add an option in
-    `markdown.c` to turn on your extension.
-
-  * Note: Avoid using `[^abc]` character classes in the grammar, because
-    they cause problems with non-ascii input. Instead, use: `( !'a' !'b'
-    !'c' . )`
-
+This system isn't quite as powerful as the XSLT approach, since it doesn't
+alter the actual MultiMarkdown to LaTeX conversion process. But it is probably
+much more familiar to LaTeX users who are accustomed to using `\include{}`
+commands and doesn't require knowledge of XSLT programming.
