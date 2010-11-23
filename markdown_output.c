@@ -481,9 +481,18 @@ static void print_latex_element(GString *out, element *elt) {
         /* don't print HTML */
         break;
     case LINK:
-        g_string_append_printf(out, "\\href{%s}{", elt->contents.link->url);
-        print_latex_element_list(out, elt->contents.link->label);
-        g_string_append_printf(out, "}");
+        if (elt->contents.link->url[0] == '#') {
+            if (elt->contents.link->label != NULL) {
+                print_latex_element_list(out, elt->contents.link->label);
+                g_string_append_printf(out, " (\\autoref\{%s})", label_from_string(elt->contents.link->url,0));             
+            } else {
+            g_string_append_printf(out, "\\autoref\{%s}", label_from_string(elt->contents.link->url,0));
+        }
+        } else {
+            g_string_append_printf(out, "\\href{%s}{", elt->contents.link->url);
+            print_latex_element_list(out, elt->contents.link->label);
+            g_string_append_printf(out, "}");
+        }
         break;
     case IMAGE:
         g_string_append_printf(out, "\\begin{figure}\n\\begin{center}\n\\resizebox{1\\linewidth}{!}{");
@@ -531,7 +540,14 @@ static void print_latex_element(GString *out, element *elt) {
                 break;
         }
         print_latex_element_list(out, elt->children);
-        g_string_append_printf(out, "}");
+        g_string_append_printf(out, "}\n\\label{");
+        /* generate a label for each header (MMD)*/
+        GString *headLabel;
+        headLabel = g_string_new("");
+        print_raw_element_list(headLabel, elt->children);
+        g_string_append(out, label_from_string(headLabel->str, 0));
+        g_string_append_printf(out, "}\n");
+        g_string_free(headLabel, TRUE);
         padded = 0;
         break;
     case PLAIN:
