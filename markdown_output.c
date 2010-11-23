@@ -482,13 +482,21 @@ static void print_latex_element(GString *out, element *elt) {
         break;
     case LINK:
         if (elt->contents.link->url[0] == '#') {
+            /* This is a link to anchor within document */
             if (elt->contents.link->label != NULL) {
                 print_latex_element_list(out, elt->contents.link->label);
                 g_string_append_printf(out, " (\\autoref\{%s})", label_from_string(elt->contents.link->url,0));             
             } else {
                 g_string_append_printf(out, "\\autoref\{%s}", label_from_string(elt->contents.link->url,0));
             }
+        } else if ( strcmp(elt->contents.link->label->contents.str, elt->contents.link->url) == 0 ) {
+            /* This is a <link> */
+            g_string_append_printf(out, "\\url{%s}", elt->contents.link->url);
+        } else if ( strcmp(&elt->contents.link->url[7], elt->contents.link->label->contents.str) == 0 ) {
+            /* This is a <mailto> */
+            g_string_append_printf(out, "\\href{%s}{%s}", elt->contents.link->url, &elt->contents.link->url[7]);
         } else {
+            /* This is a [text](link) */
             g_string_append_printf(out, "\\href{%s}{", elt->contents.link->url);
             print_latex_element_list(out, elt->contents.link->label);
             g_string_append_printf(out, "}\\footnote{\\href{%s}{", elt->contents.link->url);
