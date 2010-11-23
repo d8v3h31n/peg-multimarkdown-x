@@ -486,12 +486,14 @@ static void print_latex_element(GString *out, element *elt) {
                 print_latex_element_list(out, elt->contents.link->label);
                 g_string_append_printf(out, " (\\autoref\{%s})", label_from_string(elt->contents.link->url,0));             
             } else {
-            g_string_append_printf(out, "\\autoref\{%s}", label_from_string(elt->contents.link->url,0));
-        }
+                g_string_append_printf(out, "\\autoref\{%s}", label_from_string(elt->contents.link->url,0));
+            }
         } else {
             g_string_append_printf(out, "\\href{%s}{", elt->contents.link->url);
             print_latex_element_list(out, elt->contents.link->label);
-            g_string_append_printf(out, "}");
+            g_string_append_printf(out, "}\\footnote{\\href{%s}{", elt->contents.link->url);
+            print_latex_string(out, elt->contents.link->url);
+            g_string_append_printf(out, "}}");
         }
         break;
     case IMAGE:
