@@ -505,9 +505,7 @@ static void print_latex_element(GString *out, element *elt) {
         }
         break;
     case IMAGE:
-        g_string_append_printf(out, "\\begin{figure}\n\\begin{center}\n\\resizebox{1\\linewidth}{!}{");
-        g_string_append_printf(out, "\\includegraphics{%s}", elt->contents.link->url);
-        g_string_append_printf(out, "}\n\\end{center}\n\\end{figure}\n");
+        g_string_append_printf(out, "\\begin{figure}\n\\begin{center}\n\\resizebox{1\\linewidth}{!}{\\includegraphics{%s}}\n\\end{center}\n\\end{figure}\n", elt->contents.link->url);
         break;
     case EMPH:
         g_string_append_printf(out, "\\emph{");
