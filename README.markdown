@@ -39,6 +39,12 @@ users probably won't have any problem, and it should be relatively easy for it
 to be ported to many of the package maintenance systems out there once it's
 finished.
 
+To use on Ubuntu, for example, be sure to have installed glib2:
+
+	sudo apt-get install libglib2.0-dev
+
+
+
 
 # Usage #
 
