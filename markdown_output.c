@@ -578,9 +578,9 @@ static void print_latex_element(GString *out, element *elt) {
         break;
     case VERBATIM:
         pad(out, 1);
-        g_string_append_printf(out, "\\begin{verbatim}\n");
-        print_latex_string(out, elt->contents.str);
-        g_string_append_printf(out, "\n\\end{verbatim}");
+        g_string_append_printf(out, "\n\\begin{adjustwidth}{2.5em}{2.5em}\n\\begin{verbatim}\n\n");
+        print_raw_element(out, elt);
+        g_string_append_printf(out, "\n\\end{verbatim}\n\\end{adjustwidth}");
         padded = 0;
         break;
     case BULLETLIST:
@@ -635,19 +635,15 @@ static void print_latex_element(GString *out, element *elt) {
 		/* Treat as footnote for now */
 		break;
     case DEFLIST:
-        g_string_append_printf(out, "<dl>\n");
+        g_string_append_printf(out, "\\begin{description}\n");
         print_latex_element_list(out, elt->children);
-        g_string_append_printf(out, "</dl>\n");
+        g_string_append_printf(out, "\\end{description}\n");
         break;
     case TERM:
-        g_string_append_printf(out, "<dt>");
-        print_latex_string(out, elt->contents.str);
-        g_string_append_printf(out, "</dt>\n");
+        g_string_append_printf(out, "\\item[%s] ", elt->contents.str);
         break;
     case DEFINITION:
-        g_string_append_printf(out, "<dd>");
         print_latex_element_list(out, elt->children);
-        g_string_append_printf(out, "</dd>\n");
         break;
     case METADATA:
         /* Metadata is present, so this should be a "complete" document */
