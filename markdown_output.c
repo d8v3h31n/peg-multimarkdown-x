@@ -52,6 +52,8 @@ static void print_memoir_element(GString *out, element *elt);
 static void print_beamer_element_list(GString *out, element *list);
 static void print_beamer_element(GString *out, element *elt);
 
+element * print_html_headingsection(GString *out, element *list, bool obfuscate);
+
 
 /**********************************************************************
 
@@ -113,8 +115,12 @@ static void print_html_string(GString *out, char *str, bool obfuscate) {
 /* print_html_element_list - print a list of elements as HTML */
 static void print_html_element_list(GString *out, element *list, bool obfuscate) {
     while (list != NULL) {
-        print_html_element(out, list, obfuscate);
-        list = list->next;
+        if (list->key == HEADINGSECTION) {
+            list = print_html_headingsection(out, list, obfuscate);
+        } else {
+            print_html_element(out, list, obfuscate);
+            list = list->next;
+        }
     }
 }
 
@@ -363,6 +369,9 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
         break;
     case FOOTER:
         print_html_footer(out, obfuscate);
+        break;
+    case HEADINGSECTION:
+        print_html_element_list(out, elt->children, obfuscate);
         break;
     default: 
         fprintf(stderr, "print_html_element encountered unknown element key = %d\n", elt->key); 
@@ -1048,4 +1057,16 @@ static void print_beamer_element(GString *out, element *elt) {
 	    default:
 		print_latex_element(out, elt);
 	}
+}
+
+
+element * print_html_headingsection(GString *out, element *list, bool obfuscate) {
+    print_html_element_list(out, list->children, obfuscate);
+    
+    element *step = NULL;
+    step = list->next;
+    while ( (step != NULL) && (step->key == HEADINGSECTION) && (step->children->key > list->children->key) && (step->children->key <= H6)) {
+        step = print_html_headingsection(out, step, obfuscate);
+    }
+    return step;
 }

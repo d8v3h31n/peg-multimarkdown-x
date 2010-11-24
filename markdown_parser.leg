@@ -71,7 +71,7 @@ Block =     BlankLine*
             | Note
             | Reference
             | HorizontalRule
-            | Heading
+            | HeadingSection
             | OrderedList
             | BulletList
             | HtmlBlock
@@ -103,6 +103,10 @@ SetextHeading2 =  a:StartList ( !Endline !( &{ !extension(EXT_COMPATIBILITY) } S
                   { $$ = mk_list(H2, a); }
 
 Heading = AtxHeading | SetextHeading
+
+HeadingSection = a:StartList Heading { a = cons($$, a); }
+	(!Heading Block {a = cons($$, a); })*
+		{ $$ = mk_list(HEADINGSECTION, a);}
 
 BlockQuote = a:BlockQuoteRaw
              {  $$ = mk_element(BLOCKQUOTE);
