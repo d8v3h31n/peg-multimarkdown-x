@@ -107,8 +107,26 @@ static void print_html_string(GString *out, char *str, bool obfuscate) {
 /* print_html_element_list - print a list of elements as HTML */
 static void print_html_element_list(GString *out, element *list, bool obfuscate) {
     while (list != NULL) {
-        print_html_element(out, list, obfuscate);
-        list = list->next;
+		if (list->key == HEADINGSECTION) {
+			g_string_append_printf(out, "<div %d>\n", list->children->key);
+			print_html_element(out, list, obfuscate);
+			element *next = NULL;
+			element *placeholder = NULL;
+			next = list->next;
+			placeholder = next;
+			while ( ( next != NULL ) && ( next->key == HEADINGSECTION ) && ( next->children->key > list->children->key) && ( next->children->key <= H6 )) {
+				placeholder = next;
+				g_string_append_printf(out, "\nprinting %d as child of %d\n", next->children->key, list->children->key);
+				print_html_element_list(out, next, obfuscate);
+				g_string_append_printf(out, "\nfinished %d as child of %d\n", next->children->key, list->children->key);
+				next = next->next;
+			}
+			g_string_append_printf(out, "</div %d>\n", list->children->key);
+			list = placeholder;
+		} else {
+        	print_html_element(out, list, obfuscate);
+        	list = list->next;
+		}
     }
 }
 
@@ -358,6 +376,9 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
     case FOOTER:
         print_html_footer(out, obfuscate);
         break;
+    case HEADINGSECTION:
+		print_html_element_list(out, elt->children, obfuscate);
+		break;
     default: 
         fprintf(stderr, "print_html_element encountered unknown element key = %d\n", elt->key); 
         exit(EXIT_FAILURE);
