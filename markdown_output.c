@@ -577,9 +577,9 @@ static void print_latex_element(GString *out, element *elt) {
         break;
     case VERBATIM:
         pad(out, 1);
-        g_string_append_printf(out, "\n\\begin{adjustwidth}{2.5em}{2.5em}\n\\begin{verbatim}\n\n");
+        g_string_append_printf(out, "\n\\begin{verbatim}\n\n");
         print_raw_element(out, elt);
-        g_string_append_printf(out, "\n\\end{verbatim}\n\\end{adjustwidth}");
+        g_string_append_printf(out, "\n\\end{verbatim}\n");
         padded = 0;
         break;
     case BULLETLIST:
@@ -969,6 +969,13 @@ void print_memoir_element_list(GString *out, element *list) {
 static void print_memoir_element(GString *out, element *elt) {
     int lev;
     switch (elt->key) {
+    case VERBATIM:
+        pad(out, 1);
+        g_string_append_printf(out, "\n\\begin{adjustwidth}{2.5em}{2.5em}\n\\begin{verbatim}\n\n");
+        print_raw_element(out, elt);
+        g_string_append_printf(out, "\n\\end{verbatim}\n\\end{adjustwidth}");
+        padded = 0;
+        break;
     case HEADINGSECTION:
         print_memoir_element_list(out, elt->children);
         break;
