@@ -674,6 +674,9 @@ static void print_latex_element(GString *out, element *elt) {
     case FOOTER:
         print_latex_footer(out);
         break;
+    case HEADINGSECTION:
+        print_latex_element_list(out, elt->children);
+        break;
     default: 
         fprintf(stderr, "print_latex_element encountered unknown element key = %d\n", elt->key); 
         exit(EXIT_FAILURE);
@@ -966,6 +969,9 @@ void print_memoir_element_list(GString *out, element *list) {
 static void print_memoir_element(GString *out, element *elt) {
     int lev;
     switch (elt->key) {
+    case HEADINGSECTION:
+        print_memoir_element_list(out, elt->children);
+        break;
     case H1: case H2: case H3: case H4: case H5: case H6:
         pad(out, 2);
         lev = elt->key - H1 + base_header_level;  /* assumes H1 ... H6 are in order */
