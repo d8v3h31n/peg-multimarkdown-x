@@ -13,6 +13,8 @@ enum markdown_extensions {
 enum markdown_formats {
     HTML_FORMAT,
     LATEX_FORMAT,
+    MEMOIR_FORMAT,
+    BEAMER_FORMAT,
     GROFF_MM_FORMAT
 };
 

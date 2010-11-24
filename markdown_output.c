@@ -46,6 +46,12 @@ static void print_html_footer(GString *out, bool obfuscate);
 static void print_latex_header(GString *out, element *elt);
 static void print_latex_footer(GString *out);
 
+static void print_memoir_element_list(GString *out, element *list);
+static void print_memoir_element(GString *out, element *elt);
+
+static void print_beamer_element_list(GString *out, element *list);
+static void print_beamer_element(GString *out, element *elt);
+
 
 /**********************************************************************
 
@@ -524,38 +530,22 @@ static void print_latex_element(GString *out, element *elt) {
         /* Shouldn't occur - these are handled by process_raw_blocks() */
         assert(elt->key != RAW);
         break;
-    case H1: case H2: case H3: case H4: case H5: case H6:
+    case H1: case H2: case H3:
         pad(out, 2);
-        lev = elt->key - H1 + base_header_level;  /* assumes H1 ... H6 are in order */
-        switch (lev) {
-            case 1:
-                g_string_append_printf(out, "\\part{");
-                break;
-            case 2:
-                g_string_append_printf(out, "\\chapter{");
-                break;
-            case 3:
-                g_string_append_printf(out, "\\section{");
-                break;
-            case 4:
-                g_string_append_printf(out, "\\subsection{");
-                break;
-            case 5:
-                g_string_append_printf(out, "\\subsubsection{");
-                break;
-            default:
-                g_string_append_printf(out, "{\\itshape ");
-                break;
-        }
+        lev = elt->key - H1 + 1;  /* assumes H1 ... H6 are in order */
+        g_string_append_printf(out, "\\");
+        for (i = elt->key; i > H1; i--)
+            g_string_append_printf(out, "sub");
+        g_string_append_printf(out, "section{");
         print_latex_element_list(out, elt->children);
-        g_string_append_printf(out, "}\n\\label{");
-        /* generate a label for each header (MMD)*/
-        GString *headLabel;
-        headLabel = g_string_new("");
-        print_raw_element_list(headLabel, elt->children);
-        g_string_append(out, label_from_string(headLabel->str, 0));
-        g_string_append_printf(out, "}\n");
-        g_string_free(headLabel, TRUE);
+        g_string_append_printf(out, "}");
+        padded = 0;
+        break;
+    case H4: case H5: case H6:
+        pad(out, 2);
+        g_string_append_printf(out, "\\noindent\\textbf{");
+        print_latex_element_list(out, elt->children);
+        g_string_append_printf(out, "}");
         padded = 0;
         break;
     case PLAIN:
@@ -905,6 +895,12 @@ void print_element_list(GString *out, element *elt, int format, int exts) {
     case LATEX_FORMAT:
         print_latex_element_list(out, elt);
         break;
+    case MEMOIR_FORMAT:
+        print_memoir_element_list(out, elt);
+        break;
+    case BEAMER_FORMAT:
+        print_beamer_element_list(out, elt);
+        break;
     case GROFF_MM_FORMAT:
         print_groff_mm_element_list(out, elt);
         break;
@@ -945,4 +941,111 @@ void print_latex_footer(GString *out) {
     if (latex_footer != NULL) {
         g_string_append_printf(out, "\n\n\\include{%s}\n", latex_footer);
     }
+}
+
+
+/* print_memoir_element_list - print an element as LaTeX for memoir class */
+void print_memoir_element_list(GString *out, element *list) {
+    while (list != NULL) {
+        print_memoir_element(out, list);
+        list = list->next;
+    }
+}
+
+
+/* print_memoir_element - print an element as LaTeX for memoir class */
+static void print_memoir_element(GString *out, element *elt) {
+    int lev;
+    switch (elt->key) {
+    case H1: case H2: case H3: case H4: case H5: case H6:
+        pad(out, 2);
+        lev = elt->key - H1 + base_header_level;  /* assumes H1 ... H6 are in order */
+        switch (lev) {
+            case 1:
+                g_string_append_printf(out, "\\part{");
+                break;
+            case 2:
+                g_string_append_printf(out, "\\chapter{");
+                break;
+            case 3:
+                g_string_append_printf(out, "\\section{");
+                break;
+            case 4:
+                g_string_append_printf(out, "\\subsection{");
+                break;
+            case 5:
+                g_string_append_printf(out, "\\subsubsection{");
+                break;
+            default:
+                g_string_append_printf(out, "{\\itshape ");
+                break;
+        }
+        print_latex_element_list(out, elt->children);
+        g_string_append_printf(out, "}\n\\label{");
+        /* generate a label for each header (MMD)*/
+        GString *headLabel;
+        headLabel = g_string_new("");
+        print_raw_element_list(headLabel, elt->children);
+        g_string_append(out, label_from_string(headLabel->str, 0));
+        g_string_append_printf(out, "}\n");
+        g_string_free(headLabel, TRUE);
+        padded = 0;
+        break;
+    default:
+        /* most things are not changed for memoir output */
+        print_latex_element(out, elt);
+    }
+}
+
+
+/* print_beamer_element_list - print an element as LaTeX for beamer class */
+void print_beamer_element_list(GString *out, element *list) {
+    while (list != NULL) {
+        print_beamer_element(out, list);
+        list = list->next;
+    }
+}
+
+
+/* print_beamer_element - print an element as LaTeX for beamer class */
+static void print_beamer_element(GString *out, element *elt) {
+    int lev;
+    switch (elt->key) {
+	    case H1: case H2: case H3: case H4: case H5: case H6:
+	        pad(out, 2);
+	        lev = elt->key - H1 + base_header_level;  /* assumes H1 ... H6 are in order */
+	        switch (lev) {
+	            case 1:
+	                g_string_append_printf(out, "\\part{");
+	                break;
+	            case 2:
+	                g_string_append_printf(out, "\\chapter{");
+	                break;
+	            case 3:
+	                g_string_append_printf(out, "\\section{");
+	                break;
+	            case 4:
+	                g_string_append_printf(out, "\\subsection{");
+	                break;
+	            case 5:
+	                g_string_append_printf(out, "\\subsubsection{");
+	                break;
+	            default:
+	                g_string_append_printf(out, "{\\itshape ");
+	                break;
+	        }
+	        print_latex_element_list(out, elt->children);
+	        g_string_append_printf(out, "}\n\\label{");
+	        /* generate a label for each header (MMD)*/
+	        GString *headLabel;
+	        headLabel = g_string_new("");
+	        print_raw_element_list(headLabel, elt->children);
+	        g_string_append(out, label_from_string(headLabel->str, 0));
+	        g_string_append_printf(out, "}\n");
+	        g_string_free(headLabel, TRUE);
+	        padded = 0;
+	        break;
+	    default:
+		print_latex_element(out, elt);
+	}
 }
