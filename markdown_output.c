@@ -584,7 +584,7 @@ static void print_latex_element(GString *out, element *elt) {
         break;
     case BULLETLIST:
         pad(out, 1);
-        g_string_append_printf(out, "\\begin{itemize}");
+        g_string_append_printf(out, "\n\\begin{itemize}");
         padded = 0;
         print_latex_element_list(out, elt->children);
         pad(out, 1);
@@ -951,7 +951,7 @@ void print_latex_header(GString *out, element *elt) {
 
 void print_latex_footer(GString *out) {
     if (latex_footer != NULL) {
-        g_string_append_printf(out, "\n\n\\include{%s}\n", latex_footer);
+        g_string_append_printf(out, "\n\n\\input{%s}\n\n\\end{document}", latex_footer);
     }
 }
 
@@ -1026,6 +1026,26 @@ void print_beamer_element_list(GString *out, element *list) {
 static void print_beamer_element(GString *out, element *elt) {
     int lev;
     switch (elt->key) {
+	    case LISTITEM:
+	        pad(out, 1);
+	        g_string_append_printf(out, "\\item<+-> ");
+	        padded = 2;
+	        print_latex_element_list(out, elt->children);
+	        g_string_append_printf(out, "\n");
+	        break;
+	    case HEADINGSECTION:
+			if (elt->children->key -H1 + base_header_level == 3) {
+				g_string_append_printf(out, "\\begin{frame}\n");
+				print_beamer_element_list(out, elt->children);
+				g_string_append_printf(out, "\n\n\\end{frame}\n\n");
+			} else if (elt->children->key -H1 + base_header_level == 4) {
+				g_string_append_printf(out, "\\mode<article>{\n");
+				print_beamer_element_list(out, elt->children->next);
+				g_string_append_printf(out, "\n\n}\n\n");
+			} else {
+		        print_beamer_element_list(out, elt->children);				
+			}
+	        break;
 	    case H1: case H2: case H3: case H4: case H5: case H6:
 	        pad(out, 2);
 	        lev = elt->key - H1 + base_header_level;  /* assumes H1 ... H6 are in order */
@@ -1034,10 +1054,10 @@ static void print_beamer_element(GString *out, element *elt) {
 	                g_string_append_printf(out, "\\part{");
 	                break;
 	            case 2:
-	                g_string_append_printf(out, "\\chapter{");
+	                g_string_append_printf(out, "\\section{");
 	                break;
 	            case 3:
-	                g_string_append_printf(out, "\\section{");
+	                g_string_append_printf(out, "\\frametitle{");
 	                break;
 	            case 4:
 	                g_string_append_printf(out, "\\subsection{");
