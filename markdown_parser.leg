@@ -129,7 +129,7 @@ VerbatimChunk = a:StartList
                 ( NonblankIndentedLine { a = cons($$, a); } )+
                 { $$ = mk_str_from_list(a, false); }
 
-Verbatim =     a:StartList ( VerbatimChunk { a = cons($$, a); } )+
+Verbatim =     a:StartList ( VerbatimChunk { a = cons($$, a); } )+ BlankLine*
                { $$ = mk_str_from_list(a, false);
                  $$->key = VERBATIM; }
 
