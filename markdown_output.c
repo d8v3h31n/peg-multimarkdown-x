@@ -54,6 +54,8 @@ static void print_beamer_element(GString *out, element *elt);
 
 element * print_html_headingsection(GString *out, element *list, bool obfuscate);
 
+static bool list_contains_key(element *list, int key);
+
 
 /**********************************************************************
 
@@ -520,7 +522,7 @@ static void print_latex_element(GString *out, element *elt) {
         }
         break;
     case IMAGE:
-        g_string_append_printf(out, "\\begin{figure}\n\\begin{center}\n\\resizebox{1\\linewidth}{!}{\\includegraphics{%s}}\n\\end{center}\n\\end{figure}\n", elt->contents.link->url);
+        g_string_append_printf(out, "\\begin{figure}\n\\begin{center}\n\\includegraphics[keepaspectratio,width=\\textwidth, height=.75\\textheight]{%s}\n\\end{center}\n\\end{figure}\n", elt->contents.link->url);
         break;
     case EMPH:
         g_string_append_printf(out, "\\emph{");
@@ -1033,6 +1035,13 @@ void print_beamer_element_list(GString *out, element *list) {
 static void print_beamer_element(GString *out, element *elt) {
     int lev;
     switch (elt->key) {
+	    case VERBATIM:
+	        pad(out, 1);
+	        g_string_append_printf(out, "\n\\begin{semiverbatim}\n\n");
+	        print_raw_element(out, elt);
+	        g_string_append_printf(out, "\n\\end{semiverbatim}\n");
+	        padded = 0;
+	        break;
 	    case LISTITEM:
 	        pad(out, 1);
 	        g_string_append_printf(out, "\\item<+-> ");
@@ -1042,11 +1051,18 @@ static void print_beamer_element(GString *out, element *elt) {
 	        break;
 	    case HEADINGSECTION:
 			if (elt->children->key -H1 + base_header_level == 3) {
-				g_string_append_printf(out, "\\begin{frame}\n");
+				pad(out,2);
+				g_string_append_printf(out, "\\begin{frame}");
+				if (list_contains_key(elt->children,VERBATIM)) {
+					g_string_append_printf(out, "[fragile]");
+				}
+				padded = 0;
 				print_beamer_element_list(out, elt->children);
 				g_string_append_printf(out, "\n\n\\end{frame}\n\n");
 			} else if (elt->children->key -H1 + base_header_level == 4) {
+				pad(out, 1);
 				g_string_append_printf(out, "\\mode<article>{\n");
+				padded = 0;
 				print_beamer_element_list(out, elt->children->next);
 				g_string_append_printf(out, "\n\n}\n\n");
 			} else {
@@ -1076,7 +1092,7 @@ static void print_beamer_element(GString *out, element *elt) {
 	                g_string_append_printf(out, "{\\itshape ");
 	                break;
 	        }
-	        print_latex_element_list(out, elt->children);
+	        print_beamer_element_list(out, elt->children);
 	        g_string_append_printf(out, "}\n\\label{");
 	        /* generate a label for each header (MMD)*/
 	        GString *headLabel;
@@ -1102,4 +1118,18 @@ element * print_html_headingsection(GString *out, element *list, bool obfuscate)
         step = print_html_headingsection(out, step, obfuscate);
     }
     return step;
+}
+
+bool list_contains_key(element *list, int key) {
+    element *step = NULL;
+	bool *found = FALSE;
+    step = list->next;
+    while ( step != NULL ) {
+		if ((step->key == key) || ( list_contains_key(step, key) == TRUE )) {
+			return TRUE;
+		}
+		step = step->next;
+    }
+    return FALSE;
+	
 }
