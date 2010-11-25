@@ -479,6 +479,12 @@ static void print_latex_element(GString *out, element *elt) {
         break;
     case HTML:
         /* don't print HTML */
+        /* but do print HTML comments for raw LaTeX */
+        if (strncmp(elt->contents.str,"<!--",4) == 0) {
+            /* trim "-->" from end */
+            elt->contents.str[strlen(elt->contents.str)-3] = '\0';
+            g_string_append_printf(out, "%s", &elt->contents.str[4]);
+        }
         break;
     case LINK:
         if (elt->contents.link->url[0] == '#') {
@@ -575,6 +581,14 @@ static void print_latex_element(GString *out, element *elt) {
         break;
     case HTMLBLOCK:
         /* don't print HTML block */
+        /* but do print HTML comments for raw LaTeX */
+        if (strncmp(elt->contents.str,"<!--",4) == 0) {
+            pad(out, 2);
+            /* trim "-->" from end */
+            elt->contents.str[strlen(elt->contents.str)-3] = '\0';
+            g_string_append_printf(out, "%s", &elt->contents.str[4]);
+            padded = 0;
+        }
         break;
     case VERBATIM:
         pad(out, 1);
