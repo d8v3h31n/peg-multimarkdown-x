@@ -668,6 +668,7 @@ static void print_latex_element(GString *out, element *elt) {
         } else if (strcmp(elt->contents.str, "latexfooter") == 0) {
             latex_footer = elt->children->contents.str;
         } else {
+			g_string_append_printf(out, "\\def\\%s{%s}\n", elt->contents.str, elt->children->contents.str);
         }
         break;
     case METAVALUE:
