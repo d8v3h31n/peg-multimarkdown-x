@@ -468,7 +468,7 @@ static void print_latex_element(GString *out, element *elt) {
         print_latex_string(out, elt->contents.str);
         break;
     case ELLIPSIS:
-        g_string_append_printf(out, "\\ldots{}");
+        g_string_append_printf(out, "{\\ldots}");
         break;
     case EMDASH: 
         g_string_append_printf(out, "---");
