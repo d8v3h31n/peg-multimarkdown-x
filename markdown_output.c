@@ -1052,6 +1052,11 @@ void print_beamer_element_list(GString *out, element *list) {
 static void print_beamer_element(GString *out, element *elt) {
     int lev;
     switch (elt->key) {
+        case FOOTER:
+            g_string_append_printf(out, "\\mode<all>\n");
+            print_latex_footer(out);
+            g_string_append_printf(out, "\\mode*\n");
+            break;
 	    case VERBATIM:
 	        pad(out, 1);
 	        g_string_append_printf(out, "\n\\begin{semiverbatim}\n\n");
