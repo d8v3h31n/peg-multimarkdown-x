@@ -681,6 +681,8 @@ static void print_latex_element(GString *out, element *elt) {
             g_string_append_printf(out, "}\n");
         } else if (strcmp(elt->contents.str, "latexfooter") == 0) {
             latex_footer = elt->children->contents.str;
+        } else if (strcmp(elt->contents.str, "bibtex") == 0) {
+            g_string_append_printf(out, "\\def\\bibliocommand{\\bibliography{%s}}\n",elt->children->contents.str);
         } else {
 			g_string_append_printf(out, "\\def\\%s{%s}\n", elt->contents.str, elt->children->contents.str);
         }
