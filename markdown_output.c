@@ -1057,77 +1057,77 @@ static void print_beamer_element(GString *out, element *elt) {
             print_latex_footer(out);
             g_string_append_printf(out, "\\mode*\n");
             break;
-	    case VERBATIM:
-	        pad(out, 1);
-	        g_string_append_printf(out, "\n\\begin{semiverbatim}\n\n");
-	        print_raw_element(out, elt);
-	        g_string_append_printf(out, "\n\\end{semiverbatim}\n");
-	        padded = 0;
-	        break;
-	    case LISTITEM:
-	        pad(out, 1);
-	        g_string_append_printf(out, "\\item<+-> ");
-	        padded = 2;
-	        print_latex_element_list(out, elt->children);
-	        g_string_append_printf(out, "\n");
-	        break;
-	    case HEADINGSECTION:
-			if (elt->children->key -H1 + base_header_level == 3) {
-				pad(out,2);
-				g_string_append_printf(out, "\\begin{frame}");
-				if (list_contains_key(elt->children,VERBATIM)) {
-					g_string_append_printf(out, "[fragile]");
-				}
-				padded = 0;
-				print_beamer_element_list(out, elt->children);
-				g_string_append_printf(out, "\n\n\\end{frame}\n\n");
-			} else if (elt->children->key -H1 + base_header_level == 4) {
-				pad(out, 1);
-				g_string_append_printf(out, "\\mode<article>{\n");
-				padded = 0;
-				print_beamer_element_list(out, elt->children->next);
-				g_string_append_printf(out, "\n\n}\n\n");
-			} else {
-		        print_beamer_element_list(out, elt->children);				
-			}
-	        break;
-	    case H1: case H2: case H3: case H4: case H5: case H6:
-	        pad(out, 2);
-	        lev = elt->key - H1 + base_header_level;  /* assumes H1 ... H6 are in order */
-	        switch (lev) {
-	            case 1:
-	                g_string_append_printf(out, "\\part{");
-	                break;
-	            case 2:
-	                g_string_append_printf(out, "\\section{");
-	                break;
-	            case 3:
-	                g_string_append_printf(out, "\\frametitle{");
-	                break;
-	            case 4:
-	                g_string_append_printf(out, "\\subsection{");
-	                break;
-	            case 5:
-	                g_string_append_printf(out, "\\subsubsection{");
-	                break;
-	            default:
-	                g_string_append_printf(out, "{\\itshape ");
-	                break;
-	        }
-	        print_beamer_element_list(out, elt->children);
-	        g_string_append_printf(out, "}\n\\label{");
-	        /* generate a label for each header (MMD)*/
-	        GString *headLabel;
-	        headLabel = g_string_new("");
-	        print_raw_element_list(headLabel, elt->children);
-	        g_string_append(out, label_from_string(headLabel->str, 0));
-	        g_string_append_printf(out, "}\n");
-	        g_string_free(headLabel, TRUE);
-	        padded = 0;
-	        break;
-	    default:
-		print_latex_element(out, elt);
-	}
+        case VERBATIM:
+            pad(out, 1);
+            g_string_append_printf(out, "\n\\begin{semiverbatim}\n\n");
+            print_raw_element(out, elt);
+            g_string_append_printf(out, "\n\\end{semiverbatim}\n");
+            padded = 0;
+            break;
+        case LISTITEM:
+            pad(out, 1);
+            g_string_append_printf(out, "\\item<+-> ");
+            padded = 2;
+            print_latex_element_list(out, elt->children);
+            g_string_append_printf(out, "\n");
+            break;
+        case HEADINGSECTION:
+            if (elt->children->key -H1 + base_header_level == 3) {
+                pad(out,2);
+                g_string_append_printf(out, "\\begin{frame}");
+                if (list_contains_key(elt->children,VERBATIM)) {
+                    g_string_append_printf(out, "[fragile]");
+                }
+                padded = 0;
+                print_beamer_element_list(out, elt->children);
+                g_string_append_printf(out, "\n\n\\end{frame}\n\n");
+            } else if (elt->children->key -H1 + base_header_level == 4) {
+                pad(out, 1);
+                g_string_append_printf(out, "\\mode<article>{\n");
+                padded = 0;
+                print_beamer_element_list(out, elt->children->next);
+                g_string_append_printf(out, "\n\n}\n\n");
+            } else {
+                print_beamer_element_list(out, elt->children);              
+            }
+            break;
+        case H1: case H2: case H3: case H4: case H5: case H6:
+            pad(out, 2);
+            lev = elt->key - H1 + base_header_level;  /* assumes H1 ... H6 are in order */
+            switch (lev) {
+                case 1:
+                    g_string_append_printf(out, "\\part{");
+                    break;
+                case 2:
+                    g_string_append_printf(out, "\\section{");
+                    break;
+                case 3:
+                    g_string_append_printf(out, "\\frametitle{");
+                    break;
+                case 4:
+                    g_string_append_printf(out, "\\subsection{");
+                    break;
+                case 5:
+                    g_string_append_printf(out, "\\subsubsection{");
+                    break;
+                default:
+                    g_string_append_printf(out, "{\\itshape ");
+                    break;
+            }
+            print_beamer_element_list(out, elt->children);
+            g_string_append_printf(out, "}\n\\label{");
+            /* generate a label for each header (MMD)*/
+            GString *headLabel;
+            headLabel = g_string_new("");
+            print_raw_element_list(headLabel, elt->children);
+            g_string_append(out, label_from_string(headLabel->str, 0));
+            g_string_append_printf(out, "}\n");
+            g_string_free(headLabel, TRUE);
+            padded = 0;
+            break;
+        default:
+        print_latex_element(out, elt);
+    }
 }
 
 
