@@ -207,6 +207,8 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
         break;
     case H1: case H2: case H3: case H4: case H5: case H6:
         lev = elt->key - H1 + base_header_level;  /* assumes H1 ... H6 are in order */
+        if (lev > 6)
+            lev = 6;
         pad(out, 2);
         if ( extension(EXT_COMPATIBILITY) ) {
             /* Use regular Markdown header format */
