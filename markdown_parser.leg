@@ -71,7 +71,7 @@ Block =     BlankLine*
             | Note
             | Reference
             | HorizontalRule
-            | Heading
+            | HeadingSection
             | OrderedList
             | BulletList
             | HtmlBlock
@@ -104,6 +104,10 @@ SetextHeading2 =  a:StartList ( !Endline !( &{ !extension(EXT_COMPATIBILITY) } S
 
 Heading = AtxHeading | SetextHeading
 
+HeadingSection = a:StartList Heading { a = cons($$, a); }
+	(!Heading Block {a = cons($$, a); })*
+		{ $$ = mk_list(HEADINGSECTION, a);}
+
 BlockQuote = a:BlockQuoteRaw
              {  $$ = mk_element(BLOCKQUOTE);
                 $$->children = a;
@@ -125,7 +129,7 @@ VerbatimChunk = a:StartList
                 ( NonblankIndentedLine { a = cons($$, a); } )+
                 { $$ = mk_str_from_list(a, false); }
 
-Verbatim =     a:StartList ( VerbatimChunk { a = cons($$, a); } )+
+Verbatim =     a:StartList ( VerbatimChunk { a = cons($$, a); } )+ BlankLine*
                { $$ = mk_str_from_list(a, false);
                  $$->key = VERBATIM; }
 

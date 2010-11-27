@@ -46,6 +46,16 @@ static void print_html_footer(GString *out, bool obfuscate);
 static void print_latex_header(GString *out, element *elt);
 static void print_latex_footer(GString *out);
 
+static void print_memoir_element_list(GString *out, element *list);
+static void print_memoir_element(GString *out, element *elt);
+
+static void print_beamer_element_list(GString *out, element *list);
+static void print_beamer_element(GString *out, element *elt);
+
+element * print_html_headingsection(GString *out, element *list, bool obfuscate);
+
+static bool list_contains_key(element *list, int key);
+
 
 /**********************************************************************
 
@@ -107,8 +117,12 @@ static void print_html_string(GString *out, char *str, bool obfuscate) {
 /* print_html_element_list - print a list of elements as HTML */
 static void print_html_element_list(GString *out, element *list, bool obfuscate) {
     while (list != NULL) {
-        print_html_element(out, list, obfuscate);
-        list = list->next;
+        if (list->key == HEADINGSECTION) {
+            list = print_html_headingsection(out, list, obfuscate);
+        } else {
+            print_html_element(out, list, obfuscate);
+            list = list->next;
+        }
     }
 }
 
@@ -360,6 +374,9 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
     case FOOTER:
         print_html_footer(out, obfuscate);
         break;
+    case HEADINGSECTION:
+        print_html_element_list(out, elt->children, obfuscate);
+        break;
     default: 
         fprintf(stderr, "print_html_element encountered unknown element key = %d\n", elt->key); 
         exit(EXIT_FAILURE);
@@ -453,7 +470,7 @@ static void print_latex_element(GString *out, element *elt) {
         print_latex_string(out, elt->contents.str);
         break;
     case ELLIPSIS:
-        g_string_append_printf(out, "\\ldots{}");
+        g_string_append_printf(out, "{\\ldots}");
         break;
     case EMDASH: 
         g_string_append_printf(out, "---");
@@ -513,7 +530,7 @@ static void print_latex_element(GString *out, element *elt) {
         }
         break;
     case IMAGE:
-        g_string_append_printf(out, "\\begin{figure}\n\\begin{center}\n\\resizebox{1\\linewidth}{!}{\\includegraphics{%s}}\n\\end{center}\n\\end{figure}\n", elt->contents.link->url);
+        g_string_append_printf(out, "\\begin{figure}\n\\begin{center}\n\\includegraphics[keepaspectratio,width=\\textwidth, height=.75\\textheight]{%s}\n\\end{center}\n\\end{figure}\n", elt->contents.link->url);
         break;
     case EMPH:
         g_string_append_printf(out, "\\emph{");
@@ -532,38 +549,22 @@ static void print_latex_element(GString *out, element *elt) {
         /* Shouldn't occur - these are handled by process_raw_blocks() */
         assert(elt->key != RAW);
         break;
-    case H1: case H2: case H3: case H4: case H5: case H6:
+    case H1: case H2: case H3:
         pad(out, 2);
-        lev = elt->key - H1 + base_header_level;  /* assumes H1 ... H6 are in order */
-        switch (lev) {
-            case 1:
-                g_string_append_printf(out, "\\part{");
-                break;
-            case 2:
-                g_string_append_printf(out, "\\chapter{");
-                break;
-            case 3:
-                g_string_append_printf(out, "\\section{");
-                break;
-            case 4:
-                g_string_append_printf(out, "\\subsection{");
-                break;
-            case 5:
-                g_string_append_printf(out, "\\subsubsection{");
-                break;
-            default:
-                g_string_append_printf(out, "{\\itshape ");
-                break;
-        }
+        lev = elt->key - H1 + 1;  /* assumes H1 ... H6 are in order */
+        g_string_append_printf(out, "\\");
+        for (i = elt->key; i > H1; i--)
+            g_string_append_printf(out, "sub");
+        g_string_append_printf(out, "section{");
         print_latex_element_list(out, elt->children);
-        g_string_append_printf(out, "}\n\\label{");
-        /* generate a label for each header (MMD)*/
-        GString *headLabel;
-        headLabel = g_string_new("");
-        print_raw_element_list(headLabel, elt->children);
-        g_string_append(out, label_from_string(headLabel->str, 0));
-        g_string_append_printf(out, "}\n");
-        g_string_free(headLabel, TRUE);
+        g_string_append_printf(out, "}");
+        padded = 0;
+        break;
+    case H4: case H5: case H6:
+        pad(out, 2);
+        g_string_append_printf(out, "\\noindent\\textbf{");
+        print_latex_element_list(out, elt->children);
+        g_string_append_printf(out, "}");
         padded = 0;
         break;
     case PLAIN:
@@ -594,14 +595,14 @@ static void print_latex_element(GString *out, element *elt) {
         break;
     case VERBATIM:
         pad(out, 1);
-        g_string_append_printf(out, "\n\\begin{adjustwidth}{2.5em}{2.5em}\n\\begin{verbatim}\n\n");
+        g_string_append_printf(out, "\n\\begin{verbatim}\n\n");
         print_raw_element(out, elt);
-        g_string_append_printf(out, "\n\\end{verbatim}\n\\end{adjustwidth}");
+        g_string_append_printf(out, "\n\\end{verbatim}\n");
         padded = 0;
         break;
     case BULLETLIST:
         pad(out, 1);
-        g_string_append_printf(out, "\\begin{itemize}");
+        g_string_append_printf(out, "\n\\begin{itemize}");
         padded = 0;
         print_latex_element_list(out, elt->children);
         pad(out, 1);
@@ -674,6 +675,10 @@ static void print_latex_element(GString *out, element *elt) {
             g_string_append_printf(out, "\\def\\myauthor{");
             print_latex_element_list(out, elt->children);
             g_string_append_printf(out, "}\n");
+        } else if (strcmp(elt->contents.str, "date") == 0) {
+            g_string_append_printf(out, "\\def\\mydate{");
+            print_latex_element_list(out, elt->children);
+            g_string_append_printf(out, "}\n");
         } else if (strcmp(elt->contents.str, "baseheaderlevel") == 0) {
             base_header_level = atoi(elt->children->contents.str);
         } else if (strcmp(elt->contents.str, "latexinclude") == 0) {
@@ -682,7 +687,14 @@ static void print_latex_element(GString *out, element *elt) {
             g_string_append_printf(out, "}\n");
         } else if (strcmp(elt->contents.str, "latexfooter") == 0) {
             latex_footer = elt->children->contents.str;
+        } else if (strcmp(elt->contents.str, "bibtex") == 0) {
+            g_string_append_printf(out, "\\def\\bibliocommand{\\bibliography{%s}}\n",elt->children->contents.str);
         } else {
+			g_string_append_printf(out, "\\def\\");
+			print_latex_string(out, elt->contents.str);
+			g_string_append_printf(out, "{");
+			print_latex_element_list(out, elt->children);
+			g_string_append_printf(out, "}\n");
         }
         break;
     case METAVALUE:
@@ -690,6 +702,9 @@ static void print_latex_element(GString *out, element *elt) {
         break;
     case FOOTER:
         print_latex_footer(out);
+        break;
+    case HEADINGSECTION:
+        print_latex_element_list(out, elt->children);
         break;
     default: 
         fprintf(stderr, "print_latex_element encountered unknown element key = %d\n", elt->key); 
@@ -921,6 +936,12 @@ void print_element_list(GString *out, element *elt, int format, int exts) {
     case LATEX_FORMAT:
         print_latex_element_list(out, elt);
         break;
+    case MEMOIR_FORMAT:
+        print_memoir_element_list(out, elt);
+        break;
+    case BEAMER_FORMAT:
+        print_beamer_element_list(out, elt);
+        break;
     case GROFF_MM_FORMAT:
         print_groff_mm_element_list(out, elt);
         break;
@@ -959,6 +980,182 @@ void print_latex_header(GString *out, element *elt) {
 
 void print_latex_footer(GString *out) {
     if (latex_footer != NULL) {
-        g_string_append_printf(out, "\n\n\\include{%s}\n", latex_footer);
+        g_string_append_printf(out, "\n\n\\input{%s}\n\n\\end{document}", latex_footer);
     }
+}
+
+
+/* print_memoir_element_list - print an element as LaTeX for memoir class */
+void print_memoir_element_list(GString *out, element *list) {
+    while (list != NULL) {
+        print_memoir_element(out, list);
+        list = list->next;
+    }
+}
+
+
+/* print_memoir_element - print an element as LaTeX for memoir class */
+static void print_memoir_element(GString *out, element *elt) {
+    int lev;
+    switch (elt->key) {
+    case VERBATIM:
+        pad(out, 1);
+        g_string_append_printf(out, "\n\\begin{adjustwidth}{2.5em}{2.5em}\n\\begin{verbatim}\n\n");
+        print_raw_element(out, elt);
+        g_string_append_printf(out, "\n\\end{verbatim}\n\\end{adjustwidth}");
+        padded = 0;
+        break;
+    case HEADINGSECTION:
+        print_memoir_element_list(out, elt->children);
+        break;
+    case H1: case H2: case H3: case H4: case H5: case H6:
+        pad(out, 2);
+        lev = elt->key - H1 + base_header_level;  /* assumes H1 ... H6 are in order */
+        switch (lev) {
+            case 1:
+                g_string_append_printf(out, "\\part{");
+                break;
+            case 2:
+                g_string_append_printf(out, "\\chapter{");
+                break;
+            case 3:
+                g_string_append_printf(out, "\\section{");
+                break;
+            case 4:
+                g_string_append_printf(out, "\\subsection{");
+                break;
+            case 5:
+                g_string_append_printf(out, "\\subsubsection{");
+                break;
+            default:
+                g_string_append_printf(out, "{\\itshape ");
+                break;
+        }
+        print_latex_element_list(out, elt->children);
+        g_string_append_printf(out, "}\n\\label{");
+        /* generate a label for each header (MMD)*/
+        GString *headLabel;
+        headLabel = g_string_new("");
+        print_raw_element_list(headLabel, elt->children);
+        g_string_append(out, label_from_string(headLabel->str, 0));
+        g_string_append_printf(out, "}\n");
+        g_string_free(headLabel, TRUE);
+        padded = 0;
+        break;
+    default:
+        /* most things are not changed for memoir output */
+        print_latex_element(out, elt);
+    }
+}
+
+
+/* print_beamer_element_list - print an element as LaTeX for beamer class */
+void print_beamer_element_list(GString *out, element *list) {
+    while (list != NULL) {
+        print_beamer_element(out, list);
+        list = list->next;
+    }
+}
+
+
+/* print_beamer_element - print an element as LaTeX for beamer class */
+static void print_beamer_element(GString *out, element *elt) {
+    int lev;
+    switch (elt->key) {
+        case FOOTER:
+            g_string_append_printf(out, "\\mode<all>\n");
+            print_latex_footer(out);
+            g_string_append_printf(out, "\\mode*\n");
+            break;
+        case VERBATIM:
+            pad(out, 1);
+            g_string_append_printf(out, "\n\\begin{semiverbatim}\n\n");
+            print_raw_element(out, elt);
+            g_string_append_printf(out, "\n\\end{semiverbatim}\n");
+            padded = 0;
+            break;
+        case LISTITEM:
+            pad(out, 1);
+            g_string_append_printf(out, "\\item<+-> ");
+            padded = 2;
+            print_latex_element_list(out, elt->children);
+            g_string_append_printf(out, "\n");
+            break;
+        case HEADINGSECTION:
+            if (elt->children->key -H1 + base_header_level == 3) {
+                pad(out,2);
+                g_string_append_printf(out, "\\begin{frame}");
+                if (list_contains_key(elt->children,VERBATIM)) {
+                    g_string_append_printf(out, "[fragile]");
+                }
+                padded = 0;
+                print_beamer_element_list(out, elt->children);
+                g_string_append_printf(out, "\n\n\\end{frame}\n\n");
+            } else if (elt->children->key -H1 + base_header_level == 4) {
+                pad(out, 1);
+                g_string_append_printf(out, "\\mode<article>{\n");
+                padded = 0;
+                print_beamer_element_list(out, elt->children->next);
+                g_string_append_printf(out, "\n\n}\n\n");
+            } else {
+                print_beamer_element_list(out, elt->children);              
+            }
+            break;
+        case H1: case H2: case H3: case H4: case H5: case H6:
+            pad(out, 2);
+            lev = elt->key - H1 + base_header_level;  /* assumes H1 ... H6 are in order */
+            switch (lev) {
+                case 1:
+                    g_string_append_printf(out, "\\part{");
+                    break;
+                case 2:
+                    g_string_append_printf(out, "\\section{");
+                    break;
+                case 3:
+                    g_string_append_printf(out, "\\frametitle{");
+                    break;
+                default:
+                    g_string_append_printf(out, "{\\itshape ");
+                    break;
+            }
+            print_beamer_element_list(out, elt->children);
+            g_string_append_printf(out, "}\n\\label{");
+            /* generate a label for each header (MMD)*/
+            GString *headLabel;
+            headLabel = g_string_new("");
+            print_raw_element_list(headLabel, elt->children);
+            g_string_append(out, label_from_string(headLabel->str, 0));
+            g_string_append_printf(out, "}\n");
+            g_string_free(headLabel, TRUE);
+            padded = 0;
+            break;
+        default:
+        print_latex_element(out, elt);
+    }
+}
+
+
+element * print_html_headingsection(GString *out, element *list, bool obfuscate) {
+    print_html_element_list(out, list->children, obfuscate);
+    
+    element *step = NULL;
+    step = list->next;
+    while ( (step != NULL) && (step->key == HEADINGSECTION) && (step->children->key > list->children->key) && (step->children->key <= H6)) {
+        step = print_html_headingsection(out, step, obfuscate);
+    }
+    return step;
+}
+
+bool list_contains_key(element *list, int key) {
+    element *step = NULL;
+	bool *found = FALSE;
+    step = list->next;
+    while ( step != NULL ) {
+		if ((step->key == key) || ( list_contains_key(step, key) == TRUE )) {
+			return TRUE;
+		}
+		step = step->next;
+    }
+    return FALSE;
+	
 }

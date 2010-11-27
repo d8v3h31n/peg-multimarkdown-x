@@ -104,7 +104,7 @@ int main(int argc, char * argv[]) {
     g_option_group_add_entries (ext_group, ext_entries);
     g_option_context_add_group (context, ext_group);
     g_option_context_set_description (context, "Converts text in specified files (or stdin) from markdown to FORMAT.\n"
-                                               "Available FORMATs:  html, latex, groff-mm");
+                                               "Available FORMATs:  html, latex, memoir, beamer, groff-mm");
     if (!g_option_context_parse (context, &argc, &argv, &error)) {
         g_print ("option parsing failed: %s\n", error->message);
         exit (1);
@@ -143,6 +143,10 @@ int main(int argc, char * argv[]) {
         output_format = HTML_FORMAT;
     else if (strcmp(opt_to, "latex") == 0)
         output_format = LATEX_FORMAT;
+    else if (strcmp(opt_to, "memoir") == 0)
+        output_format = MEMOIR_FORMAT;
+    else if (strcmp(opt_to, "beamer") == 0)
+        output_format = BEAMER_FORMAT;
     else if (strcmp(opt_to, "groff-mm") == 0)
         output_format = GROFF_MM_FORMAT;
     else {
