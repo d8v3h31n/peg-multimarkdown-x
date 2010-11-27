@@ -673,6 +673,10 @@ static void print_latex_element(GString *out, element *elt) {
             g_string_append_printf(out, "\\def\\myauthor{");
             print_latex_element_list(out, elt->children);
             g_string_append_printf(out, "}\n");
+        } else if (strcmp(elt->contents.str, "date") == 0) {
+            g_string_append_printf(out, "\\def\\mydate{");
+            print_latex_element_list(out, elt->children);
+            g_string_append_printf(out, "}\n");
         } else if (strcmp(elt->contents.str, "baseheaderlevel") == 0) {
             base_header_level = atoi(elt->children->contents.str);
         } else if (strcmp(elt->contents.str, "latexinclude") == 0) {
@@ -684,7 +688,11 @@ static void print_latex_element(GString *out, element *elt) {
         } else if (strcmp(elt->contents.str, "bibtex") == 0) {
             g_string_append_printf(out, "\\def\\bibliocommand{\\bibliography{%s}}\n",elt->children->contents.str);
         } else {
-			g_string_append_printf(out, "\\def\\%s{%s}\n", elt->contents.str, elt->children->contents.str);
+			g_string_append_printf(out, "\\def\\");
+			print_latex_string(out, elt->contents.str);
+			g_string_append_printf(out, "{");
+			print_latex_element_list(out, elt->children);
+			g_string_append_printf(out, "}\n");
         }
         break;
     case METAVALUE:
@@ -1103,12 +1111,6 @@ static void print_beamer_element(GString *out, element *elt) {
                     break;
                 case 3:
                     g_string_append_printf(out, "\\frametitle{");
-                    break;
-                case 4:
-                    g_string_append_printf(out, "\\subsection{");
-                    break;
-                case 5:
-                    g_string_append_printf(out, "\\subsubsection{");
                     break;
                 default:
                     g_string_append_printf(out, "{\\itshape ");
