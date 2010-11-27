@@ -799,11 +799,14 @@ Definition = (a:StartList
                  $$->key = DEFINITION;
              }
 
-Table = a:StartList	(TableRow {a = cons($$, a);} )+
+Table = a:StartList	(TableBody {a = cons($$, a);} )+
 	{ $$ = mk_list(LIST, a);
 		$$->key = TABLE;
 	}
 
+TableBody = a:StartList (TableRow {a = cons($$, a);})+ BlankLine?
+	{ $$ = mk_list(TABLEBODY, a);}
+	
 TableRow = a:StartList (CellDivider | TableCell { a = cons($$, a); }) 
 		(TableCell { a = cons($$, a); })+ Newline
 		{ $$ = mk_list(LIST, a);
