@@ -382,6 +382,9 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
         print_html_element_list(out, elt->children, obfuscate);
         g_string_append_printf(out, "</table>\n");
         break;
+    case TABLESEPARATOR:
+	/* ignore column alignment in HTML for now */
+        break;
     case TABLECAPTION:
         g_string_append_printf(out, "<caption>", obfuscate);
         print_html_element_list(out, elt->children, obfuscate);
@@ -743,13 +746,15 @@ static void print_latex_element(GString *out, element *elt) {
         g_string_append_printf(out, "\n\\end{tabulary}\n\\end{minipage}\n\\end{table}\n");
         padded = 0;
         break;
+    case TABLESEPARATOR:
+        g_string_append_printf(out, "\\begin{tabulary}{\\linewidth}{%s} \\\\ \\toprule\n", elt->contents.str);
+        break;
     case TABLECAPTION:
         g_string_append_printf(out, "\\caption{");
         print_latex_element_list(out, elt->children);
         g_string_append_printf(out, "}\n");
         break;
     case TABLEHEAD:
-        g_string_append_printf(out, "\\begin{tabulary}{\\linewidth}{ccc} \\\\ \\toprule\n");
         print_latex_element_list(out, elt->children);
         g_string_append_printf(out, " \\\\ \\midrule\n");
         break;

@@ -805,7 +805,10 @@ Definition = (a:StartList
 
 Table = a:StartList (TableCaption { a = cons($$, a);})?
     TableBody { $$->key = TABLEHEAD; a = cons($$, a); }
-    SeparatorLine
+    (SeparatorLine
+    { element *list = reverse(a);
+        list = cons($$, list);
+        a = reverse(list); } )
     (TableBody { a = cons($$, a);} )*
     (TableCaption 
     { element *list = reverse(a);
@@ -835,7 +838,30 @@ FullCell = Sp <  (!Newline !CellDivider .)+ >
 EmptyCell = Sp CellDivider
 { $$ = mk_element(TABLECELL);}
 
-SeparatorLine = ( '-' | ':' | ' ' | '\t' | CellDivider )+ Newline
+OldSeparatorLine = ( '-' | ':' | ' ' | '\t' | CellDivider )+ Newline
+{
+	$$ = mk_str("lll");
+	$$->key = TABLESEPARATOR;
+}
+
+SeparatorLine = a:StartList ( CellDivider | AlignmentCell { a = cons($$,a);})
+	( AlignmentCell { a = cons($$, a);})+ Sp Newline
+{
+	$$ = mk_str_from_list(a,false);
+	$$->key = TABLESEPARATOR;
+}
+
+AlignmentCell = Sp (!CellDivider ( LeftAlign | CenterAlign | RightAlign))
+    ( Sp CellDivider )?
+
+LeftAlign = ':'? '-'+ &(!'-' !':')
+    { $$ = mk_str("l");}
+
+CenterAlign = ':' '-'* ':' &(!'-' !':')
+    { $$ = mk_str("c");}
+
+RightAlign = '-'+ ':' &(!'-' !':')
+    { $$ = mk_str("r");}
 
 CellDivider = '|'
 
