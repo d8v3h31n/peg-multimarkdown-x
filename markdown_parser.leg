@@ -795,12 +795,13 @@ Term =  a:StartList
         }
 
 Definition = (a:StartList
-                 ( ':' Sp Line { a = cons($$, a);}) 
-                 ( !':' Sp !BlankLine Line { a = cons($$, a);})*
+                 ( ':' Sp RawLine { a = cons(mk_str(yytext), a);}) 
+                 ( !':'  !BlankLine RawLine { a = cons(mk_str(yytext), a);})*
                  ( BlankLine)?
              )
-             { $$ = mk_list(LIST, a);
-                 $$->key = DEFINITION;
+		{ element *raw = mk_str_from_list(a, false);
+			raw->key = RAW;
+			$$ = mk_list(DEFINITION,raw);
              }
 
 Table = a:StartList (TableCaption { a = cons($$, a);})?
