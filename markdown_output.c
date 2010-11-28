@@ -227,17 +227,19 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
         if ( extension(EXT_COMPATIBILITY) ) {
             /* Use regular Markdown header format */
             g_string_append_printf(out, "<h%1d>", lev);
-        } else {
+            print_html_element_list(out, elt->children, obfuscate);
+        } else if (elt->children->key == AUTOLABEL) {
             /* generate a label for each header (MMD)*/
-            GString *headLabel;
-            headLabel = g_string_new("");
-            print_raw_element_list(headLabel, elt->children);
-            g_string_append_printf(out, "<h%1d id=\"", lev);
-            g_string_append(out, label_from_string(headLabel->str, 0));
-            g_string_append_printf(out, "\">");
-            g_string_free(headLabel, TRUE);
+            g_string_append_printf(out, "<h%d id=\"%s\">", lev,elt->children->contents.str);
+            print_html_element_list(out, elt->children->next, obfuscate);
+        } else {
+            GString *Label;
+            Label = g_string_new("");
+            print_raw_element_list(Label, elt->children);
+            g_string_append_printf(out, "<h%d id=\"%s\">",lev,label_from_string(Label->str,0));
+            g_string_free(Label, TRUE);
+            print_html_element_list(out, elt->children, obfuscate);
         }
-        print_html_element_list(out, elt->children, obfuscate);
         g_string_append_printf(out, "</h%1d>", lev);
         padded = 0;
         break;
