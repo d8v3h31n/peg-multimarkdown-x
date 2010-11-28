@@ -820,8 +820,12 @@ Table = a:StartList b:StartList (TableCaption { b = cons($$, b);})?
         list = cons($$, list);
         a = reverse(list); } )
     (TableBody { a = cons($$, a);} )*
-    (TableCaption { b =cons($$, b);})?
-    { $$ = mk_list(TABLE, reverse(cons(b, reverse(a))));}
+    (TableCaption { b = cons($$, b);})?
+    {
+        if (b != NULL) 
+            { a = reverse(cons(b, reverse(a))); }
+        $$ = mk_list(TABLE, a);
+    }
 
 TableBody = a:StartList (TableRow {a = cons($$, a);})+ BlankLine?
     { $$ = mk_list(TABLEBODY, a);}
