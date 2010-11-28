@@ -736,6 +736,38 @@ static void print_latex_element(GString *out, element *elt) {
     case HEADINGSECTION:
         print_latex_element_list(out, elt->children);
         break;
+    case TABLE:
+        pad(out, 2);
+        g_string_append_printf(out, "\\begin{table}[htbp]\n\\begin{minipage}{\\linewidth}\n\\centering\n\\small\n");
+        print_latex_element_list(out, elt->children);
+        g_string_append_printf(out, "\n\\end{tabulary}\n\\end{minipage}\n\\end{table}\n");
+        padded = 0;
+        break;
+    case TABLECAPTION:
+        g_string_append_printf(out, "\\caption{");
+        print_latex_element_list(out, elt->children);
+        g_string_append_printf(out, "}\n");
+        break;
+    case TABLEHEAD:
+        g_string_append_printf(out, "\\begin{tabulary}{\\linewidth}{ccc} \\\\ \\toprule\n");
+        print_latex_element_list(out, elt->children);
+        g_string_append_printf(out, " \\\\ \\midrule\n");
+        break;
+    case TABLEBODY:
+        print_latex_element_list(out, elt->children);
+        g_string_append_printf(out, "\n\\bottomrule\n");
+        break;
+    case TABLEROW:
+        print_latex_element_list(out, elt->children);
+        g_string_append_printf(out, " \\\\\n");
+        break;
+    case TABLECELL:
+        padded = 2;
+        print_latex_element_list(out, elt->children);
+        if (elt->next != NULL) {
+            g_string_append_printf(out, "&");
+        }
+        break;
     default: 
         fprintf(stderr, "print_latex_element encountered unknown element key = %d\n", elt->key); 
         exit(EXIT_FAILURE);
