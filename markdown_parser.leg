@@ -67,7 +67,6 @@ MetaDataValue = a:StartList < (!Newline .)+ > { a = cons(mk_str(yytext), a); }
 Block =     BlankLine*
             ( BlockQuote
             | Verbatim
-            | Table
             | DefinitionList
             | Note
             | Reference
@@ -77,6 +76,7 @@ Block =     BlankLine*
             | BulletList
             | HtmlBlock
             | StyleBlock
+            | Table
             | Para
             | Plain )
 
@@ -805,8 +805,7 @@ Definition = (a:StartList
 
 Table = a:StartList (TableCaption { a = cons($$, a);})?
     TableBody { $$->key = TABLEHEAD; a = cons($$, a); }
-    (TableBody { a = cons($$, a);} )*
-    SeparatorLine?
+    SeparatorLine
     (TableBody { a = cons($$, a);} )*
     (TableCaption 
     { element *list = reverse(a);
@@ -819,17 +818,22 @@ TableBody = a:StartList (TableRow {a = cons($$, a);})+ BlankLine?
 
 TableRow = a:StartList
     (!SeparatorLine (CellDivider | TableCell { a = cons($$, a); }) 
-    (TableCell { a = cons($$, a); })+ ) Newline
+    (TableCell { a = cons($$, a); })+ ) Sp Newline
     { $$ = mk_list(TABLEROW, a); }
 
-TableCell = NonindentSpace < (!Newline !CellDivider .)+ >
-    ( ' '* CellDivider ' '* )?
+TableCell = EmptyCell | FullCell
+
+FullCell = Sp <  (!Newline !CellDivider .)+ >
+    ( ' '* CellDivider )?
     { element *raw;
         raw = mk_str(yytext);
         raw->key = RAW;
         $$ = mk_element(TABLECELL);
         $$->children = raw;
     }
+
+EmptyCell = Sp CellDivider
+{ $$ = mk_element(TABLECELL);}
 
 SeparatorLine = ( '-' | ':' | ' ' | '\t' | CellDivider )+ Newline
 
