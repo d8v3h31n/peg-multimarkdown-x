@@ -410,6 +410,11 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
         print_html_element_list(out, elt->children, obfuscate);
         g_string_append_printf(out, "</td>\n");
         break;
+    case DOUBLECELL:
+        g_string_append_printf(out, "\t<td colspan=\"2\">");
+        print_html_element_list(out, elt->children, obfuscate);
+        g_string_append_printf(out, "</td>\n");
+        break;
     default: 
         fprintf(stderr, "print_html_element encountered unknown element key = %d\n", elt->key); 
         exit(EXIT_FAILURE);
@@ -723,11 +728,11 @@ static void print_latex_element(GString *out, element *elt) {
         } else if (strcmp(elt->contents.str, "bibtex") == 0) {
             g_string_append_printf(out, "\\def\\bibliocommand{\\bibliography{%s}}\n",elt->children->contents.str);
         } else {
-			g_string_append_printf(out, "\\def\\");
-			print_latex_string(out, elt->contents.str);
-			g_string_append_printf(out, "{");
-			print_latex_element_list(out, elt->children);
-			g_string_append_printf(out, "}\n");
+            g_string_append_printf(out, "\\def\\");
+            print_latex_string(out, elt->contents.str);
+            g_string_append_printf(out, "{");
+            print_latex_element_list(out, elt->children);
+            g_string_append_printf(out, "}\n");
         }
         break;
     case METAVALUE:
@@ -741,22 +746,25 @@ static void print_latex_element(GString *out, element *elt) {
         break;
     case TABLE:
         pad(out, 2);
-        g_string_append_printf(out, "\\begin{table}[htbp]\n\\begin{minipage}{\\linewidth}\n\\centering\n\\small\n");
+        g_string_append_printf(out, "\\begin{table}[htbp]\n\\begin{minipage}{\\linewidth}\n\\setlength{\\tymax}{0.5\\linewidth}\n\\centering\n\\small\n");
         print_latex_element_list(out, elt->children);
         g_string_append_printf(out, "\n\\end{tabulary}\n\\end{minipage}\n\\end{table}\n");
         padded = 0;
         break;
     case TABLESEPARATOR:
-        g_string_append_printf(out, "\\begin{tabulary}{\\linewidth}{%s} \\\\ \\toprule\n", elt->contents.str);
+        g_string_append_printf(out, "\\begin{tabulary}{\\linewidth}{@{}%s@{}} \\\\ \\toprule\n", elt->contents.str);
         break;
     case TABLECAPTION:
         g_string_append_printf(out, "\\caption{");
         print_latex_element_list(out, elt->children);
-        g_string_append_printf(out, "}\n");
+        GString *Label;
+        Label = g_string_new("");
+        print_raw_element_list(Label, elt->children);
+        g_string_append_printf(out, "}\n\\label{%s}\n",label_from_string(Label->str,0));
         break;
     case TABLEHEAD:
         print_latex_element_list(out, elt->children);
-        g_string_append_printf(out, " \\\\ \\midrule\n");
+        g_string_append_printf(out, "\\midrule\n");
         break;
     case TABLEBODY:
         print_latex_element_list(out, elt->children);
@@ -769,6 +777,15 @@ static void print_latex_element(GString *out, element *elt) {
     case TABLECELL:
         padded = 2;
         print_latex_element_list(out, elt->children);
+        if (elt->next != NULL) {
+            g_string_append_printf(out, "&");
+        }
+        break;
+    case DOUBLECELL:
+        padded = 2;
+        g_string_append_printf(out, "\\multicolumn{2}{c}{");
+        print_latex_element_list(out, elt->children);
+        g_string_append_printf(out, "}");
         if (elt->next != NULL) {
             g_string_append_printf(out, "&");
         }
@@ -1215,14 +1232,13 @@ element * print_html_headingsection(GString *out, element *list, bool obfuscate)
 
 bool list_contains_key(element *list, int key) {
     element *step = NULL;
-	bool *found = FALSE;
+    bool *found = FALSE;
     step = list->next;
     while ( step != NULL ) {
-		if ((step->key == key) || ( list_contains_key(step, key) == TRUE )) {
-			return TRUE;
-		}
-		step = step->next;
+        if ((step->key == key) || ( list_contains_key(step, key) == TRUE )) {
+            return TRUE;
+        }
+        step = step->next;
     }
     return FALSE;
-	
 }

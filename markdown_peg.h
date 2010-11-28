@@ -65,6 +65,7 @@ enum keys { LIST,   /* A generic list of values.  For ordered and bullet lists, 
             TABLEBODY,
             TABLEROW,
             TABLECELL,
+            DOUBLECELL,
             TABLECAPTION,
             TABLESEPARATOR
           };

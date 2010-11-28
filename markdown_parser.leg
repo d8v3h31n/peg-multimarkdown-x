@@ -106,8 +106,8 @@ SetextHeading2 =  a:StartList ( !Endline !( &{ !extension(EXT_COMPATIBILITY) } S
 Heading = AtxHeading | SetextHeading
 
 HeadingSection = a:StartList Heading { a = cons($$, a); }
-	(!Heading Block {a = cons($$, a); })*
-		{ $$ = mk_list(HEADINGSECTION, a);}
+    (!Heading Block {a = cons($$, a); })*
+    { $$ = mk_list(HEADINGSECTION, a);}
 
 BlockQuote = a:BlockQuoteRaw
              {  $$ = mk_element(BLOCKQUOTE);
@@ -777,8 +777,18 @@ AutoLabels = a:StartList ( b:Heading
                 print_raw_element_list(label, b->children);
                 a = cons(mk_str(label_from_string(label->str,0)), a);
                 g_string_free(label,true);
-            } | SkipBlock )*
-            { labels = reverse(a); }
+            } | c:TableCaption {
+                GString *label = g_string_new("");
+                print_raw_element_list(label, c->children);
+                a = cons(mk_str(label_from_string(label->str,0)), a);
+                g_string_free(label,true);}
+            | (TableBody)+ c:TableCaption {
+                GString *label = g_string_new("");
+                print_raw_element_list(label, c->children);
+                a = cons(mk_str(label_from_string(label->str,0)), a);
+                g_string_free(label,true);}
+            | SkipBlock )*
+            { labels = a; }
 
 DefinitionList =  a:StartList
                 (Term { a = cons($$, a); } )+
@@ -803,18 +813,15 @@ Definition = (a:StartList
                  $$->key = DEFINITION;
              }
 
-Table = a:StartList (TableCaption { a = cons($$, a);})?
+Table = a:StartList b:StartList (TableCaption { b = cons($$, b);})?
     TableBody { $$->key = TABLEHEAD; a = cons($$, a); }
     (SeparatorLine
     { element *list = reverse(a);
         list = cons($$, list);
         a = reverse(list); } )
     (TableBody { a = cons($$, a);} )*
-    (TableCaption 
-    { element *list = reverse(a);
-        list = cons($$, list);
-        a = reverse(list); } )?
-    { $$ = mk_list(TABLE, a);}
+    (TableCaption { b =cons($$, b);})?
+    { $$ = mk_list(TABLE, reverse(cons(b, reverse(a))));}
 
 TableBody = a:StartList (TableRow {a = cons($$, a);})+ BlankLine?
     { $$ = mk_list(TABLEBODY, a);}
@@ -824,7 +831,10 @@ TableRow = a:StartList
     (TableCell { a = cons($$, a); })+ ) Sp Newline
     { $$ = mk_list(TABLEROW, a); }
 
-TableCell = EmptyCell | FullCell
+TableCell = DoubleCell | EmptyCell | FullCell
+
+DoubleCell = (EmptyCell | FullCell) CellDivider
+{ $$->key = DOUBLECELL;}
 
 FullCell = Sp <  (!Newline !CellDivider .)+ >
     ( ' '* CellDivider )?
@@ -838,18 +848,12 @@ FullCell = Sp <  (!Newline !CellDivider .)+ >
 EmptyCell = Sp CellDivider
 { $$ = mk_element(TABLECELL);}
 
-OldSeparatorLine = ( '-' | ':' | ' ' | '\t' | CellDivider )+ Newline
-{
-	$$ = mk_str("lll");
-	$$->key = TABLESEPARATOR;
-}
-
 SeparatorLine = a:StartList ( CellDivider | AlignmentCell { a = cons($$,a);})
-	( AlignmentCell { a = cons($$, a);})+ Sp Newline
-{
-	$$ = mk_str_from_list(a,false);
-	$$->key = TABLESEPARATOR;
-}
+    ( AlignmentCell { a = cons($$, a);})+ Sp Newline
+    {
+        $$ = mk_str_from_list(a,false);
+        $$->key = TABLESEPARATOR;
+    }
 
 AlignmentCell = Sp (!CellDivider ( LeftAlign | CenterAlign | RightAlign))
     ( Sp CellDivider )?
