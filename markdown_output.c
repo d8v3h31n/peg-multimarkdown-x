@@ -367,6 +367,11 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
         print_html_element_list(out, elt->children, obfuscate);
         g_string_append_printf(out, "</table>\n");
         break;
+	case TABLECAPTION:
+	g_string_append_printf(out, "<caption>", obfuscate);
+	print_html_element_list(out, elt->children, obfuscate);
+	g_string_append_printf(out, "</caption>\n", obfuscate);
+	break;
     case TABLEHEAD:
         g_string_append_printf(out, "\n<thead>\n");
         print_html_element_list(out, elt->children, obfuscate);

@@ -799,11 +799,16 @@ Definition = (a:StartList
                  $$->key = DEFINITION;
              }
 
-Table = a:StartList TableBody { $$->key = TABLEHEAD; a = cons($$, a); }
+Table = a:StartList (TableCaption { a = cons($$, a);})?
+    TableBody { $$->key = TABLEHEAD; a = cons($$, a); }
     (TableBody { a = cons($$, a);} )*
     SeparatorLine?
     (TableBody { a = cons($$, a);} )*
-    { $$ = mk_list(TABLE, a); }
+    (TableCaption 
+    { element *list = reverse(a);
+        list = cons($$, list);
+        a = reverse(list); } )?
+    { $$ = mk_list(TABLE, a);}
 
 TableBody = a:StartList (TableRow {a = cons($$, a);})+ BlankLine?
     { $$ = mk_list(TABLEBODY, a);}
@@ -825,6 +830,11 @@ TableCell = NonindentSpace < (!Newline !CellDivider .)+ >
 SeparatorLine = ( '-' | ':' | ' ' | '\t' | CellDivider )+ Newline
 
 CellDivider = '|'
+
+TableCaption = a:Label Newline
+{ $$ = a;
+    $$->key = TABLECAPTION;
+}
 
 %%
 
