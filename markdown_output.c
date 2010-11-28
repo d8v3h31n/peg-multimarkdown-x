@@ -377,6 +377,36 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
     case HEADINGSECTION:
         print_html_element_list(out, elt->children, obfuscate);
         break;
+    case TABLE:
+        g_string_append_printf(out, "\n\n<table>\n");
+        print_html_element_list(out, elt->children, obfuscate);
+        g_string_append_printf(out, "</table>\n");
+        break;
+	case TABLECAPTION:
+	g_string_append_printf(out, "<caption>", obfuscate);
+	print_html_element_list(out, elt->children, obfuscate);
+	g_string_append_printf(out, "</caption>\n", obfuscate);
+	break;
+    case TABLEHEAD:
+        g_string_append_printf(out, "\n<thead>\n");
+        print_html_element_list(out, elt->children, obfuscate);
+        g_string_append_printf(out, "</thead>\n");
+        break;
+    case TABLEBODY:
+        g_string_append_printf(out, "\n<tbody>\n");
+        print_html_element_list(out, elt->children, obfuscate);
+        g_string_append_printf(out, "</tbody>\n");
+        break;
+    case TABLEROW:
+        g_string_append_printf(out, "<tr>\n");
+        print_html_element_list(out, elt->children, obfuscate);
+        g_string_append_printf(out, "</tr>\n");
+        break;
+    case TABLECELL:
+        g_string_append_printf(out, "\t<td>");
+        print_html_element_list(out, elt->children, obfuscate);
+        g_string_append_printf(out, "</td>\n");
+        break;
     default: 
         fprintf(stderr, "print_html_element encountered unknown element key = %d\n", elt->key); 
         exit(EXIT_FAILURE);
