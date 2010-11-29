@@ -27,6 +27,8 @@
 static int extensions;
 static int base_header_level = 1;
 static char *latex_footer;
+static int table_column = 0;
+static char *table_alignment;
 
 static void print_html_string(GString *out, char *str, bool obfuscate);
 static void print_html_element_list(GString *out, element *list, bool obfuscate);
@@ -382,9 +384,10 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
         break;
     case TABLESEPARATOR:
 	/* ignore column alignment in HTML for now */
+		table_alignment = elt->contents.str;
         break;
     case TABLECAPTION:
-        g_string_append_printf(out, "<caption>");
+        g_string_append_printf(out, "<caption id=\"%s\">", label_from_element_list(elt->children,obfuscate));
         print_html_element_list(out, elt->children, obfuscate);
         g_string_append_printf(out, "</caption>\n");
         break;
@@ -400,13 +403,21 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
         break;
     case TABLEROW:
         g_string_append_printf(out, "<tr>\n");
+        table_column = 0;
         print_html_element_list(out, elt->children, obfuscate);
         g_string_append_printf(out, "</tr>\n");
         break;
     case TABLECELL:
-        g_string_append_printf(out, "\t<td>");
+        if ( strncmp(&table_alignment[table_column],"r",1) == 0) {
+            g_string_append_printf(out, "\t<td align=\"right\">");
+        } else if ( strncmp(&table_alignment[table_column],"c",1) == 0) {
+            g_string_append_printf(out, "\t<td align=\"center\">");
+        } else {
+            g_string_append_printf(out, "\t<td align=\"left\">");
+        }
         print_html_element_list(out, elt->children, obfuscate);
         g_string_append_printf(out, "</td>\n");
+        table_column++;
         break;
     case DOUBLECELL:
         g_string_append_printf(out, "\t<td colspan=\"2\">");
