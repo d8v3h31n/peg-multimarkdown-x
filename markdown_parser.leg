@@ -32,8 +32,9 @@ Doc =       a:StartList ( Block { a = cons($$, a); } )*
             { parse_result = reverse(a); }
 
 DocWithMetaData = a:StartList b:StartList 
-( &{ !extension(EXT_COMPATIBILITY) } MetaData
-    { a = cons($$, a); b = mk_element(FOOTER);})?
+    ( &{ !extension(EXT_COMPATIBILITY) }
+        &( MetaDataKey Sp ':' Sp (!Newline)) MetaData
+            { a = cons($$, a); b = mk_element(FOOTER);})?
     ( Block { a = cons($$, a); } )*
     { if (b != NULL) a = cons(b, a);
         parse_result = reverse(a);
@@ -55,7 +56,7 @@ MetaDataKey = < Alphanumeric ( Sp ( Alphanumeric | '_' | ' ' | '-')+)* >
                 $$->key = METAKEY;
             }
 
-MetaDataValue = a:StartList < (!Newline .)+ > { a = cons(mk_str(yytext), a); }
+MetaDataValue = a:StartList < (!Newline .)* > { a = cons(mk_str(yytext), a); }
                 (Newline &(!BlankLine !MetaDataKeyValue Sp RawLine)
                     { a = cons(mk_str("\n"), a);} | Newline)
                 (!BlankLine !MetaDataKeyValue Sp RawLine
