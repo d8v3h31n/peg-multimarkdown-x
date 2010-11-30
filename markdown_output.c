@@ -29,6 +29,7 @@ static int base_header_level = 1;
 static char *latex_footer;
 static int table_column = 0;
 static char *table_alignment;
+static char cell_type = 'd';
 
 static void print_html_string(GString *out, char *str, bool obfuscate);
 static void print_html_element_list(GString *out, element *list, bool obfuscate);
@@ -392,9 +393,11 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
         g_string_append_printf(out, "</caption>\n");
         break;
     case TABLEHEAD:
+		cell_type = 'h';
         g_string_append_printf(out, "\n<thead>\n");
         print_html_element_list(out, elt->children, obfuscate);
         g_string_append_printf(out, "</thead>\n");
+		cell_type = 'd';
         break;
     case TABLEBODY:
         g_string_append_printf(out, "\n<tbody>\n");
@@ -409,20 +412,20 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
         break;
     case TABLECELL:
         if ( strncmp(&table_alignment[table_column],"r",1) == 0) {
-            g_string_append_printf(out, "\t<td align=\"right\">");
+            g_string_append_printf(out, "\t<t%c align=\"right\">", cell_type);
         } else if ( strncmp(&table_alignment[table_column],"c",1) == 0) {
-            g_string_append_printf(out, "\t<td align=\"center\">");
+            g_string_append_printf(out, "\t<t%c align=\"center\">", cell_type);
         } else {
-            g_string_append_printf(out, "\t<td align=\"left\">");
+            g_string_append_printf(out, "\t<t%c align=\"left\">", cell_type);
         }
         print_html_element_list(out, elt->children, obfuscate);
-        g_string_append_printf(out, "</td>\n");
+        g_string_append_printf(out, "</t%c>\n", cell_type);
         table_column++;
         break;
     case DOUBLECELL:
-        g_string_append_printf(out, "\t<td colspan=\"2\">");
+        g_string_append_printf(out, "\t<t%c colspan=\"2\">", cell_type);
         print_html_element_list(out, elt->children, obfuscate);
-        g_string_append_printf(out, "</td>\n");
+        g_string_append_printf(out, "</t%c>\n", cell_type);
         break;
     default: 
         fprintf(stderr, "print_html_element encountered unknown element key = %d\n", elt->key); 
