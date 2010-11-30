@@ -827,7 +827,8 @@ Table = a:StartList b:StartList (TableCaption { b = cons($$, b);})?
         list = cons($$, list);
         a = reverse(list); } )
     (TableBody { a = cons($$, a);} )*
-    (TableCaption { b = cons($$, b);})?
+    (TableCaption { b = cons($$, b);})? &BlankLine
+    # Requires blank line to end table "block"
     {
         if (b != NULL) 
             { a = reverse(cons(b, reverse(a))); }
