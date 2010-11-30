@@ -1243,7 +1243,7 @@ bool list_contains_key(element *list, int key) {
     bool *found = FALSE;
     step = list->next;
     while ( step != NULL ) {
-        if ((step->key == key) || ( list_contains_key(step, key) == TRUE )) {
+        if ((step->key == key)){ /* Doesn't match children */
             return TRUE;
         }
         step = step->next;
