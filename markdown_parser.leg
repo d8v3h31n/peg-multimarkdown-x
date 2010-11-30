@@ -97,11 +97,17 @@ AtxStart =  < ( "######" | "#####" | "####" | "###" | "##" | "#" ) >
 
 SetextHeading = SetextHeading1 | SetextHeading2
 
-SetextHeading1 =  a:StartList ( !Endline !( &{ !extension(EXT_COMPATIBILITY) } Sp ReferenceLinkSingle ) Inline { a = cons($$, a); } )+ ( Sp b:AutoLabel { a = reverse(cons(b,reverse(a)));} Sp )?Newline "===" '='* Newline
-                  { $$ = mk_list(H1, a); }
+SetextBottom1 = "===" '='* Newline
 
-SetextHeading2 =  a:StartList ( !Endline !( &{ !extension(EXT_COMPATIBILITY) } Sp ReferenceLinkSingle ) Inline { a = cons($$, a); } )+ ( Sp b:AutoLabel { a = reverse(cons(b,reverse(a)));} Sp)? Newline "---" '-'* Newline
-                  { $$ = mk_list(H2, a); }
+SetextBottom2 = "---" '-'* Newline
+
+SetextHeading1 =  &(RawLine SetextBottom1)
+                  a:StartList ( !Endline !( &{ !extension(EXT_COMPATIBILITY) } Sp ReferenceLinkSingle ) Inline { a = cons($$, a); } )+ ( Sp b:AutoLabel { a = reverse(cons(b,reverse(a)));} Sp )? Newline
+                  SetextBottom1 { $$ = mk_list(H1, a); }
+
+SetextHeading2 =  &(RawLine SetextBottom2)
+                  a:StartList ( !Endline !( &{ !extension(EXT_COMPATIBILITY) } Sp ReferenceLinkSingle ) Inline { a = cons($$, a); } )+ ( Sp b:AutoLabel { a = reverse(cons(b,reverse(a)));} Sp)? Newline
+                  SetextBottom2 { $$ = mk_list(H2, a); }
 
 Heading = AtxHeading | SetextHeading
 
