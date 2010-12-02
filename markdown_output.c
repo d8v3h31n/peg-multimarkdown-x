@@ -27,6 +27,9 @@
 static int extensions;
 static int base_header_level = 1;
 static char *latex_footer;
+static int table_column = 0;
+static char *table_alignment;
+static char cell_type = 'd';
 
 static void print_html_string(GString *out, char *str, bool obfuscate);
 static void print_html_element_list(GString *out, element *list, bool obfuscate);
@@ -227,17 +230,15 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
         if ( extension(EXT_COMPATIBILITY) ) {
             /* Use regular Markdown header format */
             g_string_append_printf(out, "<h%1d>", lev);
-        } else {
+            print_html_element_list(out, elt->children, obfuscate);
+        } else if (elt->children->key == AUTOLABEL) {
             /* generate a label for each header (MMD)*/
-            GString *headLabel;
-            headLabel = g_string_new("");
-            print_raw_element_list(headLabel, elt->children);
-            g_string_append_printf(out, "<h%1d id=\"", lev);
-            g_string_append(out, label_from_string(headLabel->str, 0));
-            g_string_append_printf(out, "\">");
-            g_string_free(headLabel, TRUE);
+            g_string_append_printf(out, "<h%d id=\"%s\">", lev,elt->children->contents.str);
+            print_html_element_list(out, elt->children->next, obfuscate);
+        } else {
+            g_string_append_printf(out, "<h%d id=\"%s\">", lev, label_from_element_list(elt->children, obfuscate));
+            print_html_element_list(out, elt->children, obfuscate);
         }
-        print_html_element_list(out, elt->children, obfuscate);
         g_string_append_printf(out, "</h%1d>", lev);
         padded = 0;
         break;
@@ -384,16 +385,19 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
         break;
     case TABLESEPARATOR:
 	/* ignore column alignment in HTML for now */
+		table_alignment = elt->contents.str;
         break;
     case TABLECAPTION:
-        g_string_append_printf(out, "<caption>", obfuscate);
+        g_string_append_printf(out, "<caption id=\"%s\">", label_from_element_list(elt->children,obfuscate));
         print_html_element_list(out, elt->children, obfuscate);
-        g_string_append_printf(out, "</caption>\n", obfuscate);
+        g_string_append_printf(out, "</caption>\n");
         break;
     case TABLEHEAD:
+		cell_type = 'h';
         g_string_append_printf(out, "\n<thead>\n");
         print_html_element_list(out, elt->children, obfuscate);
         g_string_append_printf(out, "</thead>\n");
+		cell_type = 'd';
         break;
     case TABLEBODY:
         g_string_append_printf(out, "\n<tbody>\n");
@@ -402,13 +406,26 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
         break;
     case TABLEROW:
         g_string_append_printf(out, "<tr>\n");
+        table_column = 0;
         print_html_element_list(out, elt->children, obfuscate);
         g_string_append_printf(out, "</tr>\n");
         break;
     case TABLECELL:
-        g_string_append_printf(out, "\t<td>");
+        if ( strncmp(&table_alignment[table_column],"r",1) == 0) {
+            g_string_append_printf(out, "\t<t%c align=\"right\">", cell_type);
+        } else if ( strncmp(&table_alignment[table_column],"c",1) == 0) {
+            g_string_append_printf(out, "\t<t%c align=\"center\">", cell_type);
+        } else {
+            g_string_append_printf(out, "\t<t%c align=\"left\">", cell_type);
+        }
         print_html_element_list(out, elt->children, obfuscate);
-        g_string_append_printf(out, "</td>\n");
+        g_string_append_printf(out, "</t%c>\n", cell_type);
+        table_column++;
+        break;
+    case DOUBLECELL:
+        g_string_append_printf(out, "\t<t%c colspan=\"2\">", cell_type);
+        print_html_element_list(out, elt->children, obfuscate);
+        g_string_append_printf(out, "</t%c>\n", cell_type);
         break;
     default: 
         fprintf(stderr, "print_html_element encountered unknown element key = %d\n", elt->key); 
@@ -723,11 +740,11 @@ static void print_latex_element(GString *out, element *elt) {
         } else if (strcmp(elt->contents.str, "bibtex") == 0) {
             g_string_append_printf(out, "\\def\\bibliocommand{\\bibliography{%s}}\n",elt->children->contents.str);
         } else {
-			g_string_append_printf(out, "\\def\\");
-			print_latex_string(out, elt->contents.str);
-			g_string_append_printf(out, "{");
-			print_latex_element_list(out, elt->children);
-			g_string_append_printf(out, "}\n");
+            g_string_append_printf(out, "\\def\\");
+            print_latex_string(out, elt->contents.str);
+            g_string_append_printf(out, "{");
+            print_latex_element_list(out, elt->children);
+            g_string_append_printf(out, "}\n");
         }
         break;
     case METAVALUE:
@@ -741,22 +758,22 @@ static void print_latex_element(GString *out, element *elt) {
         break;
     case TABLE:
         pad(out, 2);
-        g_string_append_printf(out, "\\begin{table}[htbp]\n\\begin{minipage}{\\linewidth}\n\\centering\n\\small\n");
+        g_string_append_printf(out, "\\begin{table}[htbp]\n\\begin{minipage}{\\linewidth}\n\\setlength{\\tymax}{0.5\\linewidth}\n\\centering\n\\small\n");
         print_latex_element_list(out, elt->children);
         g_string_append_printf(out, "\n\\end{tabulary}\n\\end{minipage}\n\\end{table}\n");
         padded = 0;
         break;
     case TABLESEPARATOR:
-        g_string_append_printf(out, "\\begin{tabulary}{\\linewidth}{%s} \\\\ \\toprule\n", elt->contents.str);
+        g_string_append_printf(out, "\\begin{tabulary}{\\linewidth}{@{}%s@{}} \\\\ \\toprule\n", elt->contents.str);
         break;
     case TABLECAPTION:
         g_string_append_printf(out, "\\caption{");
         print_latex_element_list(out, elt->children);
-        g_string_append_printf(out, "}\n");
+        g_string_append_printf(out, "}\n\\label{%s}\n",label_from_element_list(elt->children,0));
         break;
     case TABLEHEAD:
         print_latex_element_list(out, elt->children);
-        g_string_append_printf(out, " \\\\ \\midrule\n");
+        g_string_append_printf(out, "\\midrule\n");
         break;
     case TABLEBODY:
         print_latex_element_list(out, elt->children);
@@ -769,6 +786,15 @@ static void print_latex_element(GString *out, element *elt) {
     case TABLECELL:
         padded = 2;
         print_latex_element_list(out, elt->children);
+        if (elt->next != NULL) {
+            g_string_append_printf(out, "&");
+        }
+        break;
+    case DOUBLECELL:
+        padded = 2;
+        g_string_append_printf(out, "\\multicolumn{2}{c}{");
+        print_latex_element_list(out, elt->children);
+        g_string_append_printf(out, "}");
         if (elt->next != NULL) {
             g_string_append_printf(out, "&");
         }
@@ -1098,15 +1124,17 @@ static void print_memoir_element(GString *out, element *elt) {
                 g_string_append_printf(out, "{\\itshape ");
                 break;
         }
-        print_latex_element_list(out, elt->children);
-        g_string_append_printf(out, "}\n\\label{");
         /* generate a label for each header (MMD)*/
-        GString *headLabel;
-        headLabel = g_string_new("");
-        print_raw_element_list(headLabel, elt->children);
-        g_string_append(out, label_from_string(headLabel->str, 0));
+        if (elt->children->key == AUTOLABEL) {
+            print_latex_element_list(out, elt->children->next);
+            g_string_append_printf(out, "}\n\\label{");
+            g_string_append_printf(out, "%s", label_from_string(elt->children->contents.str,0));
+        } else {
+            print_latex_element_list(out, elt->children);
+            g_string_append_printf(out, "}\n\\label{");
+            g_string_append_printf(out, "%s", label_from_element_list(elt->children,0));
+        }
         g_string_append_printf(out, "}\n");
-        g_string_free(headLabel, TRUE);
         padded = 0;
         break;
     default:
@@ -1215,14 +1243,13 @@ element * print_html_headingsection(GString *out, element *list, bool obfuscate)
 
 bool list_contains_key(element *list, int key) {
     element *step = NULL;
-	bool *found = FALSE;
+    bool *found = FALSE;
     step = list->next;
     while ( step != NULL ) {
-		if ((step->key == key) || ( list_contains_key(step, key) == TRUE )) {
-			return TRUE;
-		}
-		step = step->next;
+        if ((step->key == key)){ /* Doesn't match children */
+            return TRUE;
+        }
+        step = step->next;
     }
     return FALSE;
-	
 }

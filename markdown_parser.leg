@@ -32,8 +32,9 @@ Doc =       a:StartList ( Block { a = cons($$, a); } )*
             { parse_result = reverse(a); }
 
 DocWithMetaData = a:StartList b:StartList 
-( &{ !extension(EXT_COMPATIBILITY) } MetaData
-    { a = cons($$, a); b = mk_element(FOOTER);})?
+    ( &{ !extension(EXT_COMPATIBILITY) }
+        &( MetaDataKey Sp ':' Sp (!Newline)) MetaData
+            { a = cons($$, a); b = mk_element(FOOTER);})?
     ( Block { a = cons($$, a); } )*
     { if (b != NULL) a = cons(b, a);
         parse_result = reverse(a);
@@ -55,7 +56,7 @@ MetaDataKey = < Alphanumeric ( Sp ( Alphanumeric | '_' | ' ' | '-')+)* >
                 $$->key = METAKEY;
             }
 
-MetaDataValue = a:StartList < (!Newline .)+ > { a = cons(mk_str(yytext), a); }
+MetaDataValue = a:StartList < (!Newline .)* > { a = cons(mk_str(yytext), a); }
                 (Newline &(!BlankLine !MetaDataKeyValue Sp RawLine)
                     { a = cons(mk_str("\n"), a);} | Newline)
                 (!BlankLine !MetaDataKeyValue Sp RawLine
@@ -86,28 +87,34 @@ Para =      NonindentSpace a:Inlines BlankLine+
 Plain =     a:Inlines
             { $$ = a; $$->key = PLAIN; }
 
-AtxInline = !Newline !( &{ !extension(EXT_COMPATIBILITY) } Sp ReferenceLinkSingle ) !(Sp '#'* Sp Newline) Inline
+AtxInline = !Newline !( &{ !extension(EXT_COMPATIBILITY) } Sp AutoLabel ) !(Sp '#'* Sp Newline) Inline
 
 AtxStart =  < ( "######" | "#####" | "####" | "###" | "##" | "#" ) >
             { $$ = mk_element(H1 + (strlen(yytext) - 1)); }
 
-AtxHeading = s:AtxStart Sp a:StartList ( AtxInline { a = cons($$, a); } )+ ( Sp b:ReferenceLinkSingle )? (Sp '#'* Sp)?  Newline
-            { $$ = mk_list(s->key, a);
+		AtxHeading = s:AtxStart Sp a:StartList ( AtxInline { a = cons($$, a); } )+ ( Sp b:AutoLabel { a = reverse(cons(b,reverse(a)));})? (Sp '#'* Sp)?  Newline
+            { $$ = mk_list(s->key,a);
             free(s); }
 
 SetextHeading = SetextHeading1 | SetextHeading2
 
-SetextHeading1 =  a:StartList ( !Endline !( &{ !extension(EXT_COMPATIBILITY) } Sp ReferenceLinkSingle ) Inline { a = cons($$, a); } )+ ( Sp ReferenceLinkSingle Sp )?Newline "===" '='* Newline
-                  { $$ = mk_list(H1, a); }
+SetextBottom1 = "===" '='* Newline
 
-SetextHeading2 =  a:StartList ( !Endline !( &{ !extension(EXT_COMPATIBILITY) } Sp ReferenceLinkSingle ) Inline { a = cons($$, a); } )+ ( Sp ReferenceLinkSingle Sp)? Newline "---" '-'* Newline
-                  { $$ = mk_list(H2, a); }
+SetextBottom2 = "---" '-'* Newline
+
+SetextHeading1 =  &(RawLine SetextBottom1)
+                  a:StartList ( !Endline !( &{ !extension(EXT_COMPATIBILITY) } Sp ReferenceLinkSingle ) Inline { a = cons($$, a); } )+ ( Sp b:AutoLabel { a = reverse(cons(b,reverse(a)));} Sp )? Newline
+                  SetextBottom1 { $$ = mk_list(H1, a); }
+
+SetextHeading2 =  &(RawLine SetextBottom2)
+                  a:StartList ( !Endline !( &{ !extension(EXT_COMPATIBILITY) } Sp ReferenceLinkSingle ) Inline { a = cons($$, a); } )+ ( Sp b:AutoLabel { a = reverse(cons(b,reverse(a)));} Sp)? Newline
+                  SetextBottom2 { $$ = mk_list(H2, a); }
 
 Heading = AtxHeading | SetextHeading
 
 HeadingSection = a:StartList Heading { a = cons($$, a); }
-	(!Heading Block {a = cons($$, a); })*
-		{ $$ = mk_list(HEADINGSECTION, a);}
+    (!Heading Block {a = cons($$, a); })*
+    { $$ = mk_list(HEADINGSECTION, a);}
 
 BlockQuote = a:BlockQuoteRaw
              {  $$ = mk_element(BLOCKQUOTE);
@@ -777,8 +784,18 @@ AutoLabels = a:StartList ( b:Heading
                 print_raw_element_list(label, b->children);
                 a = cons(mk_str(label_from_string(label->str,0)), a);
                 g_string_free(label,true);
-            } | SkipBlock )*
-            { labels = reverse(a); }
+            } | c:TableCaption {
+                GString *label = g_string_new("");
+                print_raw_element_list(label, c->children);
+                a = cons(mk_str(label_from_string(label->str,0)), a);
+                g_string_free(label,true);}
+            | (TableBody)+ c:TableCaption {
+                GString *label = g_string_new("");
+                print_raw_element_list(label, c->children);
+                a = cons(mk_str(label_from_string(label->str,0)), a);
+                g_string_free(label,true);}
+            | SkipBlock )*
+            { labels = a; }
 
 DefinitionList =  a:StartList
                 (Term { a = cons($$, a); } )+
@@ -804,18 +821,20 @@ Definition = (a:StartList
 			$$ = mk_list(DEFINITION,raw);
              }
 
-Table = a:StartList (TableCaption { a = cons($$, a);})?
+Table = a:StartList b:StartList (TableCaption { b = cons($$, b);})?
     TableBody { $$->key = TABLEHEAD; a = cons($$, a); }
     (SeparatorLine
     { element *list = reverse(a);
         list = cons($$, list);
         a = reverse(list); } )
     (TableBody { a = cons($$, a);} )*
-    (TableCaption 
-    { element *list = reverse(a);
-        list = cons($$, list);
-        a = reverse(list); } )?
-    { $$ = mk_list(TABLE, a);}
+    (TableCaption { b = cons($$, b);})? &BlankLine
+    # Requires blank line to end table "block"
+    {
+        if (b != NULL) 
+            { a = reverse(cons(b, reverse(a))); }
+        $$ = mk_list(TABLE, a);
+    }
 
 TableBody = a:StartList (TableRow {a = cons($$, a);})+ BlankLine?
     { $$ = mk_list(TABLEBODY, a);}
@@ -825,7 +844,10 @@ TableRow = a:StartList
     (TableCell { a = cons($$, a); })+ ) Sp Newline
     { $$ = mk_list(TABLEROW, a); }
 
-TableCell = EmptyCell | FullCell
+TableCell = DoubleCell | EmptyCell | FullCell
+
+DoubleCell = (EmptyCell | FullCell) CellDivider
+{ $$->key = DOUBLECELL;}
 
 FullCell = Sp <  (!Newline !CellDivider .)+ >
     ( ' '* CellDivider )?
@@ -839,18 +861,12 @@ FullCell = Sp <  (!Newline !CellDivider .)+ >
 EmptyCell = Sp CellDivider
 { $$ = mk_element(TABLECELL);}
 
-OldSeparatorLine = ( '-' | ':' | ' ' | '\t' | CellDivider )+ Newline
-{
-	$$ = mk_str("lll");
-	$$->key = TABLESEPARATOR;
-}
-
 SeparatorLine = a:StartList ( CellDivider | AlignmentCell { a = cons($$,a);})
-	( AlignmentCell { a = cons($$, a);})+ Sp Newline
-{
-	$$ = mk_str_from_list(a,false);
-	$$->key = TABLESEPARATOR;
-}
+    ( AlignmentCell { a = cons($$, a);})+ Sp Newline
+    {
+        $$ = mk_str_from_list(a,false);
+        $$->key = TABLESEPARATOR;
+    }
 
 AlignmentCell = Sp (!CellDivider ( LeftAlign | CenterAlign | RightAlign))
     ( Sp CellDivider )?
@@ -870,6 +886,10 @@ TableCaption = a:Label Newline
 { $$ = a;
     $$->key = TABLECAPTION;
 }
+
+AutoLabel = '[' < (!']' .)+ > ']' 
+    { $$ = mk_str(label_from_string(yytext,0));
+        $$->key = AUTOLABEL; }
 
 %%
 

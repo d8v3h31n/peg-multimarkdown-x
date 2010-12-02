@@ -3,6 +3,8 @@
 
 extern int strcasecmp(const char *string1, const char *string2);
 
+static char *label_from_string(char *str, bool obfuscate) ;
+
 /**********************************************************************
 
   List manipulation functions
@@ -230,37 +232,6 @@ static bool find_note(element **result, char *label) {
 
 /* peg-multimarkdown additions */
 
-
-/* label_from_string - strip spaces and illegal characters to generate valid 
-    HTML id */
-static char *label_from_string(char *str, bool obfuscate) {
-    bool valid = FALSE;
-    GString *out = g_string_new("");
-
-    while (*str != '\0') {
-        if (valid) {
-        /* can relax on following characters */
-            if ((*str >= '0' && *str <= '9') || (*str >= 'A' && *str <= 'Z')
-                || (*str >= 'a' && *str <= 'z') || (*str == '.') || (*str== '_')
-                || (*str== '-') || (*str== ':'))
-            {
-                g_string_append_c(out, tolower(*str));
-            }           
-        } else {
-        /* need alpha as first character */
-            if ((*str >= 'A' && *str <= 'Z') || (*str >= 'a' && *str <= 'z'))
-            {
-                g_string_append_c(out, tolower(*str));
-                valid = TRUE;
-            }
-        }
-    str++;
-    }
-
-    return out->str;
-}
-
-
 /* print_raw_element - print an element as original text */
 static void print_raw_element(GString *out, element *elt) {
     g_string_append_printf(out, "%s", elt->contents.str);
@@ -272,6 +243,50 @@ static void print_raw_element_list(GString *out, element *list) {
         print_raw_element(out, list);
         list = list->next;
     }
+}
+
+/* label_from_element_list */
+
+static char *label_from_element_list(element *list, bool obfuscate) {
+    char *label;
+    GString *raw = g_string_new("");
+    print_raw_element_list(raw, list);
+    label =  label_from_string(raw->str,obfuscate);
+    return label;
+}
+
+/* label_from_string - strip spaces and illegal characters to generate valid 
+    HTML id */
+static char *label_from_string(char *str, bool obfuscate) {
+    bool valid = FALSE;
+    GString *out = g_string_new("");
+
+	if ( strcspn(str,"[") == strlen(str)) {
+	    while (*str != '\0') {
+	        if (valid) {
+	        /* can relax on following characters */
+	            if ((*str >= '0' && *str <= '9') || (*str >= 'A' && *str <= 'Z')
+	                || (*str >= 'a' && *str <= 'z') || (*str == '.') || (*str== '_')
+	                || (*str== '-') || (*str== ':'))
+	            {
+	                g_string_append_c(out, tolower(*str));
+	            }           
+	        } else {
+	        /* need alpha as first character */
+	            if ((*str >= 'A' && *str <= 'Z') || (*str >= 'a' && *str <= 'z'))
+	            {
+	                g_string_append_c(out, tolower(*str));
+	                valid = TRUE;
+	            }
+	        }
+	    str++;
+	    }
+	} else {
+		char *token;
+		token = strtok (&str[strcspn(str,"[")+1],"]");
+		g_string_append_c(out, label_from_string(token,obfuscate));
+	}
+    return out->str;
 }
 
 /* find_label - return true if header, table, etc is found matching label.

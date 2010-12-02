@@ -1,5 +1,6 @@
 Title:			This should be a <title> element
 CSS:			http://fletcherpenney.net/css/document.css
+empty metadata:	
 XHTML HEADER:	<meta name="testing" 
 				content="This should be valid meta element"/>
 

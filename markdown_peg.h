@@ -65,8 +65,10 @@ enum keys { LIST,   /* A generic list of values.  For ordered and bullet lists, 
             TABLEBODY,
             TABLEROW,
             TABLECELL,
+            DOUBLECELL,
             TABLECAPTION,
-            TABLESEPARATOR
+            TABLESEPARATOR,
+            AUTOLABEL
           };
 
 /* Semantic value of a parsing action. */
