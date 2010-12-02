@@ -554,14 +554,17 @@ AutoLinkEmail = '<' ( "mailto:" )? < [-A-Za-z0-9+_]+ '@' ( !Newline !'>' . )+ > 
                     free(mailto);
                 }
 
-Reference = NonindentSpace !"[]" l:Label ':' Spnl s:RefSrc Spnl t:RefTitle (Spnl Attribute+)? BlankLine*
+Reference = a:StartList NonindentSpace !"[]" l:Label ':' Spnl s:RefSrc Spnl 
+        t:RefTitle (Spnl (Attribute { a = cons($$, a); })+)? BlankLine*
             { $$ = mk_link(l->children, s->contents.str, t->contents.str);
               free_element(s);
               free_element(t);
               free(l);
               $$->key = REFERENCE; }
 
-Attribute = (AttrKey '=' AttrValue Spnl)
+Attribute = a:StartList (AttrKey { a = cons($$, a); } '='
+        AttrValue { a = cons($$, a); } Spnl)
+        { $$ = mk_list(ATTRIBUTE, a); }
 
 AttrKey = < Alphanumeric+ >
         { $$ = mk_str(yytext);
