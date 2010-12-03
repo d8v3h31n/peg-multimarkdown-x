@@ -8,7 +8,8 @@ extern char *strdup(const char *string);
 struct Link {
     struct Element   *label;
     char             *url;
-    char             *title;    
+    char             *title;
+	struct Element   *attr;
 };
 
 typedef struct Link link;

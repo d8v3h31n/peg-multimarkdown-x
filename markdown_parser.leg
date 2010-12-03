@@ -477,7 +477,7 @@ ReferenceLink = ReferenceLinkDouble | ReferenceLinkSingle
 ReferenceLinkDouble =  a:Label < Spnl > !"[]" b:Label
                        {   link match;
                            if (find_reference(&match, b->children)) {
-                               $$ = mk_link(a->children, match.url, match.title);
+                               $$ = mk_link(a->children, match.url, match.title, match.attr);
                                free(a);
                                free_element_list(b);
                            } else if ( !extension(EXT_COMPATIBILITY) && 
@@ -486,7 +486,7 @@ ReferenceLinkDouble =  a:Label < Spnl > !"[]" b:Label
                                 print_raw_element_list(text, b->children);
                                 GString *label = g_string_new(label_from_string(text->str,0));
                                 g_string_prepend(label,"#");
-                                $$ = mk_link(a->children, label->str, "");
+                                $$ = mk_link(a->children, label->str, "", NULL);
                                 g_string_free(text, TRUE);
                                 g_string_free(label, TRUE);
                                 free(a);
@@ -503,7 +503,7 @@ ReferenceLinkDouble =  a:Label < Spnl > !"[]" b:Label
 ReferenceLinkSingle =  a:Label < (Spnl "[]")? >
                        {   link match;
                            if (find_reference(&match, a->children)) {
-                               $$ = mk_link(a->children, match.url, match.title);
+                               $$ = mk_link(a->children, match.url, match.title, match.attr);
                                free(a);
                            } else if ( !extension(EXT_COMPATIBILITY) && 
                             find_label(&match, a->children)) {
@@ -511,7 +511,7 @@ ReferenceLinkSingle =  a:Label < (Spnl "[]")? >
                                 print_raw_element_list(text, a->children);
                                 GString *label = g_string_new(label_from_string(text->str,0));
                                 g_string_prepend(label,"#");
-                                $$ = mk_link(a->children, label->str, "");
+                                $$ = mk_link(a->children, label->str, "", NULL);
                                 g_string_free(text, TRUE);
                                 g_string_free(label, TRUE);
                                 free(a);
@@ -524,7 +524,7 @@ ReferenceLinkSingle =  a:Label < (Spnl "[]")? >
                        }
 
 ExplicitLink =  l:Label Spnl '(' Sp s:Source Spnl t:Title Sp ')'
-                { $$ = mk_link(l->children, s->contents.str, t->contents.str);
+                { $$ = mk_link(l->children, s->contents.str, t->contents.str, NULL);
                   free_element(s);
                   free_element(t);
                   free(l); }
@@ -545,38 +545,52 @@ TitleDouble = '"' < ( !( '"' Sp ( ')' | Newline ) ) . )* > '"'
 AutoLink = AutoLinkUrl | AutoLinkEmail
 
 AutoLinkUrl =   '<' < [A-Za-z]+ "://" ( !Newline !'>' . )+ > '>'
-                {   $$ = mk_link(mk_str(yytext), yytext, ""); }
+                {   $$ = mk_link(mk_str(yytext), yytext, "", NULL); }
 
 AutoLinkEmail = '<' ( "mailto:" )? < [-A-Za-z0-9+_]+ '@' ( !Newline !'>' . )+ > '>'
                 {   char *mailto = malloc(strlen(yytext) + 8);
                     sprintf(mailto, "mailto:%s", yytext);
-                    $$ = mk_link(mk_str(yytext), mailto, "");
+                    $$ = mk_link(mk_str(yytext), mailto, "", NULL);
                     free(mailto);
                 }
 
 Reference = a:StartList NonindentSpace !"[]" l:Label ':' Spnl s:RefSrc Spnl 
-        t:RefTitle (Spnl (Attribute { a = cons($$, a); })+)? BlankLine*
-            { $$ = mk_link(l->children, s->contents.str, t->contents.str);
-              free_element(s);
-              free_element(t);
-              free(l);
-              $$->key = REFERENCE; }
+        t:RefTitle (Spnl Attributes { a = cons($$,a);})? BlankLine*
+        { 
+            if (a == NULL) {
+                $$ = mk_link(l->children, s->contents.str,
+                    t->contents.str, a);
+            } else {
+                $$ = mk_link(l->children, s->contents.str,
+                    t->contents.str, a->children);
+            }
+            free_element(s);
+            free_element(t);
+            free(l);
+            $$->key = REFERENCE;
+        }
 
-Attribute = a:StartList (AttrKey { a = cons($$, a); } '='
-        AttrValue { a = cons($$, a); } Spnl)
-        { $$ = mk_list(ATTRIBUTE, a); }
+
+Attributes = a:StartList (Attribute { a =cons($$,a);})+
+    { $$ = mk_list(LIST,a); }
+
+Attribute = a:AttrKey '=' b:AttrValue Spnl
+    { 
+        $$ = a;
+        $$->children = b;
+    }
 
 AttrKey = < Alphanumeric+ >
         { $$ = mk_str(yytext);
             $$->key = ATTRKEY;
         }
 
-AttrValue = QuotedValue | UnQuotedValue
+AttrValue = (QuotedValue | UnQuotedValue)
         { $$ = mk_str(yytext);
             $$->key = ATTRVALUE;
         }
 
-QuotedValue = '"' < (! '"' .)* > '"'
+QuotedValue = '"' < (!'"' .)* > '"'
 
 UnQuotedValue = < Alphanumeric+ >
 
