@@ -188,6 +188,7 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
             print_html_string(out, elt->contents.link->title, obfuscate);
             g_string_append_printf(out, "\"");
         }
+        print_html_element_list(out, elt->contents.link->attr, obfuscate);
         g_string_append_printf(out, ">");
         print_html_element_list(out, elt->contents.link->label, obfuscate);
         g_string_append_printf(out, "</a>");
@@ -203,6 +204,7 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
             print_html_string(out, elt->contents.link->title, obfuscate);
             g_string_append_printf(out, "\"");
         }
+        print_html_element_list(out, elt->contents.link->attr, obfuscate);
         g_string_append_printf(out, " />");
         break;
     case EMPH:
@@ -426,6 +428,10 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
         g_string_append_printf(out, "\t<t%c colspan=\"2\">", cell_type);
         print_html_element_list(out, elt->children, obfuscate);
         g_string_append_printf(out, "</t%c>\n", cell_type);
+        break;
+    case ATTRKEY:
+        g_string_append_printf(out, " %s=\"%s\"", elt->contents.str,
+            elt->children->contents.str);
         break;
     default: 
         fprintf(stderr, "print_html_element encountered unknown element key = %d\n", elt->key); 

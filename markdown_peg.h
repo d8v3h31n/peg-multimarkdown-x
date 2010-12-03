@@ -8,7 +8,8 @@ extern char *strdup(const char *string);
 struct Link {
     struct Element   *label;
     char             *url;
-    char             *title;    
+    char             *title;
+	struct Element   *attr;
 };
 
 typedef struct Link link;
@@ -68,7 +69,10 @@ enum keys { LIST,   /* A generic list of values.  For ordered and bullet lists, 
             DOUBLECELL,
             TABLECAPTION,
             TABLESEPARATOR,
-            AUTOLABEL
+            AUTOLABEL,
+            ATTRIBUTE,
+            ATTRKEY,
+            ATTRVALUE,
           };
 
 /* Semantic value of a parsing action. */
