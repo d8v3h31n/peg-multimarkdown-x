@@ -92,7 +92,7 @@ AtxInline = !Newline !( &{ !extension(EXT_COMPATIBILITY) } Sp AutoLabel ) !(Sp '
 AtxStart =  < ( "######" | "#####" | "####" | "###" | "##" | "#" ) >
             { $$ = mk_element(H1 + (strlen(yytext) - 1)); }
 
-		AtxHeading = s:AtxStart Sp a:StartList ( AtxInline { a = cons($$, a); } )+ ( Sp b:AutoLabel { a = reverse(cons(b,reverse(a)));})? (Sp '#'* Sp)?  Newline
+AtxHeading = s:AtxStart Sp a:StartList ( AtxInline { a = cons($$, a); } )+ ( Sp b:AutoLabel { a = reverse(cons(b,reverse(a)));})? (Sp '#'* Sp)?  Newline
             { $$ = mk_list(s->key,a);
             free(s); }
 
