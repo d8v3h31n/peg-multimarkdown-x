@@ -695,10 +695,10 @@ Ellipsis = ("..." | ". . .")
 
 Dash = EmDash | EnDash
 
-EnDash = '-' &Digit
+EnDash = ( "--" | '-' &Digit)
          { $$ = mk_element(ENDASH); }
 
-EmDash = ("---" | "--")
+EmDash = ("---" )
          { $$ = mk_element(EMDASH); }
 
 SingleQuoteStart = '\'' ![)!\],.;:-? \t\n] !( ( "s" | "t" | "m" | "ve" | "ll" | "re" ) !Alphanumeric )
