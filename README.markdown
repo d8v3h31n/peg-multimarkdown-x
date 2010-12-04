@@ -58,6 +58,12 @@ Once installed, you simply do something like the following:
 * `markdown -t latex file.txt` --- output the results as LaTeX instead of
   HTML. This can then be processed into a PDF if you have LaTeX installed.
 
+* `markdown -t memoir file.txt` --- output as LaTeX designed for use with the
+  `memoir` package
+
+* `markdown -t beamer file.txt` --- output as LaTeX designed for use with the
+  `beamer` package
+
 * `markdown -h` --- display help and additional options.
 
 
