@@ -151,15 +151,15 @@ powerful and allowed for fairly detailed customizations in your output.
 To create a complete LaTeX document, you can process your file as a snippet,
 and then place it in a LaTeX template that you already have. Alternatively,
 you can use metadata to trigger the creation of a complete document. You can
-use the `LaTeX Include` metadata to insert a `\include{file}` command. You can
+use the `LaTeX Input` metadata to insert a `\input{file}` command. You can
 then store various template files in your texmf directory and call them with
 metadata, or with embedded raw LaTeX commands in your document. For example:
 
-	Latex include:		mmd-memoir-header
-	Latex include:		mmd-memoir-layout
+	Latex input:		mmd-memoir-header
+	Latex input:		mmd-memoir-layout
 	Title:				Sample MultiMarkdown Document  
 	Author:				Fletcher T. Penney  
-	latex include:		mmd-memoir-frontmatter
+	latex input:		mmd-memoir-frontmatter
 	latex footer:		mmd-memoir-footer
 
 This would include several template files in the order that you see. The
@@ -167,5 +167,5 @@ This would include several template files in the order that you see. The
 
 This system isn't quite as powerful as the XSLT approach, since it doesn't
 alter the actual MultiMarkdown to LaTeX conversion process. But it is probably
-much more familiar to LaTeX users who are accustomed to using `\include{}`
+much more familiar to LaTeX users who are accustomed to using `\input{}`
 commands and doesn't require knowledge of XSLT programming.
