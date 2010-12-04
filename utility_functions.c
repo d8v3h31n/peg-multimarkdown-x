@@ -4,6 +4,7 @@
 extern int strcasecmp(const char *string1, const char *string2);
 
 static char *label_from_string(char *str, bool obfuscate) ;
+static void localize_typography(GString *out, int character, int language, int output);
 
 /**********************************************************************
 
@@ -309,4 +310,115 @@ static bool find_label(link *result, element *label) {
     }
     g_string_free(query, true);
     return false;
+}
+
+
+/* localize_typography - return the proper string, based on language chosen */
+/* Default action is English */
+
+static void localize_typography(GString *out, int character, int lang, int output) {
+
+    switch (output) {
+        case HTMLOUT:
+            switch (character) {
+                case LSQUOTE:
+                    switch (lang) {
+                        case SWEDISH:
+                            g_string_append_printf(out, "&#8217;");
+                            break;
+                        case FRENCH:
+                            g_string_append_printf(out,"&#39;");
+                            break;
+                        case GERMAN:
+                            g_string_append_printf(out,"&#8218;");
+                            break;
+                        default:
+                            g_string_append_printf(out,"&lsquo;");
+                        }
+                    break;
+                case RSQUOTE:
+                    switch (lang) {
+                        case GERMAN:
+                            g_string_append_printf(out,"&#8216;");
+                            break;
+                        default:
+                            g_string_append_printf(out,"&rsquo;");
+                        }
+                    break;
+                case APOS:
+                    g_string_append_printf(out,"&rsquo;");
+                    break;
+                case LDQUOTE:
+                    switch (lang) {
+                        case DUTCH:
+                        case GERMAN:
+                            g_string_append_printf(out,"&#8222;");
+                            break;
+                        case FRENCH:
+                            g_string_append_printf(out,"&#171;");
+                            break;
+                        case SWEDISH:
+                            g_string_append_printf(out, "&#8221;");
+                            break;
+                        default:
+                            g_string_append_printf(out,"&ldquo;");
+                        }
+                    break;
+                case RDQUOTE:
+                    switch (lang) {
+                        case SWEDISH:
+                        case DUTCH:
+                            g_string_append_printf(out,"&#8221;");
+                            break;
+                        case GERMAN:
+                            g_string_append_printf(out,"&#8220;");
+                            break;
+                        case FRENCH:
+                            g_string_append_printf(out,"&#187;");
+                            break;
+                        default:
+                            g_string_append_printf(out,"&rdquo;");
+                        }
+                    break;
+                case NDASH:
+                    g_string_append_printf(out,"&ndash;");
+                    break;
+                case MDASH:
+                    g_string_append_printf(out,"&mdash;");
+                    break;
+                case ELLIP:
+                    g_string_append_printf(out,"&hellip;");
+                    break;
+                    default:;
+            }
+            break;
+        case LATEXOUT:
+            switch (character) {
+                case LSQUOTE:
+                    g_string_append_printf(out,"`");
+                    break;
+                case RSQUOTE:
+                case APOS:
+                    g_string_append_printf(out,"'");
+                    break;
+                case LDQUOTE:
+                    g_string_append_printf(out,"``");
+                    break;
+                case RDQUOTE:
+                    g_string_append_printf(out,"''");
+                    break;
+                case NDASH:
+                    g_string_append_printf(out,"--");
+                    break;
+                case MDASH:
+                    g_string_append_printf(out,"---");
+                    break;
+                case ELLIP:
+                    g_string_append_printf(out,"{\\ldots}");
+                    break;
+                    default:;
+            }
+            break;
+        default:;
+    }
 }

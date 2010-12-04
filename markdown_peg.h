@@ -75,6 +75,31 @@ enum keys { LIST,   /* A generic list of values.  For ordered and bullet lists, 
             ATTRVALUE,
           };
 
+/* constants for managing Smart Typography */
+enum smartelements {
+	LSQUOTE,
+	RSQUOTE,
+	LDQUOTE,
+	RDQUOTE,
+	NDASH,
+	MDASH,
+	ELLIP,
+	APOS,
+};
+
+enum smartoutput {
+	HTMLOUT,
+	LATEXOUT,
+};
+
+enum language {
+	DUTCH,
+	ENGLISH,
+	FRENCH,
+	GERMAN,
+	SWEDISH,
+};
+
 /* Semantic value of a parsing action. */
 struct Element {
     int               key;
@@ -82,6 +107,8 @@ struct Element {
     struct Element    *children;
     struct Element    *next;
 };
+
+
 
 typedef struct Element element;
 

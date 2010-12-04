@@ -30,6 +30,7 @@ static char *latex_footer;
 static int table_column = 0;
 static char *table_alignment;
 static char cell_type = 'd';
+static int language = ENGLISH;
 
 static void print_html_string(GString *out, char *str, bool obfuscate);
 static void print_html_element_list(GString *out, element *list, bool obfuscate);
@@ -148,26 +149,26 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
         print_html_string(out, elt->contents.str, obfuscate);
         break;
     case ELLIPSIS:
-        g_string_append_printf(out, "&hellip;");
+        localize_typography(out, ELLIP, language, HTMLOUT);
         break;
     case EMDASH:
-        g_string_append_printf(out, "&mdash;");
+        localize_typography(out, MDASH, language, HTMLOUT);
         break;
     case ENDASH:
-        g_string_append_printf(out, "&ndash;");
+        localize_typography(out, NDASH, language, HTMLOUT);
         break;
     case APOSTROPHE:
-        g_string_append_printf(out, "&rsquo;");
+        localize_typography(out, APOS, language, HTMLOUT);
         break;
     case SINGLEQUOTED:
-        g_string_append_printf(out, "&lsquo;");
+        localize_typography(out, LSQUOTE, language, HTMLOUT);
         print_html_element_list(out, elt->children, obfuscate);
-        g_string_append_printf(out, "&rsquo;");
+        localize_typography(out, RSQUOTE, language, HTMLOUT);
         break;
     case DOUBLEQUOTED:
-        g_string_append_printf(out, "&ldquo;");
+        localize_typography(out, LDQUOTE, language, HTMLOUT);
         print_html_element_list(out, elt->children, obfuscate);
-        g_string_append_printf(out, "&rdquo;");
+        localize_typography(out, RDQUOTE, language, HTMLOUT);
         break;
     case CODE:
         g_string_append_printf(out, "<code>");
@@ -371,7 +372,12 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
             g_string_append_printf(out, "\n");
         } else if (strcmp(elt->contents.str, "baseheaderlevel") == 0) {
             base_header_level = atoi(elt->children->contents.str);
-        } else {
+        } else if (strcmp(elt->contents.str, "language") == 0) {
+            if (strcmp(label_from_element_list(elt->children, 0), "dutch") == 0) { language = DUTCH; } else 
+            if (strcmp(label_from_element_list(elt->children, 0), "german") == 0) { language = GERMAN; } else 
+            if (strcmp(label_from_element_list(elt->children, 0), "french") == 0) { language = FRENCH; } else 
+            if (strcmp(label_from_element_list(elt->children, 0), "swedish") == 0) { language = SWEDISH; }
+       } else {
             g_string_append_printf(out, "\t<meta name=\"");
             print_html_string(out, elt->contents.str, obfuscate);
             g_string_append_printf(out, "\" content=\"");
@@ -534,26 +540,26 @@ static void print_latex_element(GString *out, element *elt) {
         print_latex_string(out, elt->contents.str);
         break;
     case ELLIPSIS:
-        g_string_append_printf(out, "{\\ldots}");
+        localize_typography(out, ELLIP, language, LATEXOUT);
         break;
     case EMDASH: 
-        g_string_append_printf(out, "---");
+        localize_typography(out, MDASH, language, LATEXOUT);
         break;
     case ENDASH: 
-        g_string_append_printf(out, "--");
+        localize_typography(out, NDASH, language, LATEXOUT);
         break;
     case APOSTROPHE:
-        g_string_append_printf(out, "'");
+        localize_typography(out, APOS, language, LATEXOUT);
         break;
     case SINGLEQUOTED:
-        g_string_append_printf(out, "`");
+        localize_typography(out, LSQUOTE, language, LATEXOUT);
         print_latex_element_list(out, elt->children);
-        g_string_append_printf(out, "'");
+        localize_typography(out, RSQUOTE, language, LATEXOUT);
         break;
     case DOUBLEQUOTED:
-        g_string_append_printf(out, "``");
+        localize_typography(out, LDQUOTE, language, LATEXOUT);
         print_latex_element_list(out, elt->children);
-        g_string_append_printf(out, "''");
+        localize_typography(out, RDQUOTE, language, LATEXOUT);
         break;
     case CODE:
         g_string_append_printf(out, "\\texttt{");
