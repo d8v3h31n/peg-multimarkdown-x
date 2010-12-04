@@ -797,10 +797,11 @@ AutoLabels = a:StartList ( b:Heading
             | SkipBlock )*
             { labels = a; }
 
-DefinitionList =  a:StartList
-                (Term { a = cons($$, a); } )+
-                BlankLine* 
-                (Definition { a = cons($$, a);})+
+DefinitionList =  a:StartList (
+                    (Term { a = cons($$, a); } )+
+                    (Definition { a = cons($$, a);})+
+                    BlankLine*
+                )+
                 { $$ = mk_list(LIST, a);
                     $$->key = DEFLIST;
                 }
@@ -811,15 +812,20 @@ Term =  a:StartList
             $$->key = TERM;
         }
 
-Definition = (a:StartList
-                 ( ':' Sp RawLine { a = cons(mk_str(yytext), a);}) 
-                 ( !':'  !BlankLine RawLine { a = cons(mk_str(yytext), a);})*
-                 ( BlankLine)?
+Definition = (a:StartList b:StartList
+                (BlankLine { b = cons(mk_str("\n"),b); } )?
+                ( ':' Sp RawLine { a = cons(mk_str(yytext), a);}) 
+                ( !':' !BlankLine RawLine { a = cons(mk_str(yytext), a);})*
+                ( BlankLine {a = cons(mk_str("\n"),a);}
+                    (IndentedLine { a = cons(mk_str(yytext),a);})+ 
+                        { a = cons(mk_str("\n"),a);}
+                )*
              )
-		{ element *raw = mk_str_from_list(a, false);
-			raw->key = RAW;
-			$$ = mk_list(DEFINITION,raw);
-             }
+            { if (b != NULL) { a = cons(b,a);}
+                element *raw = mk_str_from_list(a, false);
+                raw->key = RAW;
+                $$ = mk_list(DEFINITION,raw);
+            }
 
 Table = a:StartList b:StartList (TableCaption { b = cons($$, b);})?
     TableBody { $$->key = TABLEHEAD; a = cons($$, a); }

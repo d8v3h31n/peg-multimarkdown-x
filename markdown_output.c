@@ -329,19 +329,27 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
 		}
 		break;
     case DEFLIST:
+        pad(out,1);
+        padded = 1;
         g_string_append_printf(out, "<dl>\n");
         print_html_element_list(out, elt->children, obfuscate);
         g_string_append_printf(out, "</dl>\n");
+        padded = 0;
         break;
     case TERM:
+        pad(out,1);
         g_string_append_printf(out, "<dt>");
         print_html_string(out, elt->contents.str, obfuscate);
         g_string_append_printf(out, "</dt>\n");
+        padded = 1;
         break;
     case DEFINITION:
+        pad(out,1);
+        padded = 1;
         g_string_append_printf(out, "<dd>");
         print_html_element_list(out, elt->children, obfuscate);
         g_string_append_printf(out, "</dd>\n");
+        padded = 0;
         break;
     case METADATA:
         /* Metadata is present, so this should be a "complete" document */
