@@ -1260,8 +1260,6 @@ static void print_beamer_element(GString *out, element *elt) {
                     g_string_append_printf(out, "{\\itshape ");
                     break;
             }
-            print_beamer_element_list(out, elt->children);
-            g_string_append_printf(out, "}\n\\label{");
             /* generate a label for each header (MMD)*/
             if (elt->children->key == AUTOLABEL) {
                 print_latex_element_list(out, elt->children->next);
