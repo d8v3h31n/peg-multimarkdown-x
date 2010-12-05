@@ -883,12 +883,18 @@ TableRow = a:StartList
     (TableCell { a = cons($$, a); })+ ) Sp Newline
     { $$ = mk_list(TABLEROW, a); }
 
-TableCell = DoubleCell | EmptyCell | FullCell
+TableCell = ExtendedCell | EmptyCell | FullCell
 
-DoubleCell = (EmptyCell | FullCell) CellDivider
-{ $$->key = DOUBLECELL;}
+ExtendedCell = (EmptyCell | FullCell) <CellDivider+>
+    {
+        element *span;
+        span = mk_str(yytext);
+        span->key = CELLSPAN;
+        span->next = $$->children;
+        $$->children = span;
+    }
 
-FullCell = Sp <  (!Newline !CellDivider .)+ >
+FullCell = Sp <  ((!Newline !CellDivider !('\\' '|') .)+ | ("\\|"))+ >
     ( ' '* CellDivider )?
     { element *raw;
         raw = mk_str(yytext);

@@ -428,20 +428,21 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
         break;
     case TABLECELL:
         if ( strncmp(&table_alignment[table_column],"r",1) == 0) {
-            g_string_append_printf(out, "\t<t%c align=\"right\">", cell_type);
+            g_string_append_printf(out, "\t<t%c align=\"right\"", cell_type);
         } else if ( strncmp(&table_alignment[table_column],"c",1) == 0) {
-            g_string_append_printf(out, "\t<t%c align=\"center\">", cell_type);
+            g_string_append_printf(out, "\t<t%c align=\"center\"", cell_type);
         } else {
-            g_string_append_printf(out, "\t<t%c align=\"left\">", cell_type);
+            g_string_append_printf(out, "\t<t%c align=\"left\"", cell_type);
         }
+        if ((elt->children != NULL) && (elt->children->key == CELLSPAN)) {
+            g_string_append_printf(out, " colspan=\"%d\"",strlen(elt->children->contents.str)+1);
+        }
+        g_string_append_printf(out, ">");
         print_html_element_list(out, elt->children, obfuscate);
         g_string_append_printf(out, "</t%c>\n", cell_type);
         table_column++;
         break;
-    case DOUBLECELL:
-        g_string_append_printf(out, "\t<t%c colspan=\"2\">", cell_type);
-        print_html_element_list(out, elt->children, obfuscate);
-        g_string_append_printf(out, "</t%c>\n", cell_type);
+    case CELLSPAN:
         break;
     case ATTRKEY:
         g_string_append_printf(out, " %s=\"%s\"", elt->contents.str,
@@ -811,19 +812,18 @@ static void print_latex_element(GString *out, element *elt) {
         break;
     case TABLECELL:
         padded = 2;
+        if ((elt->children != NULL) && (elt->children->key == CELLSPAN)) {
+            g_string_append_printf(out, "\\multicolumn{%d}{c}{", strlen(elt->children->contents.str)+1);
+        }
         print_latex_element_list(out, elt->children);
+        if ((elt->children != NULL) && (elt->children->key == CELLSPAN)) {
+            g_string_append_printf(out, "}");
+        }
         if (elt->next != NULL) {
             g_string_append_printf(out, "&");
         }
         break;
-    case DOUBLECELL:
-        padded = 2;
-        g_string_append_printf(out, "\\multicolumn{2}{c}{");
-        print_latex_element_list(out, elt->children);
-        g_string_append_printf(out, "}");
-        if (elt->next != NULL) {
-            g_string_append_printf(out, "&");
-        }
+    case CELLSPAN:
         break;
     default: 
         fprintf(stderr, "print_latex_element encountered unknown element key = %d\n", elt->key); 
