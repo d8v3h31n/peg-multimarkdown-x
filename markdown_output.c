@@ -600,7 +600,13 @@ static void print_latex_element(GString *out, element *elt) {
         }
         break;
     case IMAGE:
-        g_string_append_printf(out, "\\begin{figure}\n\\begin{center}\n\\includegraphics[keepaspectratio,width=\\textwidth, height=.75\\textheight]{%s}\n\\end{center}\n\\end{figure}\n", elt->contents.link->url);
+        g_string_append_printf(out, "\\begin{figure}\n\\begin{center}\n\\includegraphics[keepaspectratio,width=\\textwidth, height=.75\\textheight]{%s}\n\\end{center}\n", elt->contents.link->url);
+        if (strlen(elt->contents.link->title) > 0) {
+            g_string_append_printf(out, "\\caption{");
+            print_latex_string(out, elt->contents.link->title);
+            g_string_append_printf(out, "}\n\\label{%s}\n", label_from_string(elt->contents.link->title,0));
+        }
+        g_string_append_printf(out,"\\end{figure}\n");
         break;
     case EMPH:
         g_string_append_printf(out, "\\emph{");
