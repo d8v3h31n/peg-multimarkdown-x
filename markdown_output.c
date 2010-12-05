@@ -31,6 +31,7 @@ static int table_column = 0;
 static char *table_alignment;
 static char cell_type = 'd';
 static int language = ENGLISH;
+static bool html_footer = FALSE;
 
 static void print_html_string(GString *out, char *str, bool obfuscate);
 static void print_html_element_list(GString *out, element *list, bool obfuscate);
@@ -389,7 +390,7 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
         print_html_string(out, elt->contents.str, obfuscate);
         break;
     case FOOTER:
-        print_html_footer(out, obfuscate);
+        html_footer = TRUE;
         break;
     case HEADINGSECTION:
         print_html_element_list(out, elt->children, obfuscate);
@@ -409,11 +410,11 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
         g_string_append_printf(out, "</caption>\n");
         break;
     case TABLEHEAD:
-		cell_type = 'h';
+        cell_type = 'h';
         g_string_append_printf(out, "\n<thead>\n");
         print_html_element_list(out, elt->children, obfuscate);
         g_string_append_printf(out, "</thead>\n");
-		cell_type = 'd';
+        cell_type = 'd';
         break;
     case TABLEBODY:
         g_string_append_printf(out, "\n<tbody>\n");
@@ -475,7 +476,8 @@ static void print_html_endnotes(GString *out) {
         note = note->next;
     }
     pad(out, 1);
-    g_string_append_printf(out, "</ol>");
+    g_string_append_printf(out, "</ol>\n</div>\n");
+
     g_slist_free(endnotes);
 }
 
@@ -628,20 +630,38 @@ static void print_latex_element(GString *out, element *elt) {
         break;
     case H1: case H2: case H3:
         pad(out, 2);
-        lev = elt->key - H1 + 1;  /* assumes H1 ... H6 are in order */
+        lev = elt->key - H1 + base_header_level;  /* assumes H1 ... H6 are in order */
         g_string_append_printf(out, "\\");
         for (i = elt->key; i > H1; i--)
             g_string_append_printf(out, "sub");
         g_string_append_printf(out, "section{");
-        print_latex_element_list(out, elt->children);
-        g_string_append_printf(out, "}");
+        /* generate a label for each header (MMD)*/
+        if (elt->children->key == AUTOLABEL) {
+            print_latex_element_list(out, elt->children->next);
+            g_string_append_printf(out, "}\n\\label{");
+            g_string_append_printf(out, "%s", label_from_string(elt->children->contents.str,0));
+        } else {
+            print_latex_element_list(out, elt->children);
+            g_string_append_printf(out, "}\n\\label{");
+            g_string_append_printf(out, "%s", label_from_element_list(elt->children,0));
+        }
+        g_string_append_printf(out, "}\n");
         padded = 0;
         break;
     case H4: case H5: case H6:
         pad(out, 2);
         g_string_append_printf(out, "\\noindent\\textbf{");
-        print_latex_element_list(out, elt->children);
-        g_string_append_printf(out, "}");
+        /* generate a label for each header (MMD)*/
+        if (elt->children->key == AUTOLABEL) {
+            print_latex_element_list(out, elt->children->next);
+            g_string_append_printf(out, "}\n\\label{");
+            g_string_append_printf(out, "%s", label_from_string(elt->children->contents.str,0));
+        } else {
+            print_latex_element_list(out, elt->children);
+            g_string_append_printf(out, "}\n\\label{");
+            g_string_append_printf(out, "%s", label_from_element_list(elt->children,0));
+        }
+        g_string_append_printf(out, "}\n");
         padded = 0;
         break;
     case PLAIN:
@@ -1051,6 +1071,7 @@ void print_element_list(GString *out, element *elt, int format, int exts) {
             pad(out, 2);
             print_html_endnotes(out);
         }
+        if (html_footer == TRUE) print_html_footer(out, false);
         break;
     case LATEX_FORMAT:
         print_latex_element_list(out, elt);
@@ -1242,12 +1263,16 @@ static void print_beamer_element(GString *out, element *elt) {
             print_beamer_element_list(out, elt->children);
             g_string_append_printf(out, "}\n\\label{");
             /* generate a label for each header (MMD)*/
-            GString *headLabel;
-            headLabel = g_string_new("");
-            print_raw_element_list(headLabel, elt->children);
-            g_string_append(out, label_from_string(headLabel->str, 0));
+            if (elt->children->key == AUTOLABEL) {
+                print_latex_element_list(out, elt->children->next);
+                g_string_append_printf(out, "}\n\\label{");
+                g_string_append_printf(out, "%s", label_from_string(elt->children->contents.str,0));
+            } else {
+                print_latex_element_list(out, elt->children);
+                g_string_append_printf(out, "}\n\\label{");
+                g_string_append_printf(out, "%s", label_from_element_list(elt->children,0));
+            }
             g_string_append_printf(out, "}\n");
-            g_string_free(headLabel, TRUE);
             padded = 0;
             break;
         default:

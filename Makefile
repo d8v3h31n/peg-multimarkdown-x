@@ -35,6 +35,10 @@ mmdtest: $(PROGRAM)
 	cd MarkdownTest_1.0.3; \
 	./MarkdownTest.pl --Script=../$(PROGRAM) --Tidy --testdir=MultiMarkdownTests
 
+latextest: $(PROGRAM)
+	cd MarkdownTest_1.0.3; \
+	./MarkdownTest.pl --Script=../$(PROGRAM) --testdir=LaTeXTests --Flags="-t latex"
+
 leak-check: $(PROGRAM)
 	valgrind --leak-check=full ./markdown README
 
