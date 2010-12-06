@@ -735,13 +735,42 @@ static void print_latex_element(GString *out, element *elt) {
         /* if contents.str == 0, then print note; else ignore, since this
          * is a note block that has been incorporated into the notes list */
         if (elt->contents.str == 0) {
-            g_string_append_printf(out, "\\footnote{");
-            padded = 2;
-            print_latex_element_list(out, elt->children);
-            g_string_append_printf(out, "}");
-            padded = 0; 
+			if (elt->children->key == GLOSSARYTERM) {
+				g_string_append_printf(out, "\\newglossaryentry");
+				padded = 2;
+				if (elt->children->next->key == GLOSSARYSORTKEY) {
+					g_string_append_printf(out, "(");
+					print_latex_string(out, elt->children->next->contents.str);
+					g_string_append_printf(out, ")");
+				}
+				print_latex_element_list(out, elt->children);
+				g_string_append_printf(out, "}");
+				padded = 0;
+			} else {
+	            g_string_append_printf(out, "\\footnote{");
+	            padded = 2;
+	            print_latex_element_list(out, elt->children);
+	            g_string_append_printf(out, "}");
+	            padded = 0;
+			}
         }
         break;
+	case GLOSSARY:
+		if (elt->contents.str == 0) {
+			g_string_append_printf(out, "\\glossary");
+			padded = 2;
+			print_latex_element_list(out, elt->children);
+			g_string_append_printf(out, "}");
+			padded = 0;
+		}
+		break;
+	case GLOSSARYTERM:
+		g_string_append_printf(out, "{");
+		print_latex_string(out, elt->contents.str);
+		g_string_append_printf(out, "}{");
+		break;
+	case GLOSSARYSORTKEY:
+		break;
     case REFERENCE:
         /* Nonprinting */
         break;
