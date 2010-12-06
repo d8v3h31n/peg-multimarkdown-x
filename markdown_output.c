@@ -628,29 +628,23 @@ static void print_latex_element(GString *out, element *elt) {
         /* Shouldn't occur - these are handled by process_raw_blocks() */
         assert(elt->key != RAW);
         break;
-    case H1: case H2: case H3:
+    case H1: case H2: case H3: case H4: case H5: case H6:
         pad(out, 2);
         lev = elt->key - H1 + base_header_level;  /* assumes H1 ... H6 are in order */
-        g_string_append_printf(out, "\\");
-        for (i = elt->key; i > H1; i--)
-            g_string_append_printf(out, "sub");
-        g_string_append_printf(out, "section{");
-        /* generate a label for each header (MMD)*/
-        if (elt->children->key == AUTOLABEL) {
-            print_latex_element_list(out, elt->children->next);
-            g_string_append_printf(out, "}\n\\label{");
-            g_string_append_printf(out, "%s", label_from_string(elt->children->contents.str,0));
-        } else {
-            print_latex_element_list(out, elt->children);
-            g_string_append_printf(out, "}\n\\label{");
-            g_string_append_printf(out, "%s", label_from_element_list(elt->children,0));
+        switch (lev) {
+            case 1:
+                g_string_append_printf(out, "\\section{");
+                break;
+            case 2:
+                g_string_append_printf(out, "\\subsection{");
+                break;
+            case 3:
+                g_string_append_printf(out, "\\subsubsection{");
+                break;
+            default:
+                g_string_append_printf(out, "\\noindent\\textbf{");
+                break;
         }
-        g_string_append_printf(out, "}\n");
-        padded = 0;
-        break;
-    case H4: case H5: case H6:
-        pad(out, 2);
-        g_string_append_printf(out, "\\noindent\\textbf{");
         /* generate a label for each header (MMD)*/
         if (elt->children->key == AUTOLABEL) {
             print_latex_element_list(out, elt->children->next);
