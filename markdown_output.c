@@ -333,14 +333,24 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
     case GLOSSARYSORTKEY:
         break;
     case CITATION:
-		/* Treat as footnote for now */
-		if (elt->contents.str == 0) {
-			add_endnote(elt);
-			++notenumber;
-			g_string_append_printf(out, "<a class=\"citation\" id=\"fnref:%d\" href=\"#fn:%d\" title=\"Jump to citation %d\">[%d]</a>",
-				notenumber, notenumber, notenumber, notenumber);
-		}
-		break;
+        if (strncmp(elt->contents.str,"[#",2) == 0) {
+            g_string_append_printf(out, elt->contents.str);
+        } else {
+            if (elt->children->contents.str == NULL) {
+                elt->children->key = CITATION;
+                add_endnote(elt->children);
+                ++notenumber;
+                char buf[5];
+                sprintf(buf,"%d",notenumber);
+                
+                elt->children->contents.str = strdup(buf);
+/*              elt->children->contents.str = strdup(elt->contents.str);*/
+            }
+            g_string_append_printf(out, "<a class=\"citation\" href=\"#fn:%s\" title=\"Jump to citation\">[%s]</a>",
+                elt->children->contents.str, elt->children->contents.str);
+            elt->children = NULL;
+        }
+        break;
     case DEFLIST:
         pad(out,1);
         padded = 1;
@@ -476,12 +486,20 @@ static void print_html_endnotes(GString *out) {
         note_elt = note->data;
         counter++;
         pad(out, 1);
-        g_string_append_printf(out, "<li id=\"fn:%d\">\n", counter);
-        padded = 2;
-       print_html_element_list(out, note_elt->children, false);
-        g_string_append_printf(out, " <a href=\"#fnref:%d\" title=\"return to article\" class=\"reversefootnote\">&#160;&#8617;</a>", counter);
-        pad(out, 1);
-        g_string_append_printf(out, "</li>");
+        if (note_elt->key == CITATION) {
+            g_string_append_printf(out, "<li id=\"fn:%s\">\n", note_elt->contents.str);
+            padded = 2;
+            print_html_element_list(out, note_elt->children, false);
+            pad(out, 1);
+            g_string_append_printf(out, "</li>");
+        } else {
+            g_string_append_printf(out, "<li id=\"fn:%d\">\n", counter);
+            padded = 2;
+           print_html_element_list(out, note_elt->children, false);
+            g_string_append_printf(out, " <a href=\"#fnref:%d\" title=\"return to article\" class=\"reversefootnote\">&#160;&#8617;</a>", counter);
+            pad(out, 1);
+            g_string_append_printf(out, "</li>");
+        }
         note = note->next;
     }
     pad(out, 1);
@@ -527,6 +545,30 @@ static void print_latex_string(GString *out, char *str) {
         }
     str++;
     }
+}
+
+static void print_latex_endnotes(GString *out) {
+    int counter = 0;
+    GSList *note;
+    element *note_elt;
+    if (endnotes == NULL) 
+        return;
+    note = g_slist_reverse(endnotes);
+    pad(out,2);
+    g_string_append_printf(out, "\\begin{thebibliography}{0}");
+    while (note != NULL) {
+        note_elt = note->data;
+        pad(out, 1);
+        g_string_append_printf(out, "\\bibitem{%s}\n", note_elt->contents.str);
+        padded=2;
+        print_latex_element_list(out, note_elt);
+        pad(out, 1);
+        note = note->next;
+    }
+    pad(out, 1);
+    g_string_append_printf(out, "\\end{thebibliography}\n");
+
+    g_slist_free(endnotes);
 }
 
 /* print_latex_element_list - print a list of elements as LaTeX */
@@ -772,8 +814,20 @@ static void print_latex_element(GString *out, element *elt) {
         /* Nonprinting */
         break;
     case CITATION:
-		/* Treat as footnote for now */
-		break;
+        if (strncmp(elt->contents.str,"[#",2) == 0) {
+            /* This should be used as a bibtex citation key after trimming */
+            elt->contents.str[strlen(elt->contents.str)-1] = '\0';
+            g_string_append_printf(out, "~\\cite{%s}", &elt->contents.str[2]);
+        } else {
+            /* This citation was specified in the document itself */
+            g_string_append_printf(out, "~\\cite{%s}", elt->contents.str);
+            if (elt->children->contents.str == NULL) {
+                elt->children->contents.str = strdup(elt->contents.str);
+                add_endnote(elt->children);
+                elt->children = NULL;
+            }
+        }
+        break;
     case DEFLIST:
         g_string_append_printf(out, "\\begin{description}\n");
         print_latex_element_list(out, elt->children);
@@ -824,6 +878,7 @@ static void print_latex_element(GString *out, element *elt) {
         print_latex_string(out, elt->contents.str);
         break;
     case FOOTER:
+        print_latex_endnotes(out);
         print_latex_footer(out);
         break;
     case HEADINGSECTION:
@@ -1225,12 +1280,36 @@ void print_beamer_element_list(GString *out, element *list) {
     }
 }
 
+static void print_beamer_endnotes(GString *out) {
+    int counter = 0;
+    GSList *note;
+    element *note_elt;
+    if (endnotes == NULL) 
+        return;
+    note = g_slist_reverse(endnotes);
+    pad(out,2);
+    g_string_append_printf(out, "\\part{Bibliography}\n\\begin{frame}[allowframebreaks]\n\\frametitle{Bibliography}\n\\def\\newblock{}\n\\begin{thebibliography}{0}");
+    while (note != NULL) {
+        note_elt = note->data;
+        pad(out, 1);
+        g_string_append_printf(out, "\\bibitem{%s}\n", note_elt->contents.str);
+        padded=2;
+        print_latex_element_list(out, note_elt);
+        pad(out, 1);
+        note = note->next;
+    }
+    pad(out, 1);
+    g_string_append_printf(out, "\\end{thebibliography}\n\\end{frame}\n");
+
+    g_slist_free(endnotes);
+}
 
 /* print_beamer_element - print an element as LaTeX for beamer class */
 static void print_beamer_element(GString *out, element *elt) {
     int lev;
     switch (elt->key) {
         case FOOTER:
+            print_beamer_endnotes(out);
             g_string_append_printf(out, "\\mode<all>\n");
             print_latex_footer(out);
             g_string_append_printf(out, "\\mode*\n");

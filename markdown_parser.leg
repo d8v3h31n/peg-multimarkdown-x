@@ -69,7 +69,7 @@ Block =     BlankLine*
             ( BlockQuote
             | Verbatim
             | DefinitionList
-			| Glossary
+            | Glossary
             | Note
             | Reference
             | HorizontalRule
@@ -801,12 +801,13 @@ CitationReferenceDouble = b:Label < Spnl > !"[]" ref:RawCitationReference
                         $$ = mk_element(CITATION);
                         assert(match->children != NULL);
                         $$->children = match->children;
-                        $$->contents.str = 0;
+                        $$->contents.str = strdup(ref->contents.str);
                     } else {
                         char *s;
                         s = malloc(strlen(ref->contents.str) + 4);
                         sprintf(s, "[#%s]", ref->contents.str);
                         $$ = mk_str(s);
+                        $$->key = CITATION;
                         free(s);
                     }
                 }
@@ -817,12 +818,13 @@ CitationReferenceSingle =  ref:RawCitationReference < (Spnl "[]")? >
                         $$ = mk_element(CITATION);
                         assert(match->children != NULL);
                         $$->children = match->children;
-                        $$->contents.str = 0;
+                        $$->contents.str = strdup(ref->contents.str);
                     } else {
                         char *s;
                         s = malloc(strlen(ref->contents.str) + 4);
                         sprintf(s, "[#%s]", ref->contents.str);
                         $$ = mk_str(s);
+                        $$->key = CITATION;
                         free(s);
                     }
                 }
