@@ -742,25 +742,25 @@ NoteReference = &{ extension(EXT_NOTES) }
 RawNoteReference = ( "[^" | "[#" ) < ( !Newline !']' . )+ > ']'
                    { $$ = mk_str(yytext); }
 
-Glossary = 		&{ extension(EXT_NOTES) }
-				a:StartList
-				NonindentSpace ref:RawNoteReference ':' Sp
-				"glossary:" Sp (GlossaryTerm { a = cons($$, a); }) 
-				(GlossarySortKey { a = cons($$, a); })?
-				Newline
-				( RawNoteBlock { a = cons($$, a); } )
-				( &Indent RawNoteBlock { a = cons($$, a); } )*
-				{ $$ = mk_list(GLOSSARY, a);
-					$$->contents.str = strdup(ref->contents.str);
-				}
+Glossary =  &{ extension(EXT_NOTES) }
+            a:StartList
+            NonindentSpace ref:RawNoteReference ':' Sp
+            "glossary:" Sp (GlossaryTerm { a = cons($$, a); }) 
+            (GlossarySortKey { a = cons($$, a); })?
+            Newline
+            ( RawNoteBlock { a = cons($$, a); } )
+            ( &Indent RawNoteBlock { a = cons($$, a); } )*
+            { $$ = mk_list(GLOSSARY, a);
+                $$->contents.str = strdup(ref->contents.str);
+            }
 
 GlossaryTerm =  < (!Newline !'(' .)+ >
-	{ $$ = mk_str(yytext);
-		$$->key = GLOSSARYTERM; }
+    { $$ = mk_str(yytext);
+        $$->key = GLOSSARYTERM; }
 
 GlossarySortKey = '(' < (!')' !Newline .)* > ')'
-	{ $$ = mk_str(yytext);
-		$$->key = GLOSSARYSORTKEY; }
+    { $$ = mk_str(yytext);
+        $$->key = GLOSSARYSORTKEY; }
 
 Note =          &{ extension(EXT_NOTES) }
                 NonindentSpace ref:RawNoteReference ':' Sp
