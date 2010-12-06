@@ -323,6 +323,15 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
                 notenumber, notenumber, notenumber);
         }
         break;
+    case GLOSSARY:
+        /* Shouldn't do anything */
+        break;
+    case GLOSSARYTERM:
+        print_html_string(out, elt->contents.str, obfuscate);
+        g_string_append_printf(out, ": ");
+        break;
+    case GLOSSARYSORTKEY:
+        break;
     case CITATION:
 		/* Treat as footnote for now */
 		if (elt->contents.str == 0) {
@@ -756,7 +765,7 @@ static void print_latex_element(GString *out, element *elt) {
         }
         break;
     case GLOSSARY:
-        /* This shouldn't happen */
+        /* This shouldn't do anything */
         break;
     case GLOSSARYTERM:
         g_string_append_printf(out, "name={");
