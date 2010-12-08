@@ -317,17 +317,29 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
         /* if contents.str == 0, then print note; else ignore, since this
          * is a note block that has been incorporated into the notes list */
         if (elt->contents.str == 0) {
-            add_endnote(elt);
-            ++notenumber;
-            g_string_append_printf(out, "<a href=\"#fn:%d\" id=\"fnref:%d\" title=\"see footnote\" class=\"footnote\">[%d]</a>",
-                notenumber, notenumber, notenumber);
+            if ( (elt->children->contents.str == 0) ){
+                /* The referenced note has not been used before */
+                add_endnote(elt->children);
+                ++notenumber;
+                char buf[5];
+                sprintf(buf,"%d",notenumber);
+                /* Assign footnote number for future use */
+                elt->children->contents.str = strdup(buf);
+                g_string_append_printf(out, "<a href=\"#fn:%d\" id=\"fnref:%d\" title=\"see footnote\" class=\"footnote\">[%d]</a>",
+                    notenumber, notenumber, notenumber);
+            } else {
+                /* The referenced note has already been used */
+                g_string_append_printf(out, "<a href=\"#fn:%s\" id=\"fnref:%s\" title=\"see footnote\" class=\"footnote\">[%s]</a>",
+                    elt->children->contents.str, elt->children->contents.str, elt->children->contents.str);
+            }
         }
+        elt->children = NULL;
         break;
     case GLOSSARY:
         /* Shouldn't do anything */
         break;
     case GLOSSARYTERM:
-        print_html_string(out, elt->contents.str, obfuscate);
+        print_html_string(out, elt->children->contents.str, obfuscate);
         g_string_append_printf(out, ": ");
         break;
     case GLOSSARYSORTKEY:
@@ -344,7 +356,6 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
                 sprintf(buf,"%d",notenumber);
                 
                 elt->children->contents.str = strdup(buf);
-/*              elt->children->contents.str = strdup(elt->contents.str);*/
             }
             g_string_append_printf(out, "<a class=\"citation\" href=\"#fn:%s\" title=\"Jump to citation\">[%s]</a>",
                 elt->children->contents.str, elt->children->contents.str);
@@ -495,7 +506,7 @@ static void print_html_endnotes(GString *out) {
         } else {
             g_string_append_printf(out, "<li id=\"fn:%d\">\n", counter);
             padded = 2;
-           print_html_element_list(out, note_elt->children, false);
+           print_html_element_list(out, note_elt, false);
             g_string_append_printf(out, " <a href=\"#fnref:%d\" title=\"return to article\" class=\"reversefootnote\">&#160;&#8617;</a>", counter);
             pad(out, 1);
             g_string_append_printf(out, "</li>");
@@ -781,7 +792,7 @@ static void print_latex_element(GString *out, element *elt) {
          * is a note block that has been incorporated into the notes list */
         if (elt->contents.str == 0) {
             if (elt->children->key == GLOSSARYTERM) {
-                g_string_append_printf(out, "\\newglossaryentry{%s}{", elt->children->contents.str);
+                g_string_append_printf(out, "\\newglossaryentry{%s}{", elt->children->children->contents.str);
                 padded = 2;
                 if (elt->children->next->key == GLOSSARYSORTKEY) {
                     g_string_append_printf(out, "sort={");
@@ -789,7 +800,7 @@ static void print_latex_element(GString *out, element *elt) {
                     g_string_append_printf(out, "},");
                 }
                 print_latex_element_list(out, elt->children);
-                g_string_append_printf(out, "}}\\glsadd{%s}", elt->children->contents.str);
+                g_string_append_printf(out, "}}\\glsadd{%s}", elt->children->children->contents.str);
                 padded = 0;
             } else {
                 g_string_append_printf(out, "\\footnote{");
@@ -805,7 +816,7 @@ static void print_latex_element(GString *out, element *elt) {
         break;
     case GLOSSARYTERM:
         g_string_append_printf(out, "name={");
-        print_latex_string(out, elt->contents.str);
+        print_latex_string(out, elt->children->contents.str);
         g_string_append_printf(out, "},description={");
         break;
     case GLOSSARYSORTKEY:

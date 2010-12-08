@@ -755,8 +755,12 @@ Glossary =  &{ extension(EXT_NOTES) }
             }
 
 GlossaryTerm =  < (!Newline !'(' .)+ >
-    { $$ = mk_str(yytext);
-        $$->key = GLOSSARYTERM; }
+    { 
+        $$ = mk_list(LIST, NULL);
+        $$->contents.str = 0;
+        $$->children = mk_str(yytext);
+        $$->key = GLOSSARYTERM;
+    }
 
 GlossarySortKey = '(' < (!')' !Newline .)* > ')'
     { $$ = mk_str(yytext);

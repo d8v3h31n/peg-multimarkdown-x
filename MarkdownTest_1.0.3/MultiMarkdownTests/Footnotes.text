@@ -11,6 +11,8 @@ And this is a codeblock, that should not be a footnote:
 
 And this is a short footnote for testing.[^shortnote]
 
+And now, reuse a footnote.[^shortnote]
+
 [^somesamplefootnote]: Here is the text of the footnote itself. It also has a [link][somesamplefootnote].
 
 [somesamplefootnote]:http://somelink.com
