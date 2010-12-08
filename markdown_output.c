@@ -329,7 +329,7 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
                     notenumber, notenumber, notenumber);
             } else {
                 /* The referenced note has already been used */
-                g_string_append_printf(out, "<a href=\"#fn:%s\" id=\"fnref:%s\" title=\"see footnote\" class=\"footnote\">[%s]</a>",
+                g_string_append_printf(out, "<a href=\"#fn:%s\" title=\"see footnote\" class=\"footnote\">[%s]</a>",
                     elt->children->contents.str, elt->children->contents.str, elt->children->contents.str);
             }
         }
