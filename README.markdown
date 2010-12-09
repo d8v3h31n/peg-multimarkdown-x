@@ -6,14 +6,14 @@ Base Header Level:	2
 
 Markdown is a simple markup language used to convert plain text into HTML.
 
-MultiMarkdown is a derivative of Markdown that adds new syntax features, such
-as footnotes, tables, and metadata. Additionally, it offers mechanisms to
+[MultiMarkdown] is a derivative of [Markdown] that adds new syntax features,
+such as footnotes, tables, and metadata. Additionally, it offers mechanisms to
 convert plain text into LaTeX in addition to HTML.
 
-peg-multimarkdown is an implementation of MultiMarkdown derived from John
-MacFarlane's peg-markdown. It makes use of a parsing expression grammar (PEG),
-and is written in C. Once it's finished, it should be possible to compile it
-for any major OS.
+[peg-multimarkdown] is an implementation of MultiMarkdown derived from John
+MacFarlane's [peg-markdown]. It makes use of a parsing expression grammar
+(PEG), and is written in C. It should compile for most any (major) operating
+system.
 
 
 # Installation #
@@ -42,8 +42,6 @@ finished.
 To use on Ubuntu, for example, be sure to have installed glib2:
 
 	sudo apt-get install libglib2.0-dev
-
-
 
 
 # Usage #
@@ -169,3 +167,53 @@ This system isn't quite as powerful as the XSLT approach, since it doesn't
 alter the actual MultiMarkdown to LaTeX conversion process. But it is probably
 much more familiar to LaTeX users who are accustomed to using `\input{}`
 commands and doesn't require knowledge of XSLT programming.
+
+
+## Footnotes ##
+
+Footnotes work slightly differently than before. This is partially on purpose,
+and partly out of necessity.  Specifically:
+
+* Footnotes are anchored based on number, rather than the label used in the
+  MMD source. This won't show a visible difference to the reader, but the
+  XHTML source will be different.
+
+* Footnotes can be used more than once. Each reference will link to the same
+  numbered note, but the "return" link will only link to the first instance.
+
+* Footnote "return" links are a separate paragraph after the footnote. This is
+  due to the way peg-markdown works, and it's not worth the effort to me to
+  change it. You can always use CSS to change the appearance however you like.
+
+* Footnote numbers are surrounded by "[]" in the text.
+
+
+## Headers ##
+
+If you use closing hashes at the end of your header, there needs to be a preceding space:
+
+This:
+
+	### Header ###
+
+not this:
+
+	### Header###
+
+
+# Acknowledgments #
+
+Thanks to John MacFarlane for [peg-markdown]. Obviously, this derivative work
+would not be possible without his work. Additionally, he was very gracious in
+giving me some pointers when I was getting started with trying to modify his
+software.
+
+Thanks to John Gruber for the original [Markdown]. 'Nuff said.
+
+And thanks to the many contributors and users of the original MultiMarkdown
+that helped me refine the syntax and search out bugs.
+
+[peg-markdown]: https://github.com/jgm/peg-markdown
+[Markdown]: http://daringfireball.net/projects/markdown/
+[MultiMarkdown]: http://fletcherpenney.net/multimarkdown/
+[peg-multimarkdown]: https://github.com/fletcher/peg-multimarkdown
