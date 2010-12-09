@@ -330,7 +330,7 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
             } else {
                 /* The referenced note has already been used */
                 g_string_append_printf(out, "<a href=\"#fn:%s\" title=\"see footnote\" class=\"footnote\">[%s]</a>",
-                    elt->children->contents.str, elt->children->contents.str, elt->children->contents.str);
+                    elt->children->contents.str, elt->children->contents.str);
             }
         }
         elt->children = NULL;
@@ -346,7 +346,7 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
         break;
     case CITATION:
         if (strncmp(elt->contents.str,"[#",2) == 0) {
-            g_string_append_printf(out, elt->contents.str);
+            g_string_append_printf(out, "%s",elt->contents.str);
         } else {
             if (elt->children->contents.str == NULL) {
                 elt->children->key = CITATION;
@@ -466,7 +466,7 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
             g_string_append_printf(out, "\t<t%c align=\"left\"", cell_type);
         }
         if ((elt->children != NULL) && (elt->children->key == CELLSPAN)) {
-            g_string_append_printf(out, " colspan=\"%d\"",strlen(elt->children->contents.str)+1);
+            g_string_append_printf(out, " colspan=\"%d\"",(int)strlen(elt->children->contents.str)+1);
         }
         g_string_append_printf(out, ">");
         print_html_element_list(out, elt->children, obfuscate);
@@ -559,7 +559,6 @@ static void print_latex_string(GString *out, char *str) {
 }
 
 static void print_latex_endnotes(GString *out) {
-    int counter = 0;
     GSList *note;
     element *note_elt;
     if (endnotes == NULL) 
@@ -593,7 +592,6 @@ static void print_latex_element_list(GString *out, element *list) {
 /* print_latex_element - print an element as LaTeX */
 static void print_latex_element(GString *out, element *elt) {
     int lev;
-    int i;
     switch (elt->key) {
     case SPACE:
         g_string_append_printf(out, "%s", elt->contents.str);
@@ -925,7 +923,7 @@ static void print_latex_element(GString *out, element *elt) {
     case TABLECELL:
         padded = 2;
         if ((elt->children != NULL) && (elt->children->key == CELLSPAN)) {
-            g_string_append_printf(out, "\\multicolumn{%d}{c}{", strlen(elt->children->contents.str)+1);
+            g_string_append_printf(out, "\\multicolumn{%d}{c}{", (int)strlen(elt->children->contents.str)+1);
         }
         print_latex_element_list(out, elt->children);
         if ((elt->children != NULL) && (elt->children->key == CELLSPAN)) {
@@ -1292,7 +1290,6 @@ void print_beamer_element_list(GString *out, element *list) {
 }
 
 static void print_beamer_endnotes(GString *out) {
-    int counter = 0;
     GSList *note;
     element *note_elt;
     if (endnotes == NULL) 
@@ -1408,7 +1405,6 @@ element * print_html_headingsection(GString *out, element *list, bool obfuscate)
 
 bool list_contains_key(element *list, int key) {
     element *step = NULL;
-    bool *found = FALSE;
     step = list->next;
     while ( step != NULL ) {
         if ((step->key == key)){ /* Doesn't match children */

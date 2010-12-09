@@ -286,7 +286,7 @@ static char *label_from_string(char *str, bool obfuscate) {
 	} else {
 		char *token;
 		token = strtok (&str[strcspn(str,"[")+1],"]");
-		g_string_append_c(out, label_from_string(token,obfuscate));
+		g_string_append_c(out, (int) label_from_string(token,obfuscate));
 	}
     return out->str;
 }
