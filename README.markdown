@@ -169,6 +169,12 @@ much more familiar to LaTeX users who are accustomed to using `\input{}`
 commands and doesn't require knowledge of XSLT programming.
 
 
+I recommend checking out the default [LaTeX Support Files] that are available
+on github. They are designed to serve as a starting point for your own needs.
+
+[LaTeX Support Files]: https://github.com/fletcher/peg-multimarkdown-latex-support
+
+
 ## Footnotes ##
 
 Footnotes work slightly differently than before. This is partially on purpose,
