@@ -39,9 +39,40 @@ users probably won't have any problem, and it should be relatively easy for it
 to be ported to many of the package maintenance systems out there once it's
 finished.
 
+
+## Install glib2 ##
+
 To use on Ubuntu, for example, be sure to have installed glib2:
 
 	sudo apt-get install libglib2.0-dev
+
+For other linux distributions, you will need to do something similar.
+
+On Mac OS X, you can use fink:
+
+	fink install glib2-shlibs glib2-dev
+
+(I don't remember if I had to install both packages, or just glib2-shlibs)
+
+For Windows, follow the instructions included in `peg-markdown`. It's not
+particularly straightforward.
+
+
+## Compile peg-multimarkdown ##
+
+Either download the peg-multimarkdown source, or use git:
+
+	git clone git://github.com/fletcher/peg-multimarkdown.git
+
+Then, simply run `make` to compile the source. You can also run some test
+commands to verify that everything is working properly. Of note, it is normal
+to fail one test in the Markdown tests, but the others should pass.
+
+	make
+	make mmdtest
+	make latextest
+
+On Mac OS X, you need to have installed the Developer Tools.
 
 
 # Usage #

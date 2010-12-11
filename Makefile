@@ -1,7 +1,16 @@
 ALL : markdown
 
 PROGRAM=markdown
-CFLAGS ?= -Wall -O3 -ansi -arch i386
+
+ifeq ($(shell uname),Darwin)
+	# For compiling on Mac OS X, at least with glib2 from fink which is
+	# compiled for i386.  If it complains can remove the "-arch i386" part
+	CFLAGS ?= -Wall -O3 -ansi -arch i386
+else
+	# Otherwise
+	CFLAGS ?= -Wall -O3 -ansi
+endif
+
 OBJS=markdown_parser.o markdown_output.o markdown_lib.o
 PEGDIR=peg-0.1.4
 LEG=$(PEGDIR)/leg
