@@ -7,7 +7,8 @@ enum markdown_extensions {
     EXT_NOTES            = 0x02,
     EXT_FILTER_HTML      = 0x04,
     EXT_FILTER_STYLES    = 0x08,
-    EXT_COMPATIBILITY    = 0x10
+    EXT_COMPATIBILITY    = 0x10,
+    EXT_PROCESS_HTML     = 0x20,
 };
 
 enum markdown_formats {

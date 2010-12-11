@@ -345,7 +345,8 @@ HtmlBlock = < ( HtmlBlockInTags | HtmlComment | HtmlBlockSelfClosing ) >
                     $$ = mk_list(LIST, NULL);
                 } else {
                     $$ = mk_str(yytext);
-                    $$->key = HTMLBLOCK;
+                    if ( extension(EXT_PROCESS_HTML)) $$->key = RAW;
+                        else $$->key = HTMLBLOCK;
                 }
             }
 

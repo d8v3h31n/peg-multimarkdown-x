@@ -69,6 +69,7 @@ int main(int argc, char * argv[]) {
     static gchar *opt_to = 0;
     static gboolean opt_smart = TRUE;
     static gboolean opt_notes = TRUE;
+    static gboolean opt_process_html = FALSE;
     static gboolean opt_filter_html = FALSE;
     static gboolean opt_filter_styles = FALSE;
     static gboolean opt_allext = FALSE;
@@ -91,6 +92,7 @@ int main(int argc, char * argv[]) {
     {
       { "smart", 0, 0, G_OPTION_ARG_NONE, &opt_smart, "use smart typography extension", NULL },
       { "notes", 0, 0, G_OPTION_ARG_NONE, &opt_notes, "use notes extension", NULL },
+      { "process-html", 0, 0, G_OPTION_ARG_NONE, &opt_process_html, "process MultiMarkdown inside of raw HTML", NULL },
       { NULL }
     };
 
@@ -125,6 +127,8 @@ int main(int argc, char * argv[]) {
         extensions = extensions | EXT_SMART;
     if (opt_notes)
         extensions = extensions | EXT_NOTES;
+    if (opt_process_html)
+        extensions = extensions | EXT_PROCESS_HTML;
     if (opt_filter_html)
         extensions = extensions | EXT_FILTER_HTML;
     if (opt_filter_styles)
