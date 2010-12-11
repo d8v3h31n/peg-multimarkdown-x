@@ -240,6 +240,34 @@ not this:
 This is a difference from the behavior of Markdown and many of its other
 derivatives. However, at the moment it's not a priority for me to change it.
 
+
+## Raw HTML ##
+
+Because the original MultiMarkdown processed the text document into XHTML
+first, and then processed the entire XHTML document into LaTeX, it couldn't
+tell the difference between raw HTML and HTML that was created from plaintext.
+This version, however, uses the original plain text to create the LaTeX
+document. This means that any raw HTML inside your MultiMarkdown document is
+**not** converted into LaTeX.
+
+The benefit of this is that you can embed one piece of the document in two
+formats --- one for XHTML, and one for LaTeX:
+
+	<blockquote>
+	<p>Release early, release often!</p>
+	<blockquote><p>Linus Torvalds</p></blockquote>
+	</blockquote>
+	
+	<!-- \epigraph{Release early, release often!}{Linus Torvalds} -->
+
+In this section, when the document is converted into XHTML, the `blockquote`
+sections will be used as expected, and the `epigraph` will be ignored since it
+is inside a comment. Conversely, when processed into LaTeX, the raw HTML will
+be ignored, and the comment will be processed as raw text.
+
+You shouldn't need to use this feature, but if you want to specify exactly how
+a certain part of your document is processed into LaTeX, it's a neat trick.
+
 # Acknowledgments #
 
 Thanks to John MacFarlane for [peg-markdown]. Obviously, this derivative work
