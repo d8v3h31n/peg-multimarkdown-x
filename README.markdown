@@ -4,9 +4,9 @@ Base Header Level:	2
 
 # Introduction #
 
-Markdown is a simple markup language used to convert plain text into HTML.
+[Markdown] is a simple markup language used to convert plain text into HTML.
 
-[MultiMarkdown] is a derivative of [Markdown] that adds new syntax features,
+[MultiMarkdown] is a derivative of Markdown that adds new syntax features,
 such as footnotes, tables, and metadata. Additionally, it offers mechanisms to
 convert plain text into LaTeX in addition to HTML.
 
