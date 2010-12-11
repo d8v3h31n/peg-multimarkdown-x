@@ -28,10 +28,9 @@ major hurdles at the moment:
   an alternative means of using dynamic strings in C --- I am not a C expert,
   and any pointers would be appreciated!
 
-* The original makefile didn't work for me on my Mac. I have tweaked the
-  makefile for this project to compile on a Mac, but it probably won't compile
-  on other architectures. Again - any help on resolving this would be
-  appreciated.
+* The original makefile didn't work for me on my Mac. I have tweaked it so
+  that it should compile on any OS, but I could have made a mistake. Let me
+  know if there's something I need to change.
 
 My goal is for this project to be able to compiled as a standalone binary so
 that I can distribute pre-compiled binaries for Mac and Windows users. Linux
