@@ -268,6 +268,15 @@ be ignored, and the comment will be processed as raw text.
 You shouldn't need to use this feature, but if you want to specify exactly how
 a certain part of your document is processed into LaTeX, it's a neat trick.
 
+
+## Processing MultiMarkdown inside HTML ##
+
+In the original MultiMarkdown, you could use something like `<div markdown=1>`
+to tell MultiMarkdown to process the text inside the div. In
+peg-multimarkdown, you can use the command-line option `--process-html` to
+process the text inside all raw HTML. For the moment, there is not way to
+process the text inside only selected HTML elements.
+
 # Acknowledgments #
 
 Thanks to John MacFarlane for [peg-markdown]. Obviously, this derivative work
