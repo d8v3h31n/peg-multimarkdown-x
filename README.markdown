@@ -68,6 +68,7 @@ commands to verify that everything is working properly. Of note, it is normal
 to fail one test in the Markdown tests, but the others should pass.
 
 	make
+	make test
 	make mmdtest
 	make latextest
 
