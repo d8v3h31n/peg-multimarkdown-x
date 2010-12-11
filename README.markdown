@@ -237,6 +237,8 @@ not this:
 
 	### Header###
 
+This is a difference from the behavior of Markdown and many of its other
+derivatives. However, at the moment it's not a priority for me to change it.
 
 # Acknowledgments #
 
