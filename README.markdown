@@ -126,6 +126,7 @@ Once installed, you simply do something like the following:
 
 # What's different? #
 
+
 ## "Complete" documents vs. "snippets" ##
 
 A "snippet" is a section of HTML (or LaTeX) that is not a complete, fully-formed document.  It doesn't contain the header information to make it a valid XML document.  It can't be compiled with LaTeX into a PDF without further commands.
@@ -276,6 +277,7 @@ to tell MultiMarkdown to process the text inside the div. In
 peg-multimarkdown, you can use the command-line option `--process-html` to
 process the text inside all raw HTML. For the moment, there is not way to
 process the text inside only selected HTML elements.
+
 
 # Acknowledgments #
 
