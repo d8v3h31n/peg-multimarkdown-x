@@ -1,0 +1,9 @@
+This custom installer will install **MultiMarkdown** and the necessary support
+files. This includes the **glib2** library, as well as some support files for
+creating LaTeX output from MultiMarkdown.
+
+
+For more information, please check out the MultiMarkdown [web
+site](http://fletcherpenney.net/multimarkdown/).
+
+You will be guided through the steps necessary to install this software.
