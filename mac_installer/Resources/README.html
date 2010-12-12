@@ -1,0 +1,285 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<title>peg-multimarkdown User's Guide  </title>
+	<meta name="author" content="Fletcher T. Penney  "/>
+</head>
+<body>
+<h2 id="introduction">Introduction</h2>
+
+<p><a href="http://daringfireball.net/projects/markdown/">Markdown</a> is a simple markup language used to convert plain text into HTML.</p>
+
+<p><a href="http://fletcherpenney.net/multimarkdown/">MultiMarkdown</a> is a derivative of Markdown that adds new syntax features,
+such as footnotes, tables, and metadata. Additionally, it offers mechanisms to
+convert plain text into LaTeX in addition to HTML.</p>
+
+<p><a href="https://github.com/fletcher/peg-multimarkdown">peg-multimarkdown</a> is an implementation of MultiMarkdown derived from John
+MacFarlane&rsquo;s <a href="https://github.com/jgm/peg-markdown">peg-markdown</a>. It makes use of a parsing expression grammar
+(PEG), and is written in C. It should compile for most any (major) operating
+system.</p>
+
+<h2 id="installation">Installation</h2>
+
+<p>For now - assume that if you can&rsquo;t figure it out, it&rsquo;s not for you. If you can
+compile the original peg-markdown, this should work just fine. There are two
+major hurdles at the moment:</p>
+
+<ul>
+<li><p>You need to have <code>glib2</code> installed - John MacFarlane used this to make use
+ of GStrings, which now means you need a big huge library in order to compile
+ this one simple program. I will work on removing this dependency, but need
+ an alternative means of using dynamic strings in C &mdash; I am not a C expert,
+ and any pointers would be appreciated!</p></li>
+<li><p>The original makefile didn&rsquo;t work for me on my Mac. I have tweaked it so
+ that it should compile on any OS, but I could have made a mistake. Let me
+ know if there&rsquo;s something I need to change.</p></li>
+</ul>
+
+<p>My goal is for this project to be able to compiled as a standalone binary so
+that I can distribute pre-compiled binaries for Mac and Windows users. Linux
+users probably won&rsquo;t have any problem, and it should be relatively easy for it
+to be ported to many of the package maintenance systems out there once it&rsquo;s
+finished.</p>
+
+<h3 id="installglib2">Install glib2</h3>
+
+<p>To use on Ubuntu, for example, be sure to have installed glib2:</p>
+
+<pre><code>sudo apt-get install libglib2.0-dev
+</code></pre>
+
+<p>For other linux distributions, you will need to do something similar.</p>
+
+<p>On Mac OS X, you can use fink:</p>
+
+<pre><code>fink install glib2-shlibs glib2-dev
+</code></pre>
+
+<p>(I don&rsquo;t remember if I had to install both packages, or just glib2-shlibs)</p>
+
+<p>For Windows, follow the instructions included in <code>peg-markdown</code>. It&rsquo;s not
+particularly straightforward.</p>
+
+<h3 id="compilepeg-multimarkdown">Compile peg-multimarkdown</h3>
+
+<p>Either download the peg-multimarkdown source, or use git:</p>
+
+<pre><code>git clone git://github.com/fletcher/peg-multimarkdown.git
+</code></pre>
+
+<p>Then, simply run <code>make</code> to compile the source. You can also run some test
+commands to verify that everything is working properly. Of note, it is normal
+to fail one test in the Markdown tests, but the others should pass.</p>
+
+<pre><code>make
+make test
+make mmdtest
+make latextest
+</code></pre>
+
+<p>On Mac OS X, you need to have installed the Developer Tools.</p>
+
+<h2 id="usage">Usage</h2>
+
+<p>Once installed, you simply do something like the following:</p>
+
+<ul>
+<li><p><code>markdown file.txt</code> &mdash; process text into HTML.</p></li>
+<li><p><code>markdown -c file.txt</code> &mdash; use a compatibility mode that emulates the
+ original Markdown.</p></li>
+<li><p><code>markdown -t latex file.txt</code> &mdash; output the results as LaTeX instead of
+ HTML. This can then be processed into a PDF if you have LaTeX installed.</p></li>
+<li><p><code>markdown -t memoir file.txt</code> &mdash; output as LaTeX designed for use with the
+ <code>memoir</code> package</p></li>
+<li><p><code>markdown -t beamer file.txt</code> &mdash; output as LaTeX designed for use with the
+ <code>beamer</code> package</p></li>
+<li><p><code>markdown -h</code> &mdash; display help and additional options.</p></li>
+</ul>
+
+<h2 id="whycreateanotherversionofmultimarkdown">Why create another version of MultiMarkdown?</h2>
+
+<ul>
+<li><p>Maintaining a growing collection of nested regular expressions was going to
+ become increasingly difficult. I don&rsquo;t plan on adding much (if any) in the
+ way of new syntax features, but it was a mess.</p></li>
+<li><p>Performance on longer documents was poor. The nested perl regular
+ expressions was slow, even on a relatively fast computer. Performance on
+ something like an iPhone would probably have been miserable.</p></li>
+<li><p>The reliance on Perl made installation fairly complex on Windows. That
+ didn&rsquo;t bother me too much, but it is a factor.</p></li>
+<li><p>Perl can&rsquo;t be run on an iPhone/iPad, and I would like to be able to have
+ MultiMarkdown on an iOS device, and not just regular Markdown (which exists
+ in C versions).</p></li>
+<li><p>I was interested in learning about PEG&rsquo;s and revisiting C programming.</p></li>
+<li><p>The syntax has been fairly stable, and it would be nice to be able to
+ formalize is a bit better &mdash; which happens by definition when using a PEG.</p></li>
+<li><p>I wanted to revisit the syntax and features and clean it up a bit.</p></li>
+<li><p>Did I mention how much faster this is? And that it could (eventually) run on
+ an iPhone?</p></li>
+</ul>
+
+<h2 id="whatnullsdifferent">What&rsquo;s different?</h2>
+
+<h3 id="nulldocumentsvs.null">&ldquo;Complete&rdquo; documents vs. &ldquo;snippets&rdquo;</h3>
+
+<p>A &ldquo;snippet&rdquo; is a section of HTML (or LaTeX) that is not a complete, fully-formed document. It doesn&rsquo;t contain the header information to make it a valid XML document. It can&rsquo;t be compiled with LaTeX into a PDF without further commands.</p>
+
+<p>For example:</p>
+
+<pre><code># This is a header #
+
+And a paragraph.
+</code></pre>
+
+<p>becomes the following HTML snippet:</p>
+
+<pre><code>&lt;h1 id=&quot;thisisaheader&quot;&gt;This is a header&lt;/h1&gt;
+
+&lt;p&gt;And a paragraph.&lt;/p&gt;
+</code></pre>
+
+<p>and the following LaTeX snippet:</p>
+
+<pre><code>\part{This is a header}
+\label{thisisaheader}
+
+
+And a paragraph.
+</code></pre>
+
+<p>It was not possible to create a LaTeX snippet with the original MultiMarkdown,
+because it relied on having a complete XHTML document that was then converted
+to LaTeX via an XSLT document (requiring a whole separate program). This was
+powerful, but complicated.</p>
+
+<p>Now, I have come full-circle. peg-multimarkdown will now output LaTeX
+directly, without requiring XSLT. This allows the creation of LaTeX snippets,
+or complete documents, as necessary.</p>
+
+<p>To create a complete document, simply include metadata. You can include a
+title, author, date, or whatever you like. If you don&rsquo;t want to include any
+real metadata, including &ldquo;format: complete&rdquo; will still trigger a complete
+document, just like it used to.</p>
+
+<p>The old approach (even though it was hidden from most users) was a bit of a
+kludge, and this should be more elegant, and more flexible.</p>
+
+<h3 id="creatinglatexdocuments">Creating LaTeX Documents</h3>
+
+<p>LaTeX documents are created a bit differently than under the old system. You
+no longer have to use an XSLT file to convert from XHTML to LaTeX. You can go
+straight from MultiMarkdown to LaTeX, which is faster and more flexible.</p>
+
+<p><strong>NOTE:</strong> You can still use the old approach if you like. It was slow, but
+powerful and allowed for fairly detailed customizations in your output.</p>
+
+<p>To create a complete LaTeX document, you can process your file as a snippet,
+and then place it in a LaTeX template that you already have. Alternatively,
+you can use metadata to trigger the creation of a complete document. You can
+use the <code>LaTeX Input</code> metadata to insert a <code>\input{file}</code> command. You can
+then store various template files in your texmf directory and call them with
+metadata, or with embedded raw LaTeX commands in your document. For example:</p>
+
+<pre><code>Latex input:        mmd-memoir-header
+Latex input:        mmd-memoir-layout
+Title:              Sample MultiMarkdown Document  
+Author:             Fletcher T. Penney  
+latex input:        mmd-memoir-frontmatter
+latex footer:       mmd-memoir-footer
+</code></pre>
+
+<p>This would include several template files in the order that you see. The
+<code>LaTeX Footer</code> metadata inserts a template at the end of your document.</p>
+
+<p>This system isn&rsquo;t quite as powerful as the XSLT approach, since it doesn&rsquo;t
+alter the actual MultiMarkdown to LaTeX conversion process. But it is probably
+much more familiar to LaTeX users who are accustomed to using <code>\input{}</code>
+commands and doesn&rsquo;t require knowledge of XSLT programming.</p>
+
+<p>I recommend checking out the default <a href="https://github.com/fletcher/peg-multimarkdown-latex-support">LaTeX Support Files</a> that are available
+on github. They are designed to serve as a starting point for your own needs.</p>
+
+<h3 id="footnotes">Footnotes</h3>
+
+<p>Footnotes work slightly differently than before. This is partially on purpose,
+and partly out of necessity. Specifically:</p>
+
+<ul>
+<li><p>Footnotes are anchored based on number, rather than the label used in the
+ MMD source. This won&rsquo;t show a visible difference to the reader, but the
+ XHTML source will be different.</p></li>
+<li><p>Footnotes can be used more than once. Each reference will link to the same
+ numbered note, but the &ldquo;return&rdquo; link will only link to the first instance.</p></li>
+<li><p>Footnote &ldquo;return&rdquo; links are a separate paragraph after the footnote. This is
+ due to the way peg-markdown works, and it&rsquo;s not worth the effort to me to
+ change it. You can always use CSS to change the appearance however you like.</p></li>
+<li><p>Footnote numbers are surrounded by &ldquo;[]&rdquo; in the text.</p></li>
+</ul>
+
+<h3 id="headers">Headers</h3>
+
+<p>If you use closing hashes at the end of your header, there needs to be a preceding space:</p>
+
+<p>This:</p>
+
+<pre><code>### Header ###
+</code></pre>
+
+<p>not this:</p>
+
+<pre><code>### Header###
+</code></pre>
+
+<p>This is a difference from the behavior of Markdown and many of its other
+derivatives. However, at the moment it&rsquo;s not a priority for me to change it.</p>
+
+<h3 id="rawhtml">Raw HTML</h3>
+
+<p>Because the original MultiMarkdown processed the text document into XHTML
+first, and then processed the entire XHTML document into LaTeX, it couldn&rsquo;t
+tell the difference between raw HTML and HTML that was created from plaintext.
+This version, however, uses the original plain text to create the LaTeX
+document. This means that any raw HTML inside your MultiMarkdown document is
+<strong>not</strong> converted into LaTeX.</p>
+
+<p>The benefit of this is that you can embed one piece of the document in two
+formats &mdash; one for XHTML, and one for LaTeX:</p>
+
+<pre><code>&lt;blockquote&gt;
+&lt;p&gt;Release early, release often!&lt;/p&gt;
+&lt;blockquote&gt;&lt;p&gt;Linus Torvalds&lt;/p&gt;&lt;/blockquote&gt;
+&lt;/blockquote&gt;
+
+&lt;!-- \epigraph{Release early, release often!}{Linus Torvalds} --&gt;
+</code></pre>
+
+<p>In this section, when the document is converted into XHTML, the <code>blockquote</code>
+sections will be used as expected, and the <code>epigraph</code> will be ignored since it
+is inside a comment. Conversely, when processed into LaTeX, the raw HTML will
+be ignored, and the comment will be processed as raw text.</p>
+
+<p>You shouldn&rsquo;t need to use this feature, but if you want to specify exactly how
+a certain part of your document is processed into LaTeX, it&rsquo;s a neat trick.</p>
+
+<h3 id="processingmultimarkdowninsidehtml">Processing MultiMarkdown inside HTML</h3>
+
+<p>In the original MultiMarkdown, you could use something like <code>&lt;div markdown=1&gt;</code>
+to tell MultiMarkdown to process the text inside the div. In
+peg-multimarkdown, you can use the command-line option <code>--process-html</code> to
+process the text inside all raw HTML. For the moment, there is not way to
+process the text inside only selected HTML elements.</p>
+
+<h2 id="acknowledgments">Acknowledgments</h2>
+
+<p>Thanks to John MacFarlane for <a href="https://github.com/jgm/peg-markdown">peg-markdown</a>. Obviously, this derivative work
+would not be possible without his work. Additionally, he was very gracious in
+giving me some pointers when I was getting started with trying to modify his
+software.</p>
+
+<p>Thanks to John Gruber for the original <a href="http://daringfireball.net/projects/markdown/">Markdown</a>. &rsquo;Nuff said.</p>
+
+<p>And thanks to the many contributors and users of the original MultiMarkdown
+that helped me refine the syntax and search out bugs.</p>
+</body>
+</html>
