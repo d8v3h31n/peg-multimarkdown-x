@@ -26,13 +26,26 @@ required library for you, or you can compile it yourself from scratch. If you
 know what that means, follow the instructions below in the Linux section.
 Otherwise, definitely go for the installer!
 
+Go to the [downloads] page to get the installer.
+
 
 ## Windows ##
 
-You can install this in the same way that you would install peg-markdown for
-Windows. The instructions on the [peg-markdown] page. It is not particularly
-straightforward. If someone wants to volunteer to simplify this process, I am
-open to suggestions.
+The easiest way to get peg-multimarkdown running on Windows is to download the
+precompiled binary from the [downloads] page. I am not quite sure where the
+dll files should go on windows, so for now just put all three files in the
+same directory somewhere in your path. If someone knows an easy way to package
+these into an installer - let me know.
+
+If you want to compile this yourself, you do it in the same way that you would
+install peg-markdown for Windows. The instructions are on the [peg-markdown]
+page. I was able to compile for Windows fairly easily using Ubuntu linux
+following those instructions. I have not tried to actually compile on a
+Windows machine.
+
+(For those who are interested, I actually created an EC2 instance on Amazon
+and installed the necessary software to compile. I'll try and write down the
+exact steps, but it was pretty easy and probably cost me $0.10...)
 
 
 ## Linux ##
@@ -287,3 +300,4 @@ that helped me refine the syntax and search out bugs.
 [MultiMarkdown]: http://fletcherpenney.net/multimarkdown/
 [peg-multimarkdown]: https://github.com/fletcher/peg-multimarkdown
 [fink]: http://www.finkproject.org/
+[downloads]: https://github.com/fletcher/peg-multimarkdown/downloads
