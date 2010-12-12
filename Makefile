@@ -52,4 +52,4 @@ leak-check: $(PROGRAM)
 	valgrind --leak-check=full ./markdown README
 
 install: $(PROGRAM)
-	cp markdown mac_installer/Package_Root/usr/local/bin/multimarkdown
+	cp multimarkdown mac_installer/Package_Root/usr/local/bin/multimarkdown
