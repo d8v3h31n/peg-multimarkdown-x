@@ -1,6 +1,6 @@
-ALL : markdown
+ALL : multimarkdown
 
-PROGRAM=markdown
+PROGRAM=multimarkdown
 
 ifeq ($(shell uname),Darwin)
 	# For compiling on Mac OS X, at least with glib2 from fink which is
