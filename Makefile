@@ -51,3 +51,7 @@ latextest: $(PROGRAM)
 leak-check: $(PROGRAM)
 	valgrind --leak-check=full ./markdown README
 
+installer: $(PROGRAM)
+	cp README.markdown windows_installer/README.txt
+	zip -r windows_installer/MultiMarkdown windows_installer -x windows_installer/MultiMarkdown.zip
+	
