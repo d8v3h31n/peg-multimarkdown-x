@@ -11,3 +11,4 @@ markdown_parser.c
 peg-0.1.4/peg
 peg-0.1.4/leg
 
+/mac_installer/Resources/*.html
