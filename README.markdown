@@ -18,48 +18,38 @@ system.
 
 # Installation #
 
-For now - assume that if you can't figure it out, it's not for you. If you can
-compile the original peg-markdown, this should work just fine. There are two
-major hurdles at the moment:
 
-* You need to have `glib2` installed - John MacFarlane used this to make use
-  of GStrings, which now means you need a big huge library in order to compile
-  this one simple program. I will work on removing this dependency, but need
-  an alternative means of using dynamic strings in C --- I am not a C expert,
-  and any pointers would be appreciated!
+## Mac OS X ##
 
-* The original makefile didn't work for me on my Mac. I have tweaked it so
-  that it should compile on any OS, but I could have made a mistake. Let me
-  know if there's something I need to change.
-
-My goal is for this project to be able to compiled as a standalone binary so
-that I can distribute pre-compiled binaries for Mac and Windows users. Linux
-users probably won't have any problem, and it should be relatively easy for it
-to be ported to many of the package maintenance systems out there once it's
-finished.
+On the Mac, you can choose from using an installer to install the program and
+required library for you, or you can compile it yourself from scratch. If you
+know what that means, follow the instructions below in the Linux section.
+Otherwise, definitely go for the installer!
 
 
-## Install glib2 ##
+## Windows ##
 
-To use on Ubuntu, for example, be sure to have installed glib2:
+You can install this in the same way that you would install peg-markdown for
+Windows. The instructions on the [peg-markdown] page. It is not particularly
+straightforward. If someone wants to volunteer to simplify this process, I am
+open to suggestions.
+
+
+## Linux ##
+
+The easiest way is probably to compile it yourself. You need to have `glib2` installed.  For example, on ubuntu:
 
 	sudo apt-get install libglib2.0-dev
 
 For other linux distributions, you will need to do something similar.
 
-On Mac OS X, you can use fink:
+On Mac OS X, please note that you will need to install the Developer Tools.
+Then you can use [fink] or something similar:
 
 	fink install glib2-shlibs glib2-dev
 
-(I don't remember if I had to install both packages, or just glib2-shlibs)
-
-For Windows, follow the instructions included in `peg-markdown`. It's not
-particularly straightforward.
-
-
-## Compile peg-multimarkdown ##
-
-Either download the peg-multimarkdown source, or use git:
+Once you have that installed, you can either download the source for
+[peg-multimarkdown], or you can use git:
 
 	git clone git://github.com/fletcher/peg-multimarkdown.git
 
@@ -72,7 +62,8 @@ to fail one test in the Markdown tests, but the others should pass.
 	make mmdtest
 	make latextest
 
-On Mac OS X, you need to have installed the Developer Tools.
+If you're on a Mac, and want to make your own installer, you can run `make
+installer` if you use the `mac-installer` branch of the github project.
 
 
 # Usage #
@@ -295,3 +286,4 @@ that helped me refine the syntax and search out bugs.
 [Markdown]: http://daringfireball.net/projects/markdown/
 [MultiMarkdown]: http://fletcherpenney.net/multimarkdown/
 [peg-multimarkdown]: https://github.com/fletcher/peg-multimarkdown
+[fink]: http://www.finkproject.org/
