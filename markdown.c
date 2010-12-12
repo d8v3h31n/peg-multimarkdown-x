@@ -33,15 +33,16 @@ static int extensions;
 
  ***********************************************************************/
 
-#define VERSION "0.4.9"
-#define COPYRIGHT "Copyright (c) 2008-2009 John MacFarlane.  License GPLv2+ or MIT.\n" \
+#define VERSION "3.0a"
+#define COPYRIGHT "portions Copyright (c) 2010 Fletcher T. Penney.\n" \
+                  "original Copyright (c) 2008-2009 John MacFarlane.  License GPLv2+ or MIT.\n" \
                   "This is free software: you are free to change and redistribute it.\n" \
                   "There is NO WARRANTY, to the extent permitted by law."
 
 /* print version and copyright information */
 void version(const char *progname)
 {
-  printf("peg-markdown version %s\n"
+  printf("peg-multimarkdown version %s\n"
          "%s\n",
          VERSION,
          COPYRIGHT);
@@ -106,7 +107,7 @@ int main(int argc, char * argv[]) {
     g_option_group_add_entries (ext_group, ext_entries);
     g_option_context_add_group (context, ext_group);
     g_option_context_set_description (context, "Converts text in specified files (or stdin) from markdown to FORMAT.\n"
-                                               "Available FORMATs:  html, latex, memoir, beamer, groff-mm");
+                                               "Available FORMATs:  html, latex, memoir, beamer");
     if (!g_option_context_parse (context, &argc, &argv, &error)) {
         g_print ("option parsing failed: %s\n", error->message);
         exit (1);
@@ -151,8 +152,6 @@ int main(int argc, char * argv[]) {
         output_format = MEMOIR_FORMAT;
     else if (strcmp(opt_to, "beamer") == 0)
         output_format = BEAMER_FORMAT;
-    else if (strcmp(opt_to, "groff-mm") == 0)
-        output_format = GROFF_MM_FORMAT;
     else {
         fprintf(stderr, "%s: Unknown output format '%s'\n", progname, opt_to);
         exit(EXIT_FAILURE);

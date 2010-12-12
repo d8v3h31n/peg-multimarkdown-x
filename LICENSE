@@ -1,3 +1,7 @@
+peg-multimarkdown
+Copyright (c) 2010 Fletcher T Penney
+
+based on:
 markdown in c, implemented using PEG grammar
 Copyright (c) 2008 John MacFarlane
 
