@@ -76,28 +76,30 @@ to fail one test in the Markdown tests, but the others should pass.
 	make latextest
 
 If you're on a Mac, and want to make your own installer, you can run `make
-installer` if you use the `mac-installer` branch of the github project.
+installer` if you use the `mac-installer` branch of the github project. Then
+open the `Make OS X Installer` file and build the installer using the
+`PackageMaker` application.
 
 
 # Usage #
 
 Once installed, you simply do something like the following:
 
-* `markdown file.txt` --- process text into HTML.
+* `multimarkdown file.txt` --- process text into HTML.
 
-* `markdown -c file.txt` --- use a compatibility mode that emulates the
+* `multimarkdown -c file.txt` --- use a compatibility mode that emulates the
   original Markdown.
 
-* `markdown -t latex file.txt` --- output the results as LaTeX instead of
+* `multimarkdown -t latex file.txt` --- output the results as LaTeX instead of
   HTML. This can then be processed into a PDF if you have LaTeX installed.
 
-* `markdown -t memoir file.txt` --- output as LaTeX designed for use with the
-  `memoir` package
+* `multimarkdown -t memoir file.txt` --- output as LaTeX designed for use with
+  the `memoir` package
 
-* `markdown -t beamer file.txt` --- output as LaTeX designed for use with the
-  `beamer` package
+* `multimarkdown -t beamer file.txt` --- output as LaTeX designed for use with
+  the `beamer` package
 
-* `markdown -h` --- display help and additional options.
+* `multimarkdown -h` --- display help and additional options.
 
 
 # Why create another version of MultiMarkdown? #
@@ -204,7 +206,6 @@ alter the actual MultiMarkdown to LaTeX conversion process. But it is probably
 much more familiar to LaTeX users who are accustomed to using `\input{}`
 commands and doesn't require knowledge of XSLT programming.
 
-
 I recommend checking out the default [LaTeX Support Files] that are available
 on github. They are designed to serve as a starting point for your own needs.
 
@@ -294,6 +295,7 @@ Thanks to John Gruber for the original [Markdown]. 'Nuff said.
 
 And thanks to the many contributors and users of the original MultiMarkdown
 that helped me refine the syntax and search out bugs.
+
 
 [peg-markdown]: https://github.com/jgm/peg-markdown
 [Markdown]: http://daringfireball.net/projects/markdown/
