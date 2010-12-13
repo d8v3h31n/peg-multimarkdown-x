@@ -51,7 +51,8 @@ exact steps, but it was pretty easy and probably cost me $0.02...)
 
 ## Linux ##
 
-The easiest way is probably to compile it yourself. You need to have `glib2` installed.  For example, on ubuntu:
+The easiest way is probably to compile it yourself. You need to have `glib2`
+installed. For example, on ubuntu:
 
 	sudo apt-get install libglib2.0-dev
 
@@ -136,7 +137,10 @@ Once installed, you simply do something like the following:
 
 ## "Complete" documents vs. "snippets" ##
 
-A "snippet" is a section of HTML (or LaTeX) that is not a complete, fully-formed document.  It doesn't contain the header information to make it a valid XML document.  It can't be compiled with LaTeX into a PDF without further commands.
+A "snippet" is a section of HTML (or LaTeX) that is not a complete,
+fully-formed document. It doesn't contain the header information to make it a
+valid XML document. It can't be compiled with LaTeX into a PDF without further
+commands.
 
 For example:
 
@@ -234,7 +238,8 @@ and partly out of necessity.  Specifically:
 
 ## Headers ##
 
-If you use closing hashes at the end of your header, there needs to be a preceding space:
+If you use closing hashes at the end of your header, there needs to be a
+preceding space:
 
 This:
 
