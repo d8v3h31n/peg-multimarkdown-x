@@ -32,10 +32,11 @@ Go to the [downloads] page to get the installer.
 ## Windows ##
 
 The easiest way to get peg-multimarkdown running on Windows is to download the
-precompiled binary from the [downloads] page. I am not quite sure where the
-dll files should go on windows, so for now just put all three files in the
-same directory somewhere in your path. If someone knows an easy way to package
-these into an installer - let me know.
+precompiled binary from the [downloads] page. Theres a bat file you can run
+that will move the included dll files to the proper location
+(`C:\WINDOWS\system32`). If there's an easy way to make a proper installer, I
+am open to the idea, but only if it's pretty easy to do (preferably from the
+command line!)
 
 If you want to compile this yourself, you do it in the same way that you would
 install peg-markdown for Windows. The instructions are on the [peg-markdown]
@@ -45,7 +46,7 @@ Windows machine.
 
 (For those who are interested, I actually created an EC2 instance on Amazon
 and installed the necessary software to compile. I'll try and write down the
-exact steps, but it was pretty easy and probably cost me $0.10...)
+exact steps, but it was pretty easy and probably cost me $0.02...)
 
 
 ## Linux ##
