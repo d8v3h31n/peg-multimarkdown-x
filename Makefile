@@ -1,5 +1,7 @@
 ALL : multimarkdown
 
+VERSION=3.0a1
+
 PROGRAM=multimarkdown
 
 ifeq ($(shell uname),Darwin)
