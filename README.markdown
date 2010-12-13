@@ -39,7 +39,9 @@ am open to the idea, but only if it's pretty easy to do (preferably from the
 command line!)
 
 If you want to compile this yourself, you do it in the same way that you would
-install peg-markdown for Windows. The instructions are on the [peg-markdown]
+install peg-markdown for Windows. The instructions are on the
+peg-multimarkdown
+[wiki](https://github.com/fletcher/peg-multimarkdown/wiki/Building-for-Windows)
 page. I was able to compile for Windows fairly easily using Ubuntu linux
 following those instructions. I have not tried to actually compile on a
 Windows machine.
