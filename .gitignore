@@ -1,7 +1,9 @@
 .DS_Store
 
-manual.*
+/samples/
+/test/
 test.*
+
 
 *.o
 markdown_parser.c
@@ -17,3 +19,4 @@ peg-0.1.4/leg
 /windows_installer/README.txt
 /windows_installer/*.zip
 /windows_installer/*.exe
+
