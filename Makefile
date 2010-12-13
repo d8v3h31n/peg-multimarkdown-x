@@ -55,5 +55,5 @@ leak-check: $(PROGRAM)
 
 installer: $(PROGRAM)
 	cp README.markdown windows_installer/README.txt
-	zip -r windows_installer/MultiMarkdown windows_installer -x windows_installer/MultiMarkdown.zip
+	zip -r windows_installer/MultiMarkdown-Windows-$(VERSION).zip windows_installer -x windows_installer/MultiMarkdown*.zip
 	
