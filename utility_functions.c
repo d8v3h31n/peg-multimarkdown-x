@@ -255,6 +255,7 @@ static char *label_from_element_list(element *list, bool obfuscate) {
     GString *raw = g_string_new("");
     print_raw_element_list(raw, list);
     label =  label_from_string(raw->str,obfuscate);
+	g_string_free(raw,true);
     return label;
 }
 
