@@ -60,7 +60,7 @@ MetaDataKey = < Alphanumeric ( Sp ( Alphanumeric | '_' | ' ' | '-')+)* >
 
 MetaDataValue = a:StartList
  				(< (!Newline .)* > { a = cons(mk_str(yytext), a); }
-                (Newline &(!BlankLine !MetaDataKeyValue Sp RawLine)
+                ((Newline &(!BlankLine !MetaDataKeyValue Sp RawLine))
                     { a = cons(mk_str("\n"), a);} | Newline)
                 (!BlankLine !MetaDataKeyValue Sp RawLine
                     { a = cons(mk_str(yytext), a);} )* )
