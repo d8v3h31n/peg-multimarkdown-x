@@ -49,5 +49,5 @@ latextest: $(PROGRAM)
 	./MarkdownTest.pl --Script=../$(PROGRAM) --testdir=LaTeXTests --Flags="-t latex"
 
 leak-check: $(PROGRAM)
-	valgrind --leak-check=full ./multimarkdown README > README.html
+	valgrind --leak-check=full ./multimarkdown TEST.markdown > TEST.html
 
