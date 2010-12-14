@@ -252,11 +252,14 @@ static void print_raw_element_list(GString *out, element *list) {
 
 static char *label_from_element_list(element *list, bool obfuscate) {
     char *label;
+	char *label2;
     GString *raw = g_string_new("");
     print_raw_element_list(raw, list);
     label =  label_from_string(raw->str,obfuscate);
+	label2 = strdup(label);
+	free(label);
 	g_string_free(raw,true);
-    return label;
+    return label2;
 }
 
 /* label_from_string - strip spaces and illegal characters to generate valid 
