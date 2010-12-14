@@ -58,11 +58,11 @@ MetaDataKey = < Alphanumeric ( Sp ( Alphanumeric | '_' | ' ' | '-')+)* >
                 $$->key = METAKEY;
             }
 
-MetaDataValue = a:StartList < (!Newline .)* > { a = cons(mk_str(yytext), a); }
+MetaDataValue = (a:StartList < (!Newline .)* > { a = cons(mk_str(yytext), a); }
                 (Newline &(!BlankLine !MetaDataKeyValue Sp RawLine)
                     { a = cons(mk_str("\n"), a);} | Newline)
                 (!BlankLine !MetaDataKeyValue Sp RawLine
-                    { a = cons(mk_str(yytext), a);} )*
+                    { a = cons(mk_str(yytext), a);} )* )
                 { $$ = mk_str_from_list(a,false);
                     $$->key = METAVALUE;
                 }
