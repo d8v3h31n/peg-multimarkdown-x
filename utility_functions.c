@@ -248,6 +248,7 @@ static void print_raw_element_list(GString *out, element *list) {
 }
 
 /* label_from_element_list */
+/* Returns a null-terminated string, which must be freed after use. */
 
 static char *label_from_element_list(element *list, bool obfuscate) {
     char *label;
@@ -259,9 +260,12 @@ static char *label_from_element_list(element *list, bool obfuscate) {
 
 /* label_from_string - strip spaces and illegal characters to generate valid 
     HTML id */
+/* Returns a null-terminated string, which must be freed after use. */
+
 static char *label_from_string(char *str, bool obfuscate) {
     bool valid = FALSE;
     GString *out = g_string_new("");
+	char *label;
 
 	if ( strcspn(str,"[") == strlen(str)) {
 	    while (*str != '\0') {
@@ -288,7 +292,9 @@ static char *label_from_string(char *str, bool obfuscate) {
 		token = strtok (&str[strcspn(str,"[")+1],"]");
 		g_string_append_c(out, (int) label_from_string(token,obfuscate));
 	}
-    return out->str;
+	label = out->str;
+	g_string_free(out, false);
+	return label;
 }
 
 /* find_label - return true if header, table, etc is found matching label.
