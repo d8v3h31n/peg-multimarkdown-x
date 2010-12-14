@@ -38,8 +38,8 @@ static void free_element_contents(element elt) {
       case METAVALUE:
       case TABLESEPARATOR:
       case ATTRKEY:
-	  case GLOSSARY:
-	  case GLOSSARYTERM:
+      case GLOSSARY:
+      case GLOSSARYTERM:
         free(elt.contents.str);
         elt.contents.str = NULL;
         break;
