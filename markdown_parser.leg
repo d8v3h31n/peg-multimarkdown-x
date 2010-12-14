@@ -856,7 +856,7 @@ AutoLabels = a:StartList ( b:Heading
                 a = cons(mk_str(lab), a);
                 free(lab);
                 g_string_free(label,true);
-				free(b);
+                free(b);
             } | c:TableCaption {
                 GString *label = g_string_new("");
                 char *lab;
@@ -865,7 +865,7 @@ AutoLabels = a:StartList ( b:Heading
                 a = cons(mk_str(lab), a);
                 free(lab);
                 g_string_free(label,true);
-				free(c);}
+                free(c);}
             | (TableBody)+ c:TableCaption {
                 GString *label = g_string_new("");
                 char *lab;
@@ -874,7 +874,7 @@ AutoLabels = a:StartList ( b:Heading
                 a = cons(mk_str(lab), a);
                 free(lab);
                 g_string_free(label,true);
-				free(c);}
+                free(c);}
             | SkipBlock )*
             { labels = a; }
 
