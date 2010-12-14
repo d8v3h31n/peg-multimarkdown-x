@@ -300,10 +300,13 @@ static char *label_from_string(char *str, bool obfuscate) {
 /* find_label - return true if header, table, etc is found matching label.
  * 'link' is modified with the matching url and title. */
 static bool find_label(link *result, element *label) {
+	char *lab;
     element *cur = labels;  /* pointer to walk up list of references */
     GString *text = g_string_new("");
     print_raw_element_list(text, label);
-    GString *query = g_string_new(label_from_string(text->str,0));
+	lab = label_from_string(text->str,0);
+    GString *query = g_string_new(lab);
+	free(lab);
     g_string_free(text, true);
 
     while (cur != NULL) {
