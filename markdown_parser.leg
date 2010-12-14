@@ -52,11 +52,12 @@ MetaDataKeyValue = a:MetaDataKey
             }
 
 MetaDataKey = < Alphanumeric ( Sp ( Alphanumeric | '_' | ' ' | '-')+)* >
-{ char *label = label_from_string(yytext,0);
+{
+	char *label = label_from_string(yytext,0);
 	$$ = mk_str(label);
 	free(label);
-                $$->key = METAKEY;
-            }
+	$$->key = METAKEY;
+}
 
 MetaDataValue = a:StartList
  				((< (!Newline .)* > { a = cons(mk_str(yytext), a); })
@@ -489,9 +490,9 @@ ReferenceLinkDouble =  a:Label < Spnl > !"[]" b:Label
                             find_label(&match, b->children)) {
                                 GString *text = g_string_new("");
                                 print_raw_element_list(text, b->children);
-								char *lab = label_from_string(text->str,0);
+                                char *lab = label_from_string(text->str,0);
                                 GString *label = g_string_new(lab);
-								free(lab);
+                                free(lab);
                                 g_string_prepend(label,"#");
                                 $$ = mk_link(a->children, label->str, "", NULL);
                                 g_string_free(text, TRUE);
@@ -516,9 +517,9 @@ ReferenceLinkSingle =  a:Label < (Spnl "[]")? >
                             find_label(&match, a->children)) {
                                 GString *text = g_string_new("");
                                 print_raw_element_list(text, a->children);
-								char *lab = label_from_string(text->str,0);
+                                char *lab = label_from_string(text->str,0);
                                 GString *label = g_string_new(lab);
-								free(lab);
+                                free(lab);
                                 g_string_prepend(label,"#");
                                 $$ = mk_link(a->children, label->str, "", NULL);
                                 g_string_free(text, TRUE);
@@ -849,27 +850,27 @@ RawCitationReference = "[#" < ( !Newline !']' . )+ > ']'
 AutoLabels = a:StartList ( b:Heading
             { 
                 GString *label = g_string_new("");
-				char *lab;
+                char *lab;
                 print_raw_element_list(label, b->children);
-				lab = label_from_string(label->str,0);
+                lab = label_from_string(label->str,0);
                 a = cons(mk_str(lab), a);
-				free(lab);
+                free(lab);
                 g_string_free(label,true);
             } | c:TableCaption {
                 GString *label = g_string_new("");
-				char *lab;
+                char *lab;
                 print_raw_element_list(label, c->children);
-				lab = label_from_string(label->str,0);
+                lab = label_from_string(label->str,0);
                 a = cons(mk_str(lab), a);
-				free(lab);
+                free(lab);
                 g_string_free(label,true);}
             | (TableBody)+ c:TableCaption {
                 GString *label = g_string_new("");
-				char *lab;
+                char *lab;
                 print_raw_element_list(label, c->children);
-				lab = label_from_string(label->str,0);
+                lab = label_from_string(label->str,0);
                 a = cons(mk_str(lab), a);
-				free(lab);
+                free(lab);
                 g_string_free(label,true);}
             | SkipBlock )*
             { labels = a; }
@@ -977,10 +978,11 @@ TableCaption = a:Label Newline
 }
 
 AutoLabel = '[' < (!']' .)+ > ']' 
-{ 	char *label = label_from_string(yytext,0);
-	$$ = mk_str(label);
+{ 
+    char *label = label_from_string(yytext,0);
+    $$ = mk_str(label);
     $$->key = AUTOLABEL;
-	free(label);
+    free(label);
 }
 
 %%

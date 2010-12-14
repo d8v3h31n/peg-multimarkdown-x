@@ -139,7 +139,7 @@ static void add_endnote(element *elt) {
 /* print_html_element - print an element as HTML */
 static void print_html_element(GString *out, element *elt, bool obfuscate) {
     int lev;
-	char *label;
+    char *label;
     switch (elt->key) {
     case SPACE:
         g_string_append_printf(out, "%s", elt->contents.str);
@@ -241,10 +241,10 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
             g_string_append_printf(out, "<h%d id=\"%s\">", lev,elt->children->contents.str);
             print_html_element_list(out, elt->children->next, obfuscate);
         } else {
-			label = label_from_element_list(elt->children, obfuscate);
+            label = label_from_element_list(elt->children, obfuscate);
             g_string_append_printf(out, "<h%d id=\"%s\">", lev, label);
             print_html_element_list(out, elt->children, obfuscate);
-			free(label);
+            free(label);
         }
         g_string_append_printf(out, "</h%1d>", lev);
         padded = 0;
@@ -407,12 +407,12 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
         } else if (strcmp(elt->contents.str, "baseheaderlevel") == 0) {
             base_header_level = atoi(elt->children->contents.str);
         } else if (strcmp(elt->contents.str, "language") == 0) {
-			label = label_from_element_list(elt->children, 0);
+            label = label_from_element_list(elt->children, 0);
             if (strcmp(label, "dutch") == 0) { language = DUTCH; } else 
             if (strcmp(label, "german") == 0) { language = GERMAN; } else 
             if (strcmp(label, "french") == 0) { language = FRENCH; } else 
             if (strcmp(label, "swedish") == 0) { language = SWEDISH; }
-			free(label);
+            free(label);
        } else {
             g_string_append_printf(out, "\t<meta name=\"");
             print_html_string(out, elt->contents.str, obfuscate);
@@ -440,11 +440,11 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
 		table_alignment = elt->contents.str;
         break;
     case TABLECAPTION:
- 		label = label_from_element_list(elt->children,obfuscate);
+        label = label_from_element_list(elt->children,obfuscate);
         g_string_append_printf(out, "<caption id=\"%s\">", label);
         print_html_element_list(out, elt->children, obfuscate);
         g_string_append_printf(out, "</caption>\n");
-		free(label);
+        free(label);
         break;
     case TABLEHEAD:
         cell_type = 'h';
@@ -599,7 +599,7 @@ static void print_latex_element_list(GString *out, element *list) {
 /* print_latex_element - print an element as LaTeX */
 static void print_latex_element(GString *out, element *elt) {
     int lev;
-	char *label;
+    char *label;
     switch (elt->key) {
     case SPACE:
         g_string_append_printf(out, "%s", elt->contents.str);
@@ -649,14 +649,14 @@ static void print_latex_element(GString *out, element *elt) {
     case LINK:
         if (elt->contents.link->url[0] == '#') {
             /* This is a link to anchor within document */
-			label = label_from_string(elt->contents.link->url,0);
+            label = label_from_string(elt->contents.link->url,0);
             if (elt->contents.link->label != NULL) {
                 print_latex_element_list(out, elt->contents.link->label);
                 g_string_append_printf(out, " (\\autoref\{%s})", label);             
             } else {
                 g_string_append_printf(out, "\\autoref\{%s}", label);
             }
-			free(label);
+            free(label);
         } else if ( strcmp(elt->contents.link->label->contents.str, elt->contents.link->url) == 0 ) {
             /* This is a <link> */
             g_string_append_printf(out, "\\url{%s}", elt->contents.link->url);
@@ -675,11 +675,11 @@ static void print_latex_element(GString *out, element *elt) {
     case IMAGE:
         g_string_append_printf(out, "\\begin{figure}\n\\begin{center}\n\\includegraphics[keepaspectratio,width=\\textwidth, height=.75\\textheight]{%s}\n\\end{center}\n", elt->contents.link->url);
         if (strlen(elt->contents.link->title) > 0) {
-			label = label_from_string(elt->contents.link->title,0);
+            label = label_from_string(elt->contents.link->title,0);
             g_string_append_printf(out, "\\caption{");
             print_latex_string(out, elt->contents.link->title);
             g_string_append_printf(out, "}\n\\label{%s}\n", label);
-			free(label);
+            free(label);
         }
         g_string_append_printf(out,"\\end{figure}\n");
         break;
@@ -719,17 +719,17 @@ static void print_latex_element(GString *out, element *elt) {
         }
         /* generate a label for each header (MMD)*/
         if (elt->children->key == AUTOLABEL) {
-			label = label_from_string(elt->children->contents.str,0);
+            label = label_from_string(elt->children->contents.str,0);
             print_latex_element_list(out, elt->children->next);
             g_string_append_printf(out, "}\n\\label{");
             g_string_append_printf(out, "%s", label);
-			free(label);
+            free(label);
         } else {
-			label = label_from_element_list(elt->children,0);
-			print_latex_element_list(out, elt->children);
+            label = label_from_element_list(elt->children,0);
+            print_latex_element_list(out, elt->children);
             g_string_append_printf(out, "}\n\\label{");
             g_string_append_printf(out, "%s", label);
-			free(label);
+            free(label);
         }
         g_string_append_printf(out, "}\n");
         padded = 0;
@@ -920,11 +920,11 @@ static void print_latex_element(GString *out, element *elt) {
         g_string_append_printf(out, "\\begin{tabulary}{\\linewidth}{@{}%s@{}} \\\\ \\toprule\n", elt->contents.str);
         break;
     case TABLECAPTION:
-		label = label_from_element_list(elt->children,0);
+        label = label_from_element_list(elt->children,0);
         g_string_append_printf(out, "\\caption{");
         print_latex_element_list(out, elt->children);
         g_string_append_printf(out, "}\n\\label{%s}\n",label);
-		free(label);
+        free(label);
         break;
     case TABLEHEAD:
         print_latex_element_list(out, elt->children);
@@ -1245,7 +1245,7 @@ void print_memoir_element_list(GString *out, element *list) {
 /* print_memoir_element - print an element as LaTeX for memoir class */
 static void print_memoir_element(GString *out, element *elt) {
     int lev;
-	char *label;
+    char *label;
     switch (elt->key) {
     case VERBATIM:
         pad(out, 1);
@@ -1282,17 +1282,17 @@ static void print_memoir_element(GString *out, element *elt) {
         }
         /* generate a label for each header (MMD)*/
         if (elt->children->key == AUTOLABEL) {
-			label = label_from_string(elt->children->contents.str,0);
+            label = label_from_string(elt->children->contents.str,0);
             print_latex_element_list(out, elt->children->next);
             g_string_append_printf(out, "}\n\\label{");
             g_string_append_printf(out, "%s", label);
-			free(label);
+            free(label);
         } else {
-			label = label_from_element_list(elt->children,0);
+            label = label_from_element_list(elt->children,0);
             print_latex_element_list(out, elt->children);
             g_string_append_printf(out, "}\n\\label{");
             g_string_append_printf(out, "%s", label);
-			free(label);
+            free(label);
         }
         g_string_append_printf(out, "}\n");
         padded = 0;
@@ -1338,7 +1338,7 @@ static void print_beamer_endnotes(GString *out) {
 /* print_beamer_element - print an element as LaTeX for beamer class */
 static void print_beamer_element(GString *out, element *elt) {
     int lev;
-	char *label;
+    char *label;
     switch (elt->key) {
         case FOOTER:
             print_beamer_endnotes(out);
@@ -1399,17 +1399,17 @@ static void print_beamer_element(GString *out, element *elt) {
             }
             /* generate a label for each header (MMD)*/
             if (elt->children->key == AUTOLABEL) {
-				label = label_from_string(elt->children->contents.str,0);
+                label = label_from_string(elt->children->contents.str,0);
                 print_latex_element_list(out, elt->children->next);
                 g_string_append_printf(out, "}\n\\label{");
                 g_string_append_printf(out, "%s", label);
-				free(label);
+                free(label);
             } else {
-				label = label_from_element_list(elt->children,0);
+                label = label_from_element_list(elt->children,0);
                 print_latex_element_list(out, elt->children);
                 g_string_append_printf(out, "}\n\\label{");
                 g_string_append_printf(out, "%s", label);
-				free(label);
+                free(label);
             }
             g_string_append_printf(out, "}\n");
             padded = 0;
