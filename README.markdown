@@ -32,25 +32,29 @@ Go to the [downloads] page to get the installer.
 ## Windows ##
 
 The easiest way to get peg-multimarkdown running on Windows is to download the
-precompiled binary from the [downloads] page. I am not quite sure where the
-dll files should go on windows, so for now just put all three files in the
-same directory somewhere in your path. If someone knows an easy way to package
-these into an installer - let me know.
+precompiled binary from the [downloads] page. Theres a bat file you can run
+that will move the included dll files to the proper location
+(`C:\WINDOWS\system32`). If there's an easy way to make a proper installer, I
+am open to the idea, but only if it's pretty easy to do (preferably from the
+command line!)
 
 If you want to compile this yourself, you do it in the same way that you would
-install peg-markdown for Windows. The instructions are on the [peg-markdown]
+install peg-markdown for Windows. The instructions are on the
+peg-multimarkdown
+[wiki](https://github.com/fletcher/peg-multimarkdown/wiki/Building-for-Windows)
 page. I was able to compile for Windows fairly easily using Ubuntu linux
 following those instructions. I have not tried to actually compile on a
 Windows machine.
 
 (For those who are interested, I actually created an EC2 instance on Amazon
 and installed the necessary software to compile. I'll try and write down the
-exact steps, but it was pretty easy and probably cost me $0.10...)
+exact steps, but it was pretty easy and probably cost me $0.02...)
 
 
 ## Linux ##
 
-The easiest way is probably to compile it yourself. You need to have `glib2` installed.  For example, on ubuntu:
+The easiest way is probably to compile it yourself. You need to have `glib2`
+installed. For example, on ubuntu:
 
 	sudo apt-get install libglib2.0-dev
 
@@ -135,7 +139,10 @@ Once installed, you simply do something like the following:
 
 ## "Complete" documents vs. "snippets" ##
 
-A "snippet" is a section of HTML (or LaTeX) that is not a complete, fully-formed document.  It doesn't contain the header information to make it a valid XML document.  It can't be compiled with LaTeX into a PDF without further commands.
+A "snippet" is a section of HTML (or LaTeX) that is not a complete,
+fully-formed document. It doesn't contain the header information to make it a
+valid XML document. It can't be compiled with LaTeX into a PDF without further
+commands.
 
 For example:
 
@@ -233,7 +240,8 @@ and partly out of necessity.  Specifically:
 
 ## Headers ##
 
-If you use closing hashes at the end of your header, there needs to be a preceding space:
+If you use closing hashes at the end of your header, there needs to be a
+preceding space:
 
 This:
 
