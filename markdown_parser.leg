@@ -894,7 +894,7 @@ Table = a:StartList b:StartList (TableCaption { b = cons($$, b);})?
     { element *list = reverse(a);
         list = cons($$, list);
         a = reverse(list); } )
-    (TableBody { a = cons($$, a);} )*
+    (BlankLine? TableBody { a = cons($$, a);} )*
     (TableCaption { b = cons($$, b);})? &BlankLine
     # Requires blank line to end table "block"
     {
@@ -903,7 +903,7 @@ Table = a:StartList b:StartList (TableCaption { b = cons($$, b);})?
         $$ = mk_list(TABLE, a);
     }
 
-TableBody = a:StartList (TableRow {a = cons($$, a);})+ BlankLine?
+TableBody = a:StartList (TableRow {a = cons($$, a);})+
     { $$ = mk_list(TABLEBODY, a);}
 
 TableRow = a:StartList
