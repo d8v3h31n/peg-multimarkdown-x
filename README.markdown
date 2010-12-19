@@ -95,13 +95,9 @@ Once installed, you simply do something like the following:
   original Markdown.
 
 * `multimarkdown -t latex file.txt` --- output the results as LaTeX instead of
-  HTML. This can then be processed into a PDF if you have LaTeX installed.
-
-* `multimarkdown -t memoir file.txt` --- output as LaTeX designed for use with
-  the `memoir` package
-
-* `multimarkdown -t beamer file.txt` --- output as LaTeX designed for use with
-  the `beamer` package
+  HTML. This can then be processed into a PDF if you have LaTeX installed. You
+  can further specify the `LaTeX Mode` metadata to customize output for
+  compatibility with `memoir` or `beamer` classes.
 
 * `multimarkdown -h` --- display help and additional options.
 
@@ -202,6 +198,7 @@ metadata, or with embedded raw LaTeX commands in your document. For example:
 	Latex input:		mmd-memoir-layout
 	Title:				Sample MultiMarkdown Document  
 	Author:				Fletcher T. Penney  
+	LaTeX Mode:			memoir  
 	latex input:		mmd-memoir-frontmatter
 	latex footer:		mmd-memoir-footer
 
