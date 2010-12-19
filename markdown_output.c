@@ -61,6 +61,8 @@ element * print_html_headingsection(GString *out, element *list, bool obfuscate)
 
 static bool list_contains_key(element *list, int key);
 
+static int find_latex_mode(int format, element *list);
+element * metadata_for_key(char *key, element *list);
 
 /**********************************************************************
 
@@ -1172,6 +1174,8 @@ static void print_groff_mm_element(GString *out, element *elt, int count) {
 void print_element_list(GString *out, element *elt, int format, int exts) {
     extensions = exts;
     padded = 2;  /* set padding to 2, so no extra blank lines at beginning */
+
+    format = find_latex_mode(format, elt);
     switch (format) {
     case HTML_FORMAT:
         print_html_element_list(out, elt, false);
@@ -1433,12 +1437,63 @@ element * print_html_headingsection(GString *out, element *list, bool obfuscate)
 
 bool list_contains_key(element *list, int key) {
     element *step = NULL;
-    step = list->next;
+
+    step = list;
     while ( step != NULL ) {
-        if ((step->key == key)){ /* Doesn't match children */
+        if (step->key == key) {
             return TRUE;
+        }
+        if (step->children != NULL) {
+            if (list_contains_key(step->children, key)) {
+                return TRUE;
+            }
+        }
+       step = step->next;
+    }
+    return FALSE;
+}
+
+
+/* look for "LaTeX Mode" metadata and change format to match */
+static int find_latex_mode(int format, element *list) {
+    element *latex_mode;
+    char *label;
+    
+    if (format != LATEX_FORMAT) return format;
+    
+    if (list_contains_key(list,METAKEY)) {
+        latex_mode = metadata_for_key("latexmode", list);
+        if ( latex_mode != NULL) {
+            label = label_from_element_list(latex_mode->children, 0);
+            if (strcmp(label, "beamer") == 0) { format = BEAMER_FORMAT; } else 
+            if (strcmp(label, "memoir") == 0) { format = MEMOIR_FORMAT; } 
+            free(label);
+        }
+        return format;
+    } else {
+        return format;
+    }
+}
+
+
+/* find specified metadata key, if present */
+element * metadata_for_key(char *key, element *list) {
+    element *step = NULL;
+    step = list;
+    
+    while (step != NULL) {
+        if (step->key == METADATA) {
+            /* search METAKEY children */
+            step = step->children;
+            while ( step != NULL) {
+                if (strcmp(step->contents.str, key) == 0) {
+                    return step;
+                }
+                step = step->next;
+            }
+            return NULL;
         }
         step = step->next;
     }
-    return FALSE;
+    return NULL;
 }
