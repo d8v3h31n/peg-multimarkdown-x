@@ -97,7 +97,7 @@ AtxInline = !Newline !( &{ !extension(EXT_COMPATIBILITY) } Sp AutoLabel ) !(Sp '
 AtxStart =  < ( "######" | "#####" | "####" | "###" | "##" | "#" ) >
             { $$ = mk_element(H1 + (strlen(yytext) - 1)); }
 
-AtxHeading = s:AtxStart Sp a:StartList ( AtxInline { a = cons($$, a); } )+ ( Sp b:AutoLabel { a = reverse(cons(b,reverse(a)));})? (Sp '#'* Sp)?  Newline
+AtxHeading = s:AtxStart Sp a:StartList ( AtxInline { a = cons($$, a); } )+ ( Sp b:AutoLabel { append_list(b,a);})? (Sp '#'* Sp)?  Newline
             { $$ = mk_list(s->key,a);
             free(s); }
 
@@ -108,11 +108,11 @@ SetextBottom1 = "===" '='* Newline
 SetextBottom2 = "---" '-'* Newline
 
 SetextHeading1 =  &(RawLine SetextBottom1)
-                  a:StartList ( !Endline !( &{ !extension(EXT_COMPATIBILITY) } Sp ReferenceLinkSingle ) Inline { a = cons($$, a); } )+ ( Sp b:AutoLabel { a = reverse(cons(b,reverse(a)));} Sp )? Newline
+                  a:StartList ( !Endline !( &{ !extension(EXT_COMPATIBILITY) } Sp ReferenceLinkSingle ) Inline { a = cons($$, a); } )+ ( Sp b:AutoLabel { append_list(b,a);} Sp )? Newline
                   SetextBottom1 { $$ = mk_list(H1, a); }
 
 SetextHeading2 =  &(RawLine SetextBottom2)
-                  a:StartList ( !Endline !( &{ !extension(EXT_COMPATIBILITY) } Sp ReferenceLinkSingle ) Inline { a = cons($$, a); } )+ ( Sp b:AutoLabel { a = reverse(cons(b,reverse(a)));} Sp)? Newline
+                  a:StartList ( !Endline !( &{ !extension(EXT_COMPATIBILITY) } Sp ReferenceLinkSingle ) Inline { a = cons($$, a); } )+ ( Sp b:AutoLabel { append_list(b,a);} Sp)? Newline
                   SetextBottom2 { $$ = mk_list(H2, a); }
 
 Heading = AtxHeading | SetextHeading
@@ -911,15 +911,13 @@ Definition = (a:StartList b:StartList
 Table = a:StartList b:StartList (TableCaption { b = cons($$, b);})?
     TableBody { $$->key = TABLEHEAD; a = cons($$, a); }
     (SeparatorLine
-    { element *list = reverse(a);
-        list = cons($$, list);
-        a = reverse(list); } )
+		{ append_list($$,a); } )
     (TableBody { a = cons($$, a);} )*
     (TableCaption { b = cons($$, b);})? &BlankLine
     # Requires blank line to end table "block"
     {
         if (b != NULL) 
-            { a = reverse(cons(b, reverse(a))); }
+			{ append_list(b,a); }
         $$ = mk_list(TABLE, a);
     }
 

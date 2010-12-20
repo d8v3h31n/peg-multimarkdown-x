@@ -31,6 +31,19 @@ static element *reverse(element *list) {
     return new;
 }
 
+/* append_list - add element to end of list */
+static void append_list(element *new, element *list) {
+	assert(new != NULL);
+	element *step = list;
+	
+	while (step->next != NULL) {
+		step = step->next;
+	}
+	
+	new->next = NULL;
+	step->next = new;
+}
+
 /* concat_string_list - concatenates string contents of list of STR elements.
  * Frees STR elements as they are added to the concatenation. */
 static GString *concat_string_list(element *list) {
