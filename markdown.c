@@ -21,8 +21,6 @@
 #include <assert.h>
 #include <glib.h>
 #include "markdown_peg.h"
-#include "filepath.h"
-#include <gio/gio.h>
 
 static int extensions;
 
