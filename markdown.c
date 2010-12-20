@@ -21,6 +21,8 @@
 #include <assert.h>
 #include <glib.h>
 #include "markdown_peg.h"
+#include "filepath.h"
+#include <gio/gio.h>
 
 static int extensions;
 
@@ -49,12 +51,15 @@ void version(const char *progname)
 }
 
 int main(int argc, char * argv[]) {
-
+	g_type_init();
     int numargs;            /* number of filename arguments */
     int i;
 
     GString *inputbuf;
     char *out;              /* string containing processed output */
+
+	PATHINFO *filename;
+	GFile *file;
 
     FILE *input;
     FILE *output;
@@ -75,6 +80,7 @@ int main(int argc, char * argv[]) {
     static gboolean opt_filter_styles = FALSE;
     static gboolean opt_allext = FALSE;
     static gboolean opt_compatibility = FALSE;
+	static gboolean opt_batchmode = FALSE;
 
     static GOptionEntry entries[] =
     {
@@ -84,7 +90,8 @@ int main(int argc, char * argv[]) {
       { "extensions", 'x', 0, G_OPTION_ARG_NONE, &opt_allext, "use all syntax extensions", NULL },
       { "filter-html", 0, 0, G_OPTION_ARG_NONE, &opt_filter_html, "filter out raw HTML (except styles)", NULL },
       { "filter-styles", 0, 0, G_OPTION_ARG_NONE, &opt_filter_styles, "filter out HTML styles", NULL },
-      { "comptability", 'c', 0, G_OPTION_ARG_NONE, &opt_compatibility, "markdown compatibility mode", NULL },
+      { "compatibility", 'c', 0, G_OPTION_ARG_NONE, &opt_compatibility, "markdown compatibility mode", NULL },
+      { "batch", 'b', 0, G_OPTION_ARG_NONE, &opt_batchmode, "process multiple files automatically", NULL },
       { NULL }
     };
 
@@ -167,31 +174,68 @@ int main(int argc, char * argv[]) {
 
     inputbuf = g_string_new("");   /* string for concatenated input */
 
-    /* Read input from stdin or input files into inputbuf */
-
     numargs = argc - 1;
-    if (numargs == 0) {        /* use stdin if no files specified */
-        while ((curchar = fgetc(stdin)) != EOF)
-            g_string_append_c(inputbuf, curchar);
-        fclose(stdin);
-    }
-    else {                  /* open all the files on command line */
-       for (i = 0; i < numargs; i++) {
-            if ((input = fopen(argv[i+1], "r")) == NULL) {
-                perror(argv[i+1]);
-                exit(EXIT_FAILURE);
-            }
-            while ((curchar = fgetc(input)) != EOF)
-                g_string_append_c(inputbuf, curchar);
-            fclose(input);
-       }
-    }
 
-    out = markdown_to_string(inputbuf->str, extensions, output_format);
-    fprintf(output, "%s\n", out);
-    free(out);
+	if (opt_batchmode && numargs != 0) {
+		/* handle each file individually, and set output to filename with
+			appropriate extension */
+		
+	       for (i = 0; i < numargs; i++) {
+				/* Read file */
+	            if ((input = fopen(argv[i+1], "r")) == NULL) {
+	                perror(argv[i+1]);
+	                exit(EXIT_FAILURE);
+	            }
+	            while ((curchar = fgetc(input)) != EOF)
+	                g_string_append_c(inputbuf, curchar);
+	            fclose(input);
 
-    g_string_free(inputbuf, true);
+				filename = SplitPath(argv[i+1]);
+				
+				fprintf(stdout, "%s\n%s\n%s\n", filename->directory, filename->filename, filename->extension);
+				
+				GFile *file = g_file_new_for_path(argv[i+1]);
+				fprintf(stdout, "%s\n%s\n", g_file_get_path(file), g_file_get_basename(file));
+			
+				return 1;
+				/* open output file */
+				if (!(output = fopen(filename->filename, "w"))) {
+			        perror(opt_output);
+			        return 1;
+			    }
+				
+			    out = markdown_to_string(inputbuf->str, extensions, output_format);
+			    fprintf(output, "%s\n", out);
+			    free(out);
+	       }
+		
+	} else {
+	    /* Read input from stdin or input files into inputbuf */
+
+	    if (numargs == 0) {        /* use stdin if no files specified */
+	        while ((curchar = fgetc(stdin)) != EOF)
+	            g_string_append_c(inputbuf, curchar);
+	        fclose(stdin);
+	    }
+	    else {                  /* open all the files on command line */
+	       for (i = 0; i < numargs; i++) {
+	            if ((input = fopen(argv[i+1], "r")) == NULL) {
+	                perror(argv[i+1]);
+	                exit(EXIT_FAILURE);
+	            }
+	            while ((curchar = fgetc(input)) != EOF)
+	                g_string_append_c(inputbuf, curchar);
+	            fclose(input);
+	       }
+	    }
+
+	    out = markdown_to_string(inputbuf->str, extensions, output_format);
+	    fprintf(output, "%s\n", out);
+	    free(out);
+
+	    g_string_free(inputbuf, true);
+		
+	}
 
     return(EXIT_SUCCESS);
 }

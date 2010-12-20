@@ -13,7 +13,7 @@ else
 	CFLAGS ?= -Wall -O3 -ansi
 endif
 
-OBJS=markdown_parser.o markdown_output.o markdown_lib.o
+OBJS=markdown_parser.o markdown_output.o markdown_lib.o filepath.o
 PEGDIR=peg-0.1.4
 LEG=$(PEGDIR)/leg
 
@@ -21,10 +21,10 @@ $(LEG):
 	CC=gcc make -C $(PEGDIR)
 
 %.o : %.c markdown_peg.h
-	$(CC) -c `pkg-config --cflags glib-2.0` $(CFLAGS) -o $@ $<
+	$(CC) -c `pkg-config --cflags glib-2.0` `pkg-config --cflags gio-2.0`$(CFLAGS) -o $@ $<
 
 $(PROGRAM) : markdown.c $(OBJS)
-	$(CC) `pkg-config --cflags glib-2.0` `pkg-config --libs glib-2.0` $(CFLAGS) -o $@ $(OBJS) $<
+	$(CC) `pkg-config --cflags glib-2.0` `pkg-config --cflags gio-2.0` `pkg-config --libs glib-2.0` `pkg-config --libs gio-2.0` $(CFLAGS) -o $@ $(OBJS) $<
 
 markdown_parser.c : markdown_parser.leg $(LEG) markdown_peg.h parsing_functions.c utility_functions.c
 	$(LEG) -o $@ $<
