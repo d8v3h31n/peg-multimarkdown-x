@@ -1425,14 +1425,15 @@ static void print_beamer_element(GString *out, element *elt) {
 
 
 element * print_html_headingsection(GString *out, element *list, bool obfuscate) {
+	element *base = list;
     print_html_element_list(out, list->children, obfuscate);
     
-    element *step = NULL;
-    step = list->next;
-    while ( (step != NULL) && (step->key == HEADINGSECTION) && (step->children->key > list->children->key) && (step->children->key <= H6)) {
-        step = print_html_headingsection(out, step, obfuscate);
+    list = list->next;
+    while ( (list != NULL) && (list->key == HEADINGSECTION) && (list->children->key > base->children->key) && (list->children->key <= H6)) {
+        list = print_html_headingsection(out, list, obfuscate);
     }
-    return step;
+
+    return list;
 }
 
 bool list_contains_key(element *list, int key) {
