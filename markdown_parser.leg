@@ -913,7 +913,7 @@ Table = a:StartList b:StartList (TableCaption { b = cons($$, b);})?
     (SeparatorLine
 		{ append_list($$,a); } )
     (TableBody { a = cons($$, a);} )*
-    (TableCaption { b = cons($$, b);})? &BlankLine
+    (TableCaption { b = cons($$, b);} &BlankLine)? 
     # Requires blank line to end table "block"
     {
         if (b != NULL) 
