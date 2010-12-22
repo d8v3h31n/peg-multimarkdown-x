@@ -64,6 +64,8 @@ static bool list_contains_key(element *list, int key);
 static int find_latex_mode(int format, element *list);
 element * metadata_for_key(char *key, element *list);
 
+
+
 /**********************************************************************
 
   Utility functions for printing
@@ -1497,4 +1499,12 @@ element * metadata_for_key(char *key, element *list) {
         step = step->next;
     }
     return NULL;
+}
+
+
+/* Re-initialize notes before parsing document */
+void init_notes() {
+	notenumber = 0;
+    if (endnotes != NULL) g_slist_free(endnotes);
+	endnotes = NULL;
 }
