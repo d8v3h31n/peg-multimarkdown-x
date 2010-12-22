@@ -70,7 +70,7 @@ int main(int argc, char * argv[]) {
     static gchar *opt_output = 0;
     static gchar *opt_to = 0;
     static gboolean opt_smart = TRUE;
-    static gboolean opt_notes = FALSE;
+    static gboolean opt_notes = TRUE;
     static gboolean opt_process_html = FALSE;
     static gboolean opt_filter_html = FALSE;
     static gboolean opt_filter_styles = FALSE;
