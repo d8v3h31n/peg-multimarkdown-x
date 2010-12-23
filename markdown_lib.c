@@ -150,7 +150,7 @@ GString * markdown_to_g_string(char *text, int extensions, int output_format) {
     GString *formatted_text;
     GString *out;
     out = g_string_new("");
-	init_notes();
+    init_notes();
 
     formatted_text = preformat_text(text);
 

@@ -1427,7 +1427,7 @@ static void print_beamer_element(GString *out, element *elt) {
 
 
 element * print_html_headingsection(GString *out, element *list, bool obfuscate) {
-	element *base = list;
+    element *base = list;
     print_html_element_list(out, list->children, obfuscate);
     
     list = list->next;
@@ -1504,7 +1504,7 @@ element * metadata_for_key(char *key, element *list) {
 
 /* Re-initialize notes before parsing document */
 void init_notes() {
-	notenumber = 0;
+    notenumber = 0;
     if (endnotes != NULL) g_slist_free(endnotes);
-	endnotes = NULL;
+    endnotes = NULL;
 }

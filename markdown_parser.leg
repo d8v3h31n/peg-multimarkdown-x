@@ -53,14 +53,14 @@ MetaDataKeyValue = a:MetaDataKey
 
 MetaDataKey = < Alphanumeric ( Sp ( Alphanumeric | '_' | ' ' | '-')+)* >
 {
-	char *label = label_from_string(yytext,0);
-	$$ = mk_str(label);
-	free(label);
-	$$->key = METAKEY;
+    char *label = label_from_string(yytext,0);
+    $$ = mk_str(label);
+    free(label);
+    $$->key = METAKEY;
 }
 
 MetaDataValue = a:StartList
- 				((< (!Newline .)* > { a = cons(mk_str(yytext), a); })
+                ((< (!Newline .)* > { a = cons(mk_str(yytext), a); })
                 ((Newline &(!BlankLine !MetaDataKeyValue Sp RawLine))
                     { a = cons(mk_str("\n"), a);} | Newline)
                 (!BlankLine !MetaDataKeyValue Sp RawLine
@@ -811,14 +811,14 @@ CitationReference = CitationReferenceDouble | CitationReferenceSingle
 CitationReferenceDouble = b:Label < Spnl > !"[]" ref:RawCitationReference
                 {   element *match;
                     if (find_note(&match, ref->contents.str)) {
-						/* This citation is specified within the document */
+                        /* This citation is specified within the document */
                         $$ = mk_element(CITATION);
                         assert(match->children != NULL);
                         $$->children = match->children;
                         $$->contents.str = strdup(ref->contents.str);
                     } else {
-						/* Citation not specified - likely bibtex citation */
-	/* TODO: fix this - need to print label as well */
+                        /* Citation not specified - likely bibtex citation */
+                        /* TODO: fix this - need to print label as well */
                         char *s;
                         s = malloc(strlen(ref->contents.str) + 4);
                         sprintf(s, "[#%s]", ref->contents.str);
@@ -913,18 +913,16 @@ Definition = (a:StartList b:StartList
 
 Table = a:StartList b:StartList (TableCaption { b = cons($$, b);})?
     TableBody { $$->key = TABLEHEAD; a = cons($$, a); }
-    (SeparatorLine
-		{ append_list($$,a); } )
+    (SeparatorLine { append_list($$,a); } )
     (TableBody { a = cons($$, a);} )*
     (TableCaption { b = cons($$, b);} &BlankLine)? 
     # Requires blank line to end table "block"
     {
-        if (b != NULL) 
-			{ append_list(b,a); }
+        if (b != NULL) { append_list(b,a); };
         $$ = mk_list(TABLE, a);
     }
 
-TableBody = a:StartList (TableRow {a = cons($$, a);})+
+TableBody = a:StartList (TableRow {a = cons($$, a);})+ BlankLine?
     { $$ = mk_list(TABLEBODY, a);}
 
 TableRow = a:StartList

@@ -33,7 +33,7 @@ static int extensions;
 
  ***********************************************************************/
 
-#define VERSION "3.0a1"
+#define VERSION "3.0a3"
 #define COPYRIGHT "portions Copyright (c) 2010 Fletcher T. Penney.\n" \
                   "original Copyright (c) 2008-2009 John MacFarlane.  License GPLv2+ or MIT.\n" \
                   "This is free software: you are free to change and redistribute it.\n" \
@@ -55,8 +55,8 @@ int main(int argc, char * argv[]) {
     GString *inputbuf;
     char *out;              /* string containing processed output */
 
-	GString *file;
-	char *fake;
+    GString *file;
+    char *fake;
     FILE *input;
     FILE *output;
     char curchar;
@@ -76,7 +76,7 @@ int main(int argc, char * argv[]) {
     static gboolean opt_filter_styles = FALSE;
     static gboolean opt_allext = FALSE;
     static gboolean opt_compatibility = FALSE;
-	static gboolean opt_batchmode = FALSE;
+    static gboolean opt_batchmode = FALSE;
 
     static GOptionEntry entries[] =
     {
@@ -163,90 +163,90 @@ int main(int argc, char * argv[]) {
 
     numargs = argc - 1;
 
-	if (opt_batchmode && numargs != 0) {
-		/* handle each file individually, and set output to filename with
-			appropriate extension */
-		
-	       for (i = 0; i < numargs; i++) {
-		    	inputbuf = g_string_new("");   /* string for concatenated input */
-				/* Read file */
-	            if ((input = fopen(argv[i+1], "r")) == NULL) {
-	                perror(argv[i+1]);
-	                exit(EXIT_FAILURE);
-	            }
-	            while ((curchar = fgetc(input)) != EOF)
-	                g_string_append_c(inputbuf, curchar);
-	            fclose(input);
+    if (opt_batchmode && numargs != 0) {
+        /* handle each file individually, and set output to filename with
+            appropriate extension */
+        
+           for (i = 0; i < numargs; i++) {
+                inputbuf = g_string_new("");   /* string for concatenated input */
+                /* Read file */
+                if ((input = fopen(argv[i+1], "r")) == NULL) {
+                    perror(argv[i+1]);
+                    exit(EXIT_FAILURE);
+                }
+                while ((curchar = fgetc(input)) != EOF)
+                    g_string_append_c(inputbuf, curchar);
+                fclose(input);
 
-				/* remove file extension, if present */
-				fake = argv[i+1];
-				if (strrchr(fake, '.') != NULL) {
-					int count = strrchr(fake,'.') - fake;
-					if (count != 0) {
-						fake[count] = '\0';
-					}
-				}
+                /* remove file extension, if present */
+                fake = argv[i+1];
+                if (strrchr(fake, '.') != NULL) {
+                    int count = strrchr(fake,'.') - fake;
+                    if (count != 0) {
+                        fake[count] = '\0';
+                    }
+                }
 
-				file = g_string_new(fake);
-				if (output_format == HTML_FORMAT) {
-					g_string_append(file,".html");
-				} else {
-					g_string_append(file,".tex");
-				}
+                file = g_string_new(fake);
+                if (output_format == HTML_FORMAT) {
+                    g_string_append(file,".html");
+                } else {
+                    g_string_append(file,".tex");
+                }
 
-				/* open output file */
-				if (!(output = fopen(file->str, "w"))) {
-			        perror(opt_output);
-			        return 1;
-			    }
-				
-			    out = markdown_to_string(inputbuf->str, extensions, output_format);
+                /* open output file */
+                if (!(output = fopen(file->str, "w"))) {
+                    perror(opt_output);
+                    return 1;
+                }
+                
+                out = markdown_to_string(inputbuf->str, extensions, output_format);
 
-			    fprintf(output, "%s\n", out);
-				fclose(output);
-				g_string_free(file,true);
-			    free(out);
-			    g_string_free(inputbuf, true);
-	       }
-		
-	} else {
-	    /* Read input from stdin or input files into inputbuf */
+                fprintf(output, "%s\n", out);
+                fclose(output);
+                g_string_free(file,true);
+                free(out);
+                g_string_free(inputbuf, true);
+           }
+        
+    } else {
+        /* Read input from stdin or input files into inputbuf */
 
-	    inputbuf = g_string_new("");   /* string for concatenated input */
+        inputbuf = g_string_new("");   /* string for concatenated input */
 
-	    if (numargs == 0) {        /* use stdin if no files specified */
-	        while ((curchar = fgetc(stdin)) != EOF)
-	            g_string_append_c(inputbuf, curchar);
-	        fclose(stdin);
-	    }
-	    else {                  /* open all the files on command line */
-	       for (i = 0; i < numargs; i++) {
-	            if ((input = fopen(argv[i+1], "r")) == NULL) {
-	                perror(argv[i+1]);
-	                exit(EXIT_FAILURE);
-	            }
-	            while ((curchar = fgetc(input)) != EOF)
-	                g_string_append_c(inputbuf, curchar);
-	            fclose(input);
-	       }
-	    }
+        if (numargs == 0) {        /* use stdin if no files specified */
+            while ((curchar = fgetc(stdin)) != EOF)
+                g_string_append_c(inputbuf, curchar);
+            fclose(stdin);
+        }
+        else {                  /* open all the files on command line */
+           for (i = 0; i < numargs; i++) {
+                if ((input = fopen(argv[i+1], "r")) == NULL) {
+                    perror(argv[i+1]);
+                    exit(EXIT_FAILURE);
+                }
+                while ((curchar = fgetc(input)) != EOF)
+                    g_string_append_c(inputbuf, curchar);
+                fclose(input);
+           }
+        }
 
-	    /* we allow "-" as a synonym for stdout here */
-	    if (opt_output == NULL || strcmp(opt_output, "-") == 0)
-	        output = stdout;
-	    else if (!(output = fopen(opt_output, "w"))) {
-	        perror(opt_output);
-	        return 1;
-	    }
+        /* we allow "-" as a synonym for stdout here */
+        if (opt_output == NULL || strcmp(opt_output, "-") == 0)
+            output = stdout;
+        else if (!(output = fopen(opt_output, "w"))) {
+            perror(opt_output);
+            return 1;
+        }
 
 
-	    out = markdown_to_string(inputbuf->str, extensions, output_format);
-	    fprintf(output, "%s\n", out);
-	    free(out);
-		fclose(output);
-	    g_string_free(inputbuf, true);
-		
-	}
+        out = markdown_to_string(inputbuf->str, extensions, output_format);
+        fprintf(output, "%s\n", out);
+        free(out);
+        fclose(output);
+        g_string_free(inputbuf, true);
+        
+    }
 
     return(EXIT_SUCCESS);
 }
