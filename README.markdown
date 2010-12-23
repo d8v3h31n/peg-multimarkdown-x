@@ -95,15 +95,19 @@ Once installed, you simply do something like the following:
   original Markdown.
 
 * `multimarkdown -t latex file.txt` --- output the results as LaTeX instead of
-  HTML. This can then be processed into a PDF if you have LaTeX installed.
-
-* `multimarkdown -t memoir file.txt` --- output as LaTeX designed for use with
-  the `memoir` package
-
-* `multimarkdown -t beamer file.txt` --- output as LaTeX designed for use with
-  the `beamer` package
+  HTML. This can then be processed into a PDF if you have LaTeX installed. You
+  can further specify the `LaTeX Mode` metadata to customize output for
+  compatibility with `memoir` or `beamer` classes.
 
 * `multimarkdown -h` --- display help and additional options.
+
+* `multimarkdown -b *.txt` --- `-b` or `--batch` mode can process multiple
+  files at once, converting `file.txt` to `file.html` or `file.tex` as
+  directed. Using this feature, you can convert a directory of MultiMarkdown
+  text files into HTML files, or LaTeX files with a single command without
+  having to specify the output files manually. **CAUTION**: This will
+  overwrite existing files with the `html` or `tex` extension, so use with
+  caution.
 
 
 # Why create another version of MultiMarkdown? #
@@ -188,9 +192,6 @@ LaTeX documents are created a bit differently than under the old system. You
 no longer have to use an XSLT file to convert from XHTML to LaTeX. You can go
 straight from MultiMarkdown to LaTeX, which is faster and more flexible.
 
-**NOTE:** You can still use the old approach if you like. It was slow, but
-powerful and allowed for fairly detailed customizations in your output.
-
 To create a complete LaTeX document, you can process your file as a snippet,
 and then place it in a LaTeX template that you already have. Alternatively,
 you can use metadata to trigger the creation of a complete document. You can
@@ -198,15 +199,20 @@ use the `LaTeX Input` metadata to insert a `\input{file}` command. You can
 then store various template files in your texmf directory and call them with
 metadata, or with embedded raw LaTeX commands in your document. For example:
 
-	Latex input:		mmd-memoir-header
-	Latex input:		mmd-memoir-layout
+	LaTeX Input:		mmd-memoir-header
+	LaTeX Input:		mmd-memoir-layout
 	Title:				Sample MultiMarkdown Document  
 	Author:				Fletcher T. Penney  
-	latex input:		mmd-memoir-frontmatter
-	latex footer:		mmd-memoir-footer
+	LaTeX Mode:			memoir  
+	LaTeX Input:		mmd-memoir-frontmatter
+	LaTeX Footer:		mmd-memoir-footer
 
 This would include several template files in the order that you see. The
-`LaTeX Footer` metadata inserts a template at the end of your document.
+`LaTeX Footer` metadata inserts a template at the end of your document.  Note that the order and placement of the `LaTeX Include` statements is important.
+
+The `LaTeX Mode` metadata allows you to specify that MultiMarkdown should use
+the `memoir` or `beamer` output format. This places subtle differences in the
+output document for compatibility with those respective classes.
 
 This system isn't quite as powerful as the XSLT approach, since it doesn't
 alter the actual MultiMarkdown to LaTeX conversion process. But it is probably

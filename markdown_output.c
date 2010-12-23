@@ -61,6 +61,10 @@ element * print_html_headingsection(GString *out, element *list, bool obfuscate)
 
 static bool list_contains_key(element *list, int key);
 
+static int find_latex_mode(int format, element *list);
+element * metadata_for_key(char *key, element *list);
+
+
 
 /**********************************************************************
 
@@ -139,6 +143,7 @@ static void add_endnote(element *elt) {
 /* print_html_element - print an element as HTML */
 static void print_html_element(GString *out, element *elt, bool obfuscate) {
     int lev;
+    char *label;
     switch (elt->key) {
     case SPACE:
         g_string_append_printf(out, "%s", elt->contents.str);
@@ -240,8 +245,10 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
             g_string_append_printf(out, "<h%d id=\"%s\">", lev,elt->children->contents.str);
             print_html_element_list(out, elt->children->next, obfuscate);
         } else {
-            g_string_append_printf(out, "<h%d id=\"%s\">", lev, label_from_element_list(elt->children, obfuscate));
+            label = label_from_element_list(elt->children, obfuscate);
+            g_string_append_printf(out, "<h%d id=\"%s\">", lev, label);
             print_html_element_list(out, elt->children, obfuscate);
+            free(label);
         }
         g_string_append_printf(out, "</h%1d>", lev);
         padded = 0;
@@ -404,10 +411,12 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
         } else if (strcmp(elt->contents.str, "baseheaderlevel") == 0) {
             base_header_level = atoi(elt->children->contents.str);
         } else if (strcmp(elt->contents.str, "language") == 0) {
-            if (strcmp(label_from_element_list(elt->children, 0), "dutch") == 0) { language = DUTCH; } else 
-            if (strcmp(label_from_element_list(elt->children, 0), "german") == 0) { language = GERMAN; } else 
-            if (strcmp(label_from_element_list(elt->children, 0), "french") == 0) { language = FRENCH; } else 
-            if (strcmp(label_from_element_list(elt->children, 0), "swedish") == 0) { language = SWEDISH; }
+            label = label_from_element_list(elt->children, 0);
+            if (strcmp(label, "dutch") == 0) { language = DUTCH; } else 
+            if (strcmp(label, "german") == 0) { language = GERMAN; } else 
+            if (strcmp(label, "french") == 0) { language = FRENCH; } else 
+            if (strcmp(label, "swedish") == 0) { language = SWEDISH; }
+            free(label);
        } else {
             g_string_append_printf(out, "\t<meta name=\"");
             print_html_string(out, elt->contents.str, obfuscate);
@@ -435,9 +444,11 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
 		table_alignment = elt->contents.str;
         break;
     case TABLECAPTION:
-        g_string_append_printf(out, "<caption id=\"%s\">", label_from_element_list(elt->children,obfuscate));
+        label = label_from_element_list(elt->children,obfuscate);
+        g_string_append_printf(out, "<caption id=\"%s\">", label);
         print_html_element_list(out, elt->children, obfuscate);
         g_string_append_printf(out, "</caption>\n");
+        free(label);
         break;
     case TABLEHEAD:
         cell_type = 'h';
@@ -592,6 +603,7 @@ static void print_latex_element_list(GString *out, element *list) {
 /* print_latex_element - print an element as LaTeX */
 static void print_latex_element(GString *out, element *elt) {
     int lev;
+    char *label;
     switch (elt->key) {
     case SPACE:
         g_string_append_printf(out, "%s", elt->contents.str);
@@ -641,12 +653,14 @@ static void print_latex_element(GString *out, element *elt) {
     case LINK:
         if (elt->contents.link->url[0] == '#') {
             /* This is a link to anchor within document */
+            label = label_from_string(elt->contents.link->url,0);
             if (elt->contents.link->label != NULL) {
                 print_latex_element_list(out, elt->contents.link->label);
-                g_string_append_printf(out, " (\\autoref\{%s})", label_from_string(elt->contents.link->url,0));             
+                g_string_append_printf(out, " (\\autoref\{%s})", label);             
             } else {
-                g_string_append_printf(out, "\\autoref\{%s}", label_from_string(elt->contents.link->url,0));
+                g_string_append_printf(out, "\\autoref\{%s}", label);
             }
+            free(label);
         } else if ( strcmp(elt->contents.link->label->contents.str, elt->contents.link->url) == 0 ) {
             /* This is a <link> */
             g_string_append_printf(out, "\\url{%s}", elt->contents.link->url);
@@ -665,9 +679,11 @@ static void print_latex_element(GString *out, element *elt) {
     case IMAGE:
         g_string_append_printf(out, "\\begin{figure}\n\\begin{center}\n\\includegraphics[keepaspectratio,width=\\textwidth, height=.75\\textheight]{%s}\n\\end{center}\n", elt->contents.link->url);
         if (strlen(elt->contents.link->title) > 0) {
+            label = label_from_string(elt->contents.link->title,0);
             g_string_append_printf(out, "\\caption{");
             print_latex_string(out, elt->contents.link->title);
-            g_string_append_printf(out, "}\n\\label{%s}\n", label_from_string(elt->contents.link->title,0));
+            g_string_append_printf(out, "}\n\\label{%s}\n", label);
+            free(label);
         }
         g_string_append_printf(out,"\\end{figure}\n");
         break;
@@ -707,13 +723,17 @@ static void print_latex_element(GString *out, element *elt) {
         }
         /* generate a label for each header (MMD)*/
         if (elt->children->key == AUTOLABEL) {
+            label = label_from_string(elt->children->contents.str,0);
             print_latex_element_list(out, elt->children->next);
             g_string_append_printf(out, "}\n\\label{");
-            g_string_append_printf(out, "%s", label_from_string(elt->children->contents.str,0));
+            g_string_append_printf(out, "%s", label);
+            free(label);
         } else {
+            label = label_from_element_list(elt->children,0);
             print_latex_element_list(out, elt->children);
             g_string_append_printf(out, "}\n\\label{");
-            g_string_append_printf(out, "%s", label_from_element_list(elt->children,0));
+            g_string_append_printf(out, "%s", label);
+            free(label);
         }
         g_string_append_printf(out, "}\n");
         padded = 0;
@@ -833,8 +853,8 @@ static void print_latex_element(GString *out, element *elt) {
             if (elt->children->contents.str == NULL) {
                 elt->children->contents.str = strdup(elt->contents.str);
                 add_endnote(elt->children);
-                elt->children = NULL;
             }
+            elt->children = NULL;
         }
         break;
     case DEFLIST:
@@ -904,9 +924,11 @@ static void print_latex_element(GString *out, element *elt) {
         g_string_append_printf(out, "\\begin{tabulary}{\\linewidth}{@{}%s@{}} \\\\ \\toprule\n", elt->contents.str);
         break;
     case TABLECAPTION:
+        label = label_from_element_list(elt->children,0);
         g_string_append_printf(out, "\\caption{");
         print_latex_element_list(out, elt->children);
-        g_string_append_printf(out, "}\n\\label{%s}\n",label_from_element_list(elt->children,0));
+        g_string_append_printf(out, "}\n\\label{%s}\n",label);
+        free(label);
         break;
     case TABLEHEAD:
         print_latex_element_list(out, elt->children);
@@ -1154,6 +1176,8 @@ static void print_groff_mm_element(GString *out, element *elt, int count) {
 void print_element_list(GString *out, element *elt, int format, int exts) {
     extensions = exts;
     padded = 2;  /* set padding to 2, so no extra blank lines at beginning */
+
+    format = find_latex_mode(format, elt);
     switch (format) {
     case HTML_FORMAT:
         print_html_element_list(out, elt, false);
@@ -1227,6 +1251,7 @@ void print_memoir_element_list(GString *out, element *list) {
 /* print_memoir_element - print an element as LaTeX for memoir class */
 static void print_memoir_element(GString *out, element *elt) {
     int lev;
+    char *label;
     switch (elt->key) {
     case VERBATIM:
         pad(out, 1);
@@ -1263,13 +1288,17 @@ static void print_memoir_element(GString *out, element *elt) {
         }
         /* generate a label for each header (MMD)*/
         if (elt->children->key == AUTOLABEL) {
+            label = label_from_string(elt->children->contents.str,0);
             print_latex_element_list(out, elt->children->next);
             g_string_append_printf(out, "}\n\\label{");
-            g_string_append_printf(out, "%s", label_from_string(elt->children->contents.str,0));
+            g_string_append_printf(out, "%s", label);
+            free(label);
         } else {
+            label = label_from_element_list(elt->children,0);
             print_latex_element_list(out, elt->children);
             g_string_append_printf(out, "}\n\\label{");
-            g_string_append_printf(out, "%s", label_from_element_list(elt->children,0));
+            g_string_append_printf(out, "%s", label);
+            free(label);
         }
         g_string_append_printf(out, "}\n");
         padded = 0;
@@ -1315,6 +1344,7 @@ static void print_beamer_endnotes(GString *out) {
 /* print_beamer_element - print an element as LaTeX for beamer class */
 static void print_beamer_element(GString *out, element *elt) {
     int lev;
+    char *label;
     switch (elt->key) {
         case FOOTER:
             print_beamer_endnotes(out);
@@ -1375,13 +1405,17 @@ static void print_beamer_element(GString *out, element *elt) {
             }
             /* generate a label for each header (MMD)*/
             if (elt->children->key == AUTOLABEL) {
+                label = label_from_string(elt->children->contents.str,0);
                 print_latex_element_list(out, elt->children->next);
                 g_string_append_printf(out, "}\n\\label{");
-                g_string_append_printf(out, "%s", label_from_string(elt->children->contents.str,0));
+                g_string_append_printf(out, "%s", label);
+                free(label);
             } else {
+                label = label_from_element_list(elt->children,0);
                 print_latex_element_list(out, elt->children);
                 g_string_append_printf(out, "}\n\\label{");
-                g_string_append_printf(out, "%s", label_from_element_list(elt->children,0));
+                g_string_append_printf(out, "%s", label);
+                free(label);
             }
             g_string_append_printf(out, "}\n");
             padded = 0;
@@ -1393,24 +1427,84 @@ static void print_beamer_element(GString *out, element *elt) {
 
 
 element * print_html_headingsection(GString *out, element *list, bool obfuscate) {
+    element *base = list;
     print_html_element_list(out, list->children, obfuscate);
     
-    element *step = NULL;
-    step = list->next;
-    while ( (step != NULL) && (step->key == HEADINGSECTION) && (step->children->key > list->children->key) && (step->children->key <= H6)) {
-        step = print_html_headingsection(out, step, obfuscate);
+    list = list->next;
+    while ( (list != NULL) && (list->key == HEADINGSECTION) && (list->children->key > base->children->key) && (list->children->key <= H6)) {
+        list = print_html_headingsection(out, list, obfuscate);
     }
-    return step;
+
+    return list;
 }
 
 bool list_contains_key(element *list, int key) {
     element *step = NULL;
-    step = list->next;
+
+    step = list;
     while ( step != NULL ) {
-        if ((step->key == key)){ /* Doesn't match children */
+        if (step->key == key) {
             return TRUE;
+        }
+        if (step->children != NULL) {
+            if (list_contains_key(step->children, key)) {
+                return TRUE;
+            }
+        }
+       step = step->next;
+    }
+    return FALSE;
+}
+
+
+/* look for "LaTeX Mode" metadata and change format to match */
+static int find_latex_mode(int format, element *list) {
+    element *latex_mode;
+    char *label;
+    
+    if (format != LATEX_FORMAT) return format;
+    
+    if (list_contains_key(list,METAKEY)) {
+        latex_mode = metadata_for_key("latexmode", list);
+        if ( latex_mode != NULL) {
+            label = label_from_element_list(latex_mode->children, 0);
+            if (strcmp(label, "beamer") == 0) { format = BEAMER_FORMAT; } else 
+            if (strcmp(label, "memoir") == 0) { format = MEMOIR_FORMAT; } 
+            free(label);
+        }
+        return format;
+    } else {
+        return format;
+    }
+}
+
+
+/* find specified metadata key, if present */
+element * metadata_for_key(char *key, element *list) {
+    element *step = NULL;
+    step = list;
+    
+    while (step != NULL) {
+        if (step->key == METADATA) {
+            /* search METAKEY children */
+            step = step->children;
+            while ( step != NULL) {
+                if (strcmp(step->contents.str, key) == 0) {
+                    return step;
+                }
+                step = step->next;
+            }
+            return NULL;
         }
         step = step->next;
     }
-    return FALSE;
+    return NULL;
+}
+
+
+/* Re-initialize notes before parsing document */
+void init_notes() {
+    notenumber = 0;
+    if (endnotes != NULL) g_slist_free(endnotes);
+    endnotes = NULL;
 }

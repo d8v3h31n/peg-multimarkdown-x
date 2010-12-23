@@ -1,6 +1,6 @@
 ALL : multimarkdown
 
-VERSION=3.0a1
+VERSION=3.0a3
 
 PROGRAM=multimarkdown
 
@@ -50,8 +50,12 @@ latextest: $(PROGRAM)
 	cd MarkdownTest_1.0.3; \
 	./MarkdownTest.pl --Script=../$(PROGRAM) --testdir=LaTeXTests --Flags="-t latex"
 
+beamertest: $(PROGRAM)
+	cd MarkdownTest_1.0.3; \
+	./MarkdownTest.pl --Script=../$(PROGRAM) --testdir=BeamerTests --Flags="-t beamer"
+
 leak-check: $(PROGRAM)
-	valgrind --leak-check=full ./markdown README
+	valgrind --leak-check=full ./multimarkdown TEST.markdown > TEST.html
 
 installer: $(PROGRAM)
 	cp README.markdown windows_installer/README.txt

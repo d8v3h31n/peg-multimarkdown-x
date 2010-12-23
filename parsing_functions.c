@@ -31,6 +31,15 @@ static void free_element_contents(element elt) {
       case VERBATIM:
       case CODE:
       case NOTE:
+      case AUTOLABEL:
+      case CITATION:
+      case TERM:
+      case METAKEY:
+      case METAVALUE:
+      case TABLESEPARATOR:
+      case ATTRKEY:
+      case GLOSSARY:
+      case GLOSSARYTERM:
         free(elt.contents.str);
         elt.contents.str = NULL;
         break;
