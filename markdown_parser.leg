@@ -811,11 +811,14 @@ CitationReference = CitationReferenceDouble | CitationReferenceSingle
 CitationReferenceDouble = b:Label < Spnl > !"[]" ref:RawCitationReference
                 {   element *match;
                     if (find_note(&match, ref->contents.str)) {
+						/* This citation is specified within the document */
                         $$ = mk_element(CITATION);
                         assert(match->children != NULL);
                         $$->children = match->children;
                         $$->contents.str = strdup(ref->contents.str);
                     } else {
+						/* Citation not specified - likely bibtex citation */
+	/* TODO: fix this - need to print label as well */
                         char *s;
                         s = malloc(strlen(ref->contents.str) + 4);
                         sprintf(s, "[#%s]", ref->contents.str);

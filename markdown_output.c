@@ -853,8 +853,8 @@ static void print_latex_element(GString *out, element *elt) {
             if (elt->children->contents.str == NULL) {
                 elt->children->contents.str = strdup(elt->contents.str);
                 add_endnote(elt->children);
-                elt->children = NULL;
             }
+            elt->children = NULL;
         }
         break;
     case DEFLIST:
