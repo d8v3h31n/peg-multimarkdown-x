@@ -6,7 +6,7 @@ To create an installer for Mac OS X:
 * `make test`, `make mmdtest`, `make latextest` to be sure everything worked
   properly
 
-* `make install` to copy the binary into the proper folder
+* `make installer` to copy the binary into the proper folder
 
 * open the `Make OS X Installer` file and select "Build"
 
