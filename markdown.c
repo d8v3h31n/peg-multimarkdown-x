@@ -49,13 +49,14 @@ void version(const char *progname)
 }
 
 int main(int argc, char * argv[]) {
-
     int numargs;            /* number of filename arguments */
     int i;
 
     GString *inputbuf;
     char *out;              /* string containing processed output */
 
+	GString *file;
+	char *fake;
     FILE *input;
     FILE *output;
     char curchar;
@@ -75,6 +76,7 @@ int main(int argc, char * argv[]) {
     static gboolean opt_filter_styles = FALSE;
     static gboolean opt_allext = FALSE;
     static gboolean opt_compatibility = FALSE;
+	static gboolean opt_batchmode = FALSE;
 
     static GOptionEntry entries[] =
     {
@@ -84,7 +86,8 @@ int main(int argc, char * argv[]) {
       { "extensions", 'x', 0, G_OPTION_ARG_NONE, &opt_allext, "use all syntax extensions", NULL },
       { "filter-html", 0, 0, G_OPTION_ARG_NONE, &opt_filter_html, "filter out raw HTML (except styles)", NULL },
       { "filter-styles", 0, 0, G_OPTION_ARG_NONE, &opt_filter_styles, "filter out HTML styles", NULL },
-      { "comptability", 'c', 0, G_OPTION_ARG_NONE, &opt_compatibility, "markdown compatibility mode", NULL },
+      { "compatibility", 'c', 0, G_OPTION_ARG_NONE, &opt_compatibility, "markdown compatibility mode", NULL },
+      { "batch", 'b', 0, G_OPTION_ARG_NONE, &opt_batchmode, "process multiple files automatically", NULL },
       { NULL }
     };
 
@@ -157,41 +160,93 @@ int main(int argc, char * argv[]) {
         exit(EXIT_FAILURE);
     }
 
-    /* we allow "-" as a synonym for stdout here */
-    if (opt_output == NULL || strcmp(opt_output, "-") == 0)
-        output = stdout;
-    else if (!(output = fopen(opt_output, "w"))) {
-        perror(opt_output);
-        return 1;
-    }
-
-    inputbuf = g_string_new("");   /* string for concatenated input */
-
-    /* Read input from stdin or input files into inputbuf */
 
     numargs = argc - 1;
-    if (numargs == 0) {        /* use stdin if no files specified */
-        while ((curchar = fgetc(stdin)) != EOF)
-            g_string_append_c(inputbuf, curchar);
-        fclose(stdin);
-    }
-    else {                  /* open all the files on command line */
-       for (i = 0; i < numargs; i++) {
-            if ((input = fopen(argv[i+1], "r")) == NULL) {
-                perror(argv[i+1]);
-                exit(EXIT_FAILURE);
-            }
-            while ((curchar = fgetc(input)) != EOF)
-                g_string_append_c(inputbuf, curchar);
-            fclose(input);
-       }
-    }
 
-    out = markdown_to_string(inputbuf->str, extensions, output_format);
-    fprintf(output, "%s\n", out);
-    free(out);
+	if (opt_batchmode && numargs != 0) {
+		/* handle each file individually, and set output to filename with
+			appropriate extension */
+		
+	       for (i = 0; i < numargs; i++) {
+		    	inputbuf = g_string_new("");   /* string for concatenated input */
+				/* Read file */
+	            if ((input = fopen(argv[i+1], "r")) == NULL) {
+	                perror(argv[i+1]);
+	                exit(EXIT_FAILURE);
+	            }
+	            while ((curchar = fgetc(input)) != EOF)
+	                g_string_append_c(inputbuf, curchar);
+	            fclose(input);
 
-    g_string_free(inputbuf, true);
+				/* remove file extension, if present */
+				fake = argv[i+1];
+				if (strrchr(fake, '.') != NULL) {
+					int count = strrchr(fake,'.') - fake;
+					if (count != 0) {
+						fake[count] = '\0';
+					}
+				}
+
+				file = g_string_new(fake);
+				if (output_format == HTML_FORMAT) {
+					g_string_append(file,".html");
+				} else {
+					g_string_append(file,".tex");
+				}
+
+				/* open output file */
+				if (!(output = fopen(file->str, "w"))) {
+			        perror(opt_output);
+			        return 1;
+			    }
+				
+			    out = markdown_to_string(inputbuf->str, extensions, output_format);
+
+			    fprintf(output, "%s\n", out);
+				fclose(output);
+				g_string_free(file,true);
+			    free(out);
+			    g_string_free(inputbuf, true);
+	       }
+		
+	} else {
+	    /* Read input from stdin or input files into inputbuf */
+
+	    inputbuf = g_string_new("");   /* string for concatenated input */
+
+	    if (numargs == 0) {        /* use stdin if no files specified */
+	        while ((curchar = fgetc(stdin)) != EOF)
+	            g_string_append_c(inputbuf, curchar);
+	        fclose(stdin);
+	    }
+	    else {                  /* open all the files on command line */
+	       for (i = 0; i < numargs; i++) {
+	            if ((input = fopen(argv[i+1], "r")) == NULL) {
+	                perror(argv[i+1]);
+	                exit(EXIT_FAILURE);
+	            }
+	            while ((curchar = fgetc(input)) != EOF)
+	                g_string_append_c(inputbuf, curchar);
+	            fclose(input);
+	       }
+	    }
+
+	    /* we allow "-" as a synonym for stdout here */
+	    if (opt_output == NULL || strcmp(opt_output, "-") == 0)
+	        output = stdout;
+	    else if (!(output = fopen(opt_output, "w"))) {
+	        perror(opt_output);
+	        return 1;
+	    }
+
+
+	    out = markdown_to_string(inputbuf->str, extensions, output_format);
+	    fprintf(output, "%s\n", out);
+	    free(out);
+		fclose(output);
+	    g_string_free(inputbuf, true);
+		
+	}
 
     return(EXIT_SUCCESS);
 }

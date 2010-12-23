@@ -31,6 +31,19 @@ static element *reverse(element *list) {
     return new;
 }
 
+/* append_list - add element to end of list */
+static void append_list(element *new, element *list) {
+	assert(new != NULL);
+	element *step = list;
+	
+	while (step->next != NULL) {
+		step = step->next;
+	}
+	
+	new->next = NULL;
+	step->next = new;
+}
+
 /* concat_string_list - concatenates string contents of list of STR elements.
  * Frees STR elements as they are added to the concatenation. */
 static GString *concat_string_list(element *list) {
@@ -248,56 +261,69 @@ static void print_raw_element_list(GString *out, element *list) {
 }
 
 /* label_from_element_list */
+/* Returns a null-terminated string, which must be freed after use. */
 
 static char *label_from_element_list(element *list, bool obfuscate) {
     char *label;
+    char *label2;
     GString *raw = g_string_new("");
     print_raw_element_list(raw, list);
     label =  label_from_string(raw->str,obfuscate);
-    return label;
+    label2 = strdup(label);
+    free(label);
+    g_string_free(raw,true);
+    return label2;
 }
 
 /* label_from_string - strip spaces and illegal characters to generate valid 
     HTML id */
+/* Returns a null-terminated string, which must be freed after use. */
+
 static char *label_from_string(char *str, bool obfuscate) {
     bool valid = FALSE;
     GString *out = g_string_new("");
+    char *label;
 
-	if ( strcspn(str,"[") == strlen(str)) {
-	    while (*str != '\0') {
-	        if (valid) {
-	        /* can relax on following characters */
-	            if ((*str >= '0' && *str <= '9') || (*str >= 'A' && *str <= 'Z')
-	                || (*str >= 'a' && *str <= 'z') || (*str == '.') || (*str== '_')
-	                || (*str== '-') || (*str== ':'))
-	            {
-	                g_string_append_c(out, tolower(*str));
-	            }           
-	        } else {
-	        /* need alpha as first character */
-	            if ((*str >= 'A' && *str <= 'Z') || (*str >= 'a' && *str <= 'z'))
-	            {
-	                g_string_append_c(out, tolower(*str));
-	                valid = TRUE;
-	            }
-	        }
-	    str++;
-	    }
-	} else {
-		char *token;
-		token = strtok (&str[strcspn(str,"[")+1],"]");
-		g_string_append_c(out, (int) label_from_string(token,obfuscate));
-	}
-    return out->str;
+    if ( strcspn(str,"[") == strlen(str)) {
+        while (*str != '\0') {
+            if (valid) {
+            /* can relax on following characters */
+                if ((*str >= '0' && *str <= '9') || (*str >= 'A' && *str <= 'Z')
+                    || (*str >= 'a' && *str <= 'z') || (*str == '.') || (*str== '_')
+                    || (*str== '-') || (*str== ':'))
+                {
+                    g_string_append_c(out, tolower(*str));
+                }           
+            } else {
+            /* need alpha as first character */
+                if ((*str >= 'A' && *str <= 'Z') || (*str >= 'a' && *str <= 'z'))
+                {
+                    g_string_append_c(out, tolower(*str));
+                    valid = TRUE;
+                }
+            }
+        str++;
+        }
+    } else {
+        char *token;
+        token = strtok (&str[strcspn(str,"[")+1],"]");
+        g_string_append_c(out, (int) label_from_string(token,obfuscate));
+    }
+    label = out->str;
+    g_string_free(out, false);
+    return label;
 }
 
 /* find_label - return true if header, table, etc is found matching label.
  * 'link' is modified with the matching url and title. */
 static bool find_label(link *result, element *label) {
+    char *lab;
     element *cur = labels;  /* pointer to walk up list of references */
     GString *text = g_string_new("");
     print_raw_element_list(text, label);
-    GString *query = g_string_new(label_from_string(text->str,0));
+    lab = label_from_string(text->str,0);
+    GString *query = g_string_new(lab);
+    free(lab);
     g_string_free(text, true);
 
     while (cur != NULL) {
