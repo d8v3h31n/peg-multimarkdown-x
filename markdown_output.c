@@ -1174,6 +1174,10 @@ static void print_groff_mm_element(GString *out, element *elt, int count) {
  ***********************************************************************/
 
 void print_element_list(GString *out, element *elt, int format, int exts) {
+    /* Initialize globals */
+    endnotes = NULL;
+    notenumber = 0;
+
     extensions = exts;
     padded = 2;  /* set padding to 2, so no extra blank lines at beginning */
 
@@ -1502,9 +1506,3 @@ element * metadata_for_key(char *key, element *list) {
 }
 
 
-/* Re-initialize notes before parsing document */
-void init_notes() {
-    notenumber = 0;
-    if (endnotes != NULL) g_slist_free(endnotes);
-    endnotes = NULL;
-}
