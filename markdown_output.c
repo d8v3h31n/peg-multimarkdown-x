@@ -63,8 +63,8 @@ static bool list_contains_key(element *list, int key);
 
 static int find_latex_mode(int format, element *list);
 element * metadata_for_key(char *key, element *list);
-
-
+element * element_for_attribute(char *querystring, element *list);
+char * dimension_for_attribute(char *querystring, element *list);
 
 /**********************************************************************
 
@@ -604,6 +604,8 @@ static void print_latex_element_list(GString *out, element *list) {
 static void print_latex_element(GString *out, element *elt) {
     int lev;
     char *label;
+	char *height;
+	char *width;
     switch (elt->key) {
     case SPACE:
         g_string_append_printf(out, "%s", elt->contents.str);
@@ -677,7 +679,33 @@ static void print_latex_element(GString *out, element *elt) {
         }
         break;
     case IMAGE:
-        g_string_append_printf(out, "\\begin{figure}\n\\begin{center}\n\\includegraphics[keepaspectratio,width=\\textwidth, height=.75\\textheight]{%s}\n\\end{center}\n", elt->contents.link->url);
+		/* Figure if we have height, width, neither */
+		height = dimension_for_attribute("height", elt->contents.link->attr);
+		width = dimension_for_attribute("width", elt->contents.link->attr);
+		g_string_append_printf(out, "\\begin{figure}\n\\begin{center}\n\\includegraphics[keepaspectratio,");
+		if ((height == NULL) && (width == NULL)) {
+			/* No dimensions given */
+			g_string_append_printf(out,"width=\\textwidth, height=.75\\textheight");
+		} else {
+			/* at least one dimension given */
+			if ((height != NULL) && (width != NULL)) {
+				
+			} else {
+				g_string_append_printf(out, "keepaspectratio,");
+			}
+			if (width != NULL) {
+				g_string_append_printf(out,"width=%s,", width);
+			} else {
+				g_string_append_printf(out, "width=\\textwidth,");
+			}
+			if (height != NULL) {
+				g_string_append_printf(out,"height=%s",height);
+			} else {
+				g_string_append_printf(out, "height=0.75\\textheight");
+			}
+		}
+
+		g_string_append_printf(out, "]{%s}\n\\end{center}\n", elt->contents.link->url);
         if (strlen(elt->contents.link->title) > 0) {
             label = label_from_string(elt->contents.link->title,0);
             g_string_append_printf(out, "\\caption{");
@@ -686,6 +714,8 @@ static void print_latex_element(GString *out, element *elt) {
             free(label);
         }
         g_string_append_printf(out,"\\end{figure}\n");
+		free(height);
+		free(width);
         break;
     case EMPH:
         g_string_append_printf(out, "\\emph{");
@@ -956,6 +986,10 @@ static void print_latex_element(GString *out, element *elt) {
         }
         break;
     case CELLSPAN:
+        break;
+    case ATTRKEY:
+        g_string_append_printf(out, " %s=\"%s\"", elt->contents.str,
+            elt->children->contents.str);
         break;
     default: 
         fprintf(stderr, "print_latex_element encountered unknown element key = %d\n", elt->key); 
@@ -1506,3 +1540,46 @@ element * metadata_for_key(char *key, element *list) {
 }
 
 
+/* find attribute, if present */
+element * element_for_attribute(char *querystring, element *list) {
+	element *step = NULL;
+	step = list;
+    char *query;
+    query = label_from_string(querystring,0);
+	
+	while (step != NULL) {
+		if (strcmp(step->contents.str,query) == 0) {
+			free(query);
+			return step;
+		}
+		step = step->next;
+	}
+	free(query);
+	return NULL;
+}
+
+/* convert attribute to dimensions suitable for LaTeX */
+/* returns c string that needs to be freed */
+
+char * dimension_for_attribute(char *querystring, element *list) {
+	element *attribute;
+	char *dimension;
+	char *ptr;
+	
+	attribute = element_for_attribute(querystring, list);
+	if (attribute == NULL) return NULL;
+	
+	dimension = tolower(strdup(attribute->children->contents.str));
+
+	
+	if (strstr(dimension, "px")) {
+		ptr = strstr(dimension,"px");
+		ptr[0] = '\0';
+		strcat(ptr,"pt");
+	} 
+	
+	if (strcmp(toupper(dimension),tolower(dimension)) == 0) {
+		/* no units */
+	}
+	return(dimension);
+}
