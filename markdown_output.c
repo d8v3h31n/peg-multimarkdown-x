@@ -876,16 +876,31 @@ static void print_latex_element(GString *out, element *elt) {
         if (strncmp(elt->contents.str,"[#",2) == 0) {
             /* This should be used as a bibtex citation key after trimming */
             elt->contents.str[strlen(elt->contents.str)-1] = '\0';
-            g_string_append_printf(out, "~\\cite{%s}", &elt->contents.str[2]);
+            if ((elt->children != NULL) && (elt->children->key == SPECIFIER)){
+                g_string_append_printf(out, "~\\cite[");
+                print_latex_element(out,elt->children);
+                g_string_append_printf(out, "]{%s}",&elt->contents.str[2]);
+            } else {
+                g_string_append_printf(out, "~\\cite{%s}", &elt->contents.str[2]);
+            }
         } else {
             /* This citation was specified in the document itself */
-            g_string_append_printf(out, "~\\cite{%s}", elt->contents.str);
+            if ((elt->children != NULL) && (elt->children->key == SPECIFIER)){
+                g_string_append_printf(out, "~\\cite[");
+                print_latex_element(out,elt->children);
+                g_string_append_printf(out, "]{%s}",elt->contents.str);
+            } else {
+                g_string_append_printf(out, "~\\cite{%s}", elt->contents.str);
+            }
             if (elt->children->contents.str == NULL) {
                 elt->children->contents.str = strdup(elt->contents.str);
                 add_endnote(elt->children);
             }
             elt->children = NULL;
         }
+        break;
+    case SPECIFIER:
+        print_latex_element_list(out, elt->children);
         break;
     case DEFLIST:
         g_string_append_printf(out, "\\begin{description}\n");
