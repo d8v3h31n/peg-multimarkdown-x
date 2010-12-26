@@ -591,8 +591,12 @@ Attribute = a:AttrKey '=' b:AttrValue Spnl
     }
 
 AttrKey = < Alphanumeric+ >
-        { $$ = mk_str(yytext);
+        {
+            char *lab;
+            lab = label_from_string(yytext,0);
+            $$ = mk_str(lab);
             $$->key = ATTRKEY;
+            free(lab);
         }
 
 AttrValue = (QuotedValue | UnQuotedValue)
