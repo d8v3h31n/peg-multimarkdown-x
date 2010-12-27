@@ -1,6 +1,10 @@
 ALL : multimarkdown
 
+<<<<<<< .merge_file_mRSaeN
 VERSION=3.0a43
+=======
+VERSION=3.0a4
+>>>>>>> .merge_file_I7wrxl
 
 PROGRAM=multimarkdown
 
