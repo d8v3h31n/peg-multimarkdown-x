@@ -352,7 +352,17 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
     case GLOSSARYSORTKEY:
         break;
     case CITATION:
+		if ((elt->children != NULL) && (elt->children->key == LOCATOR)) {
+			GString *temp = g_string_new("");
+			print_html_element(temp,elt->children,obfuscate);
+			label = strdup(temp->str);
+			g_string_free(temp,true);
+			elt->children = elt->children->next;
+		} else {
+			label = NULL;
+		}
         if (strncmp(elt->contents.str,"[#",2) == 0) {
+			if (label != NULL) g_string_append_printf(out, "[%s]", label);
             g_string_append_printf(out, "%s",elt->contents.str);
         } else {
             if (elt->children->contents.str == NULL) {
@@ -364,10 +374,20 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
                 
                 elt->children->contents.str = strdup(buf);
             }
-            g_string_append_printf(out, "<a class=\"citation\" href=\"#fn:%s\" title=\"Jump to citation\">[%s]</a>",
-                elt->children->contents.str, elt->children->contents.str);
-            elt->children = NULL;
+			if (label != NULL) {
+	            g_string_append_printf(out, "<a class=\"citation\" href=\"#fn:%s\" title=\"Jump to citation\">[%s, %s]</a>",
+	                elt->children->contents.str, label, elt->children->contents.str);
+	            elt->children = NULL;				
+			} else {
+				g_string_append_printf(out, "<a class=\"citation\" href=\"#fn:%s\" title=\"Jump to citation\">[%s]</a>",
+	                elt->children->contents.str, elt->children->contents.str);
+	            elt->children = NULL;
+			}
         }
+		free(label);
+        break;
+    case LOCATOR:
+        print_html_element_list(out, elt->children, obfuscate);
         break;
     case DEFLIST:
         pad(out,1);
@@ -876,7 +896,7 @@ static void print_latex_element(GString *out, element *elt) {
         if (strncmp(elt->contents.str,"[#",2) == 0) {
             /* This should be used as a bibtex citation key after trimming */
             elt->contents.str[strlen(elt->contents.str)-1] = '\0';
-            if ((elt->children != NULL) && (elt->children->key == SPECIFIER)){
+            if ((elt->children != NULL) && (elt->children->key == LOCATOR)){
                 g_string_append_printf(out, "~\\cite[");
                 print_latex_element(out,elt->children);
                 g_string_append_printf(out, "]{%s}",&elt->contents.str[2]);
@@ -885,7 +905,7 @@ static void print_latex_element(GString *out, element *elt) {
             }
         } else {
             /* This citation was specified in the document itself */
-            if ((elt->children != NULL) && (elt->children->key == SPECIFIER)){
+            if ((elt->children != NULL) && (elt->children->key == LOCATOR)){
                 g_string_append_printf(out, "~\\cite[");
                 print_latex_element(out,elt->children);
                 g_string_append_printf(out, "]{%s}",elt->contents.str);
@@ -899,7 +919,7 @@ static void print_latex_element(GString *out, element *elt) {
             elt->children = NULL;
         }
         break;
-    case SPECIFIER:
+    case LOCATOR:
         print_latex_element_list(out, elt->children);
         break;
     case DEFLIST:

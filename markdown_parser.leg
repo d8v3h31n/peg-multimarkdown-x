@@ -819,7 +819,7 @@ CitationReferenceDouble = b:Label < Spnl > !"[]" ref:RawCitationReference
                         $$ = mk_element(CITATION);
                         assert(match->children != NULL);
 						b->next = match->children;
-						b->key = SPECIFIER;
+						b->key = LOCATOR;
 						$$->children = b;
                         $$->contents.str = strdup(ref->contents.str);
                     } else {
