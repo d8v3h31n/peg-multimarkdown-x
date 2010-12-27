@@ -208,7 +208,8 @@ metadata, or with embedded raw LaTeX commands in your document. For example:
 	LaTeX Footer:		mmd-memoir-footer
 
 This would include several template files in the order that you see. The
-`LaTeX Footer` metadata inserts a template at the end of your document.  Note that the order and placement of the `LaTeX Include` statements is important.
+`LaTeX Footer` metadata inserts a template at the end of your document. Note
+that the order and placement of the `LaTeX Include` statements is important.
 
 The `LaTeX Mode` metadata allows you to specify that MultiMarkdown should use
 the `memoir` or `beamer` output format. This places subtle differences in the
