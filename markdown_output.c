@@ -909,6 +909,10 @@ static void print_latex_element(GString *out, element *elt) {
                 g_string_append_printf(out, "~\\cite[");
                 print_latex_element(out,elt->children);
                 g_string_append_printf(out, "]{%s}",elt->contents.str);
+                element *temp;
+                temp = elt->children;
+                elt->children = temp->next;
+                free_element(temp);
             } else {
                 g_string_append_printf(out, "~\\cite{%s}", elt->contents.str);
             }
