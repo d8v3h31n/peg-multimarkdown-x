@@ -63,8 +63,8 @@ static bool list_contains_key(element *list, int key);
 
 static int find_latex_mode(int format, element *list);
 element * metadata_for_key(char *key, element *list);
-
-
+element * element_for_attribute(char *querystring, element *list);
+char * dimension_for_attribute(char *querystring, element *list);
 
 /**********************************************************************
 
@@ -352,7 +352,17 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
     case GLOSSARYSORTKEY:
         break;
     case CITATION:
+        if ((elt->children != NULL) && (elt->children->key == LOCATOR)) {
+            GString *temp = g_string_new("");
+            print_html_element(temp,elt->children,obfuscate);
+            label = strdup(temp->str);
+            g_string_free(temp,true);
+            elt->children = elt->children->next;
+        } else {
+            label = NULL;
+        }
         if (strncmp(elt->contents.str,"[#",2) == 0) {
+            if (label != NULL) g_string_append_printf(out, "[%s]", label);
             g_string_append_printf(out, "%s",elt->contents.str);
         } else {
             if (elt->children->contents.str == NULL) {
@@ -364,10 +374,20 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
                 
                 elt->children->contents.str = strdup(buf);
             }
-            g_string_append_printf(out, "<a class=\"citation\" href=\"#fn:%s\" title=\"Jump to citation\">[%s]</a>",
-                elt->children->contents.str, elt->children->contents.str);
-            elt->children = NULL;
+            if (label != NULL) {
+                g_string_append_printf(out, "<a class=\"citation\" href=\"#fn:%s\" title=\"Jump to citation\">[%s, %s]</a>",
+                    elt->children->contents.str, label, elt->children->contents.str);
+                elt->children = NULL;               
+            } else {
+                g_string_append_printf(out, "<a class=\"citation\" href=\"#fn:%s\" title=\"Jump to citation\">[%s]</a>",
+                    elt->children->contents.str, elt->children->contents.str);
+                elt->children = NULL;
+            }
         }
+        free(label);
+        break;
+    case LOCATOR:
+        print_html_element_list(out, elt->children, obfuscate);
         break;
     case DEFLIST:
         pad(out,1);
@@ -604,6 +624,8 @@ static void print_latex_element_list(GString *out, element *list) {
 static void print_latex_element(GString *out, element *elt) {
     int lev;
     char *label;
+    char *height;
+    char *width;
     switch (elt->key) {
     case SPACE:
         g_string_append_printf(out, "%s", elt->contents.str);
@@ -677,7 +699,33 @@ static void print_latex_element(GString *out, element *elt) {
         }
         break;
     case IMAGE:
-        g_string_append_printf(out, "\\begin{figure}\n\\begin{center}\n\\includegraphics[keepaspectratio,width=\\textwidth, height=.75\\textheight]{%s}\n\\end{center}\n", elt->contents.link->url);
+        /* Figure if we have height, width, neither */
+        height = dimension_for_attribute("height", elt->contents.link->attr);
+        width = dimension_for_attribute("width", elt->contents.link->attr);
+        g_string_append_printf(out, "\\begin{figure}\n\\begin{center}\n\\includegraphics[keepaspectratio,");
+        if ((height == NULL) && (width == NULL)) {
+            /* No dimensions given */
+            g_string_append_printf(out,"width=\\textwidth, height=.75\\textheight");
+        } else {
+            /* at least one dimension given */
+            if ((height != NULL) && (width != NULL)) {
+                
+            } else {
+                g_string_append_printf(out, "keepaspectratio,");
+            }
+            if (width != NULL) {
+                g_string_append_printf(out,"width=%s,", width);
+            } else {
+                g_string_append_printf(out, "width=\\textwidth,");
+            }
+            if (height != NULL) {
+                g_string_append_printf(out,"height=%s",height);
+            } else {
+                g_string_append_printf(out, "height=0.75\\textheight");
+            }
+        }
+
+        g_string_append_printf(out, "]{%s}\n\\end{center}\n", elt->contents.link->url);
         if (strlen(elt->contents.link->title) > 0) {
             label = label_from_string(elt->contents.link->title,0);
             g_string_append_printf(out, "\\caption{");
@@ -686,6 +734,8 @@ static void print_latex_element(GString *out, element *elt) {
             free(label);
         }
         g_string_append_printf(out,"\\end{figure}\n");
+        free(height);
+        free(width);
         break;
     case EMPH:
         g_string_append_printf(out, "\\emph{");
@@ -846,16 +896,35 @@ static void print_latex_element(GString *out, element *elt) {
         if (strncmp(elt->contents.str,"[#",2) == 0) {
             /* This should be used as a bibtex citation key after trimming */
             elt->contents.str[strlen(elt->contents.str)-1] = '\0';
-            g_string_append_printf(out, "~\\cite{%s}", &elt->contents.str[2]);
+            if ((elt->children != NULL) && (elt->children->key == LOCATOR)){
+                g_string_append_printf(out, "~\\cite[");
+                print_latex_element(out,elt->children);
+                g_string_append_printf(out, "]{%s}",&elt->contents.str[2]);
+            } else {
+                g_string_append_printf(out, "~\\cite{%s}", &elt->contents.str[2]);
+            }
         } else {
             /* This citation was specified in the document itself */
-            g_string_append_printf(out, "~\\cite{%s}", elt->contents.str);
+            if ((elt->children != NULL) && (elt->children->key == LOCATOR)){
+                g_string_append_printf(out, "~\\cite[");
+                print_latex_element(out,elt->children);
+                g_string_append_printf(out, "]{%s}",elt->contents.str);
+                element *temp;
+                temp = elt->children;
+                elt->children = temp->next;
+                free_element(temp);
+            } else {
+                g_string_append_printf(out, "~\\cite{%s}", elt->contents.str);
+            }
             if (elt->children->contents.str == NULL) {
                 elt->children->contents.str = strdup(elt->contents.str);
                 add_endnote(elt->children);
             }
             elt->children = NULL;
         }
+        break;
+    case LOCATOR:
+        print_latex_element_list(out, elt->children);
         break;
     case DEFLIST:
         g_string_append_printf(out, "\\begin{description}\n");
@@ -956,6 +1025,10 @@ static void print_latex_element(GString *out, element *elt) {
         }
         break;
     case CELLSPAN:
+        break;
+    case ATTRKEY:
+        g_string_append_printf(out, " %s=\"%s\"", elt->contents.str,
+            elt->children->contents.str);
         break;
     default: 
         fprintf(stderr, "print_latex_element encountered unknown element key = %d\n", elt->key); 
@@ -1174,6 +1247,10 @@ static void print_groff_mm_element(GString *out, element *elt, int count) {
  ***********************************************************************/
 
 void print_element_list(GString *out, element *elt, int format, int exts) {
+    /* Initialize globals */
+    endnotes = NULL;
+    notenumber = 0;
+
     extensions = exts;
     padded = 2;  /* set padding to 2, so no extra blank lines at beginning */
 
@@ -1502,9 +1579,65 @@ element * metadata_for_key(char *key, element *list) {
 }
 
 
-/* Re-initialize notes before parsing document */
-void init_notes() {
-    notenumber = 0;
-    if (endnotes != NULL) g_slist_free(endnotes);
-    endnotes = NULL;
+/* find attribute, if present */
+element * element_for_attribute(char *querystring, element *list) {
+    element *step = NULL;
+    step = list;
+    char *query;
+    query = label_from_string(querystring,0);
+    
+    while (step != NULL) {
+        if (strcmp(step->contents.str,query) == 0) {
+            free(query);
+            return step;
+        }
+        step = step->next;
+    }
+    free(query);
+    return NULL;
+}
+
+/* convert attribute to dimensions suitable for LaTeX */
+/* returns c string that needs to be freed */
+
+char * dimension_for_attribute(char *querystring, element *list) {
+    element *attribute;
+    char *dimension;
+    char *ptr;
+    int i;
+    char *upper;
+    GString *result;
+
+    attribute = element_for_attribute(querystring, list);
+    if (attribute == NULL) return NULL;
+
+    dimension = strdup(attribute->children->contents.str);
+    upper = strdup(attribute->children->contents.str);
+
+    for(i = 0; dimension[ i ]; i++)
+        dimension[i] = tolower(dimension[ i ]);
+
+    for(i = 0; upper[ i ]; i++)
+        upper[i] = toupper(upper[ i ]);
+
+    if (strstr(dimension, "px")) {
+        ptr = strstr(dimension,"px");
+        ptr[0] = '\0';
+        strcat(ptr,"pt");
+    }
+
+    result = g_string_new(dimension);
+    
+    if (strcmp(dimension,upper) == 0) {
+        /* no units */
+        fprintf(stderr, "No units: %s\n", toupper(dimension));
+        g_string_append_printf(result, "pt");
+    }
+
+    free(upper);
+    free(dimension);
+    
+    dimension = result->str;
+    g_string_free(result, false);
+    return(dimension);
 }

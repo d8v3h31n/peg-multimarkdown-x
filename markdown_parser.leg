@@ -402,7 +402,7 @@ Space = Spacechar+
         { $$ = mk_str(" ");
           $$->key = SPACE; }
 
-Str = < NormalChar (NormalChar | '_'+ &NormalChar)* >
+Str = < NormalChar (NormalChar | '_'+ &Alphanumeric)* >
         { $$ = mk_str(yytext); }
 
 EscapedChar =   '\\' !Newline < [-\\`|*_{}[\]()#+.!><] >
@@ -591,8 +591,12 @@ Attribute = a:AttrKey '=' b:AttrValue Spnl
     }
 
 AttrKey = < Alphanumeric+ >
-        { $$ = mk_str(yytext);
+        {
+            char *lab;
+            lab = label_from_string(yytext,0);
+            $$ = mk_str(lab);
             $$->key = ATTRKEY;
+            free(lab);
         }
 
 AttrValue = (QuotedValue | UnQuotedValue)
@@ -814,7 +818,9 @@ CitationReferenceDouble = b:Label < Spnl > !"[]" ref:RawCitationReference
                         /* This citation is specified within the document */
                         $$ = mk_element(CITATION);
                         assert(match->children != NULL);
-                        $$->children = match->children;
+                        b->next = match->children;
+                        b->key = LOCATOR;
+                        $$->children = b;
                         $$->contents.str = strdup(ref->contents.str);
                     } else {
                         /* Citation not specified - likely bibtex citation */
