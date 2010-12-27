@@ -1,6 +1,6 @@
 ALL : multimarkdown
 
-VERSION=3.0a3
+VERSION=3.0a4
 
 PROGRAM=multimarkdown
 
@@ -49,10 +49,6 @@ mmdtest: $(PROGRAM)
 latextest: $(PROGRAM)
 	cd MarkdownTest_1.0.3; \
 	./MarkdownTest.pl --Script=../$(PROGRAM) --testdir=LaTeXTests --Flags="-t latex"
-
-beamertest: $(PROGRAM)
-	cd MarkdownTest_1.0.3; \
-	./MarkdownTest.pl --Script=../$(PROGRAM) --testdir=BeamerTests --Flags="-t beamer"
 
 leak-check: $(PROGRAM)
 	valgrind --leak-check=full ./multimarkdown TEST.markdown > TEST.html

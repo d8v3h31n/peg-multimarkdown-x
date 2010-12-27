@@ -1,6 +1,7 @@
 latex input:		mmd-beamer-header
 Title:				Test  
 base header level:	3
+latex mode:			beamer
 Theme:				keynote-gradient
 latex input:		mmd-beamer-begin-doc
 latex footer:		mmd-beamer-footer
