@@ -818,9 +818,9 @@ CitationReferenceDouble = b:Label < Spnl > !"[]" ref:RawCitationReference
                         /* This citation is specified within the document */
                         $$ = mk_element(CITATION);
                         assert(match->children != NULL);
-						b->next = match->children;
-						b->key = LOCATOR;
-						$$->children = b;
+                        b->next = match->children;
+                        b->key = LOCATOR;
+                        $$->children = b;
                         $$->contents.str = strdup(ref->contents.str);
                     } else {
                         /* Citation not specified - likely bibtex citation */
