@@ -352,17 +352,17 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
     case GLOSSARYSORTKEY:
         break;
     case CITATION:
-		if ((elt->children != NULL) && (elt->children->key == LOCATOR)) {
-			GString *temp = g_string_new("");
-			print_html_element(temp,elt->children,obfuscate);
-			label = strdup(temp->str);
-			g_string_free(temp,true);
-			elt->children = elt->children->next;
-		} else {
-			label = NULL;
-		}
+        if ((elt->children != NULL) && (elt->children->key == LOCATOR)) {
+            GString *temp = g_string_new("");
+            print_html_element(temp,elt->children,obfuscate);
+            label = strdup(temp->str);
+            g_string_free(temp,true);
+            elt->children = elt->children->next;
+        } else {
+            label = NULL;
+        }
         if (strncmp(elt->contents.str,"[#",2) == 0) {
-			if (label != NULL) g_string_append_printf(out, "[%s]", label);
+            if (label != NULL) g_string_append_printf(out, "[%s]", label);
             g_string_append_printf(out, "%s",elt->contents.str);
         } else {
             if (elt->children->contents.str == NULL) {
@@ -374,17 +374,17 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
                 
                 elt->children->contents.str = strdup(buf);
             }
-			if (label != NULL) {
-	            g_string_append_printf(out, "<a class=\"citation\" href=\"#fn:%s\" title=\"Jump to citation\">[%s, %s]</a>",
-	                elt->children->contents.str, label, elt->children->contents.str);
-	            elt->children = NULL;				
-			} else {
-				g_string_append_printf(out, "<a class=\"citation\" href=\"#fn:%s\" title=\"Jump to citation\">[%s]</a>",
-	                elt->children->contents.str, elt->children->contents.str);
-	            elt->children = NULL;
-			}
+            if (label != NULL) {
+                g_string_append_printf(out, "<a class=\"citation\" href=\"#fn:%s\" title=\"Jump to citation\">[%s, %s]</a>",
+                    elt->children->contents.str, label, elt->children->contents.str);
+                elt->children = NULL;               
+            } else {
+                g_string_append_printf(out, "<a class=\"citation\" href=\"#fn:%s\" title=\"Jump to citation\">[%s]</a>",
+                    elt->children->contents.str, elt->children->contents.str);
+                elt->children = NULL;
+            }
         }
-		free(label);
+        free(label);
         break;
     case LOCATOR:
         print_html_element_list(out, elt->children, obfuscate);
