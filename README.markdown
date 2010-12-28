@@ -109,6 +109,10 @@ Once installed, you simply do something like the following:
   overwrite existing files with the `html` or `tex` extension, so use with
   caution.
 
+**Note**: The Mac OS X installer installs `mmd` as an alias to `multimarkdown`
+for convenience. You could do the same on Windows (or rename the binary). You
+could do the same manually on linux.
+
 
 # Why create another version of MultiMarkdown? #
 
