@@ -109,6 +109,10 @@ Once installed, you simply do something like the following:
   overwrite existing files with the `html` or `tex` extension, so use with
   caution.
 
+**Note**: The Mac OS X installer installs `mmd` as an alias to `multimarkdown`
+for convenience. You could do the same on Windows (or rename the binary). You
+could do the same manually on linux.
+
 
 # Why create another version of MultiMarkdown? #
 
@@ -208,7 +212,8 @@ metadata, or with embedded raw LaTeX commands in your document. For example:
 	LaTeX Footer:		mmd-memoir-footer
 
 This would include several template files in the order that you see. The
-`LaTeX Footer` metadata inserts a template at the end of your document.  Note that the order and placement of the `LaTeX Include` statements is important.
+`LaTeX Footer` metadata inserts a template at the end of your document. Note
+that the order and placement of the `LaTeX Include` statements is important.
 
 The `LaTeX Mode` metadata allows you to specify that MultiMarkdown should use
 the `memoir` or `beamer` output format. This places subtle differences in the
@@ -296,6 +301,62 @@ to tell MultiMarkdown to process the text inside the div. In
 peg-multimarkdown, you can use the command-line option `--process-html` to
 process the text inside all raw HTML. For the moment, there is not way to
 process the text inside only selected HTML elements.
+
+
+## Math Support ##
+
+MultiMarkdown 2.0 supported [ASCIIMathML] embedded with MultiMarkdown
+documents. This syntax was then converted to MathML for XHTML output, and then
+further processed into LaTeX when creating LaTeX output. The benefit of this
+was that the ASCIIMathML syntax was pretty straightforward. The downside was
+that only a handful of browsers actually support MathML, so most of the time
+it was only useful for LaTeX. Many MMD users who are interested in LaTeX
+output already knew LaTeX, so they sometimes preferred native math syntax,
+which led to several hacks.
+
+MultiMarkdown 3.0 does not have built in support for ASCIIMathML. In fact, I
+would probably have to write a parser from scratch to do anything useful with
+it, which I have little desire to do. So I came up with a compromise.
+
+ASCIIMathML is no longer supported by MultiMarkdown. Instead, you *can* use
+LaTeX to code for math within your document. When creating a LaTeX document,
+the source is simply passed through, and LaTeX handles it as usual. *If* you
+desire, you can add a line to your header when creating XHTML documents that
+will allow [MathJax] to appropriately display your math.
+
+Normally, MathJax *and* LaTeX supported using `\[ math \]` or `\( math \)` to
+indicate that math was included. MMD stumbled on this due to some issues with
+escaping, so instead we use `\\[ math \\]` and `\\( math \\)`. See an
+example:
+
+	latex input:	mmd-article-header
+	Title:			MultiMarkdown Math Example  
+	latex input:	mmd-article-begin-doc
+	latex footer:	mmd-memoir-footer
+	xhtml header:	<script type="text/javascript" src="http://localhost/~fletcher/math/mathjax/MathJax.js"></script>
+
+
+	An example of math within a paragraph --- \\({e}^{i\pi }+1=0\\) --- easy
+	enough.
+
+	And an equation on it's own:
+
+	\\[ {x}_{1,2}=\frac{-b\pm \sqrt{{b}^{2}-4ac}}{2a} \\]
+
+	That's it.
+
+You would, of course, need to change the `xhtml header` metadata to point to
+your own installation of MathJax.
+
+**Note**: MultiMarkdown doesn't actually *do* anything with the code inside
+the brackets. It simply strips away the extra backslash and passes the LaTeX
+source unchanged, where it is handled by MathJax *if* it's properly installed,
+or by LaTeX. If you're having trouble, you can certainly email the
+[MultiMarkdown Discussion List], but I do not provide support for LaTeX code.
+
+[ASCIIMathML]:	http://www.chapman.edu/~jipsen/mathml/Asciimath.html
+[MathJax]: 		http://www.mathjax.org/
+[MultiMarkdown Discussion List]: http://groups.google.com/group/multimarkdown/
 
 
 # Acknowledgments #

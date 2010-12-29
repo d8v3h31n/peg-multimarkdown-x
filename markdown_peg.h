@@ -77,6 +77,7 @@ enum keys { LIST,   /* A generic list of values.  For ordered and bullet lists, 
             GLOSSARY,
             GLOSSARYTERM,
             GLOSSARYSORTKEY,
+			MATHSPAN
           };
 
 /* constants for managing Smart Typography */

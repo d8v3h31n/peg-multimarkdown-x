@@ -510,6 +510,15 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
         g_string_append_printf(out, " %s=\"%s\"", elt->contents.str,
             elt->children->contents.str);
         break;
+    case MATHSPAN:
+        if ( elt->contents.str[strlen(elt->contents.str)-1] == ']') {
+            elt->contents.str[strlen(elt->contents.str)-3] = '\0';
+            g_string_append_printf(out, "%s\\]", elt->contents.str);
+        } else {
+            elt->contents.str[strlen(elt->contents.str)-3] = '\0';
+            g_string_append_printf(out, "%s\\)", elt->contents.str);
+        }
+        break;
     default: 
         fprintf(stderr, "print_html_element encountered unknown element key = %d\n", elt->key); 
         exit(EXIT_FAILURE);
@@ -1029,6 +1038,15 @@ static void print_latex_element(GString *out, element *elt) {
     case ATTRKEY:
         g_string_append_printf(out, " %s=\"%s\"", elt->contents.str,
             elt->children->contents.str);
+        break;
+    case MATHSPAN:
+        if ( elt->contents.str[strlen(elt->contents.str)-1] == ']') {
+            elt->contents.str[strlen(elt->contents.str)-3] = '\0';
+            g_string_append_printf(out, "%s\\]", elt->contents.str);
+        } else {
+            elt->contents.str[strlen(elt->contents.str)-3] = '\0';
+            g_string_append_printf(out, "%s\\)", elt->contents.str);
+        }
         break;
     default: 
         fprintf(stderr, "print_latex_element encountered unknown element key = %d\n", elt->key); 
