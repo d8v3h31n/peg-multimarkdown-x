@@ -381,6 +381,7 @@ Inlines  =  a:StartList ( !Endline Inline { a = cons($$, a); }
             { $$ = mk_list(LIST, a); }
 
 Inline  = Str
+        | MathSpan
         | Endline
         | UlOrStarLine
         | Space
@@ -991,6 +992,17 @@ AutoLabel = '[' < (!']' .)+ > ']'
     $$ = mk_str(label);
     $$->key = AUTOLABEL;
     free(label);
+}
+
+MathSpan = '\\' < (
+    ('\\[' (!'\\\\]' .)* '\\\\]') |
+    ('\\(' (!'\\\\)' .)* '\\\\)') ) >
+{
+    /* Basically, these delimiters indicate math in LaTeX syntax, and the
+       delimiters are compatible with MathJax and LaTeX
+       ASCIIMathML is *not* supported */
+    $$ = mk_str(yytext);
+    $$->key = MATHSPAN;
 }
 
 %%
