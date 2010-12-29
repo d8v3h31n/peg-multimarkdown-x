@@ -34,6 +34,8 @@ markdown_parser.c : markdown_parser.leg $(LEG) markdown_peg.h parsing_functions.
 clean:
 	rm -f markdown_parser.c $(PROGRAM) $(OBJS); \
 	make -C $(PEGDIR) clean
+	rm mac_installer/Package_Root/usr/local/bin/multimarkdown
+	rm mac_installer/Resources/*.html
 
 distclean: clean
 	make -C $(PEGDIR) spotless
