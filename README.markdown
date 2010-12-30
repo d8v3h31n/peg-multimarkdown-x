@@ -32,23 +32,28 @@ Go to the [downloads] page to get the installer.
 ## Windows ##
 
 The easiest way to get peg-multimarkdown running on Windows is to download the
-precompiled binary from the [downloads] page. Theres a bat file you can run
-that will move the included dll files to the proper location
-(`C:\WINDOWS\system32`). If there's an easy way to make a proper installer, I
-am open to the idea, but only if it's pretty easy to do (preferably from the
-command line!)
+precompiled binary from the [downloads] page. There's a bat file you can run
+that will move the included dll files, the executable, and a couple of
+convenience scripts to `C:\WINDOWS\system32`. If there's an easy way to make a
+proper installer, I am open to the idea, but only if it's pretty easy to do
+(preferably from the command line!) Also, if I should be installing these
+files somewhere else, please let me know.
 
 If you want to compile this yourself, you do it in the same way that you would
 install peg-markdown for Windows. The instructions are on the
 peg-multimarkdown
-[wiki](https://github.com/fletcher/peg-multimarkdown/wiki/Building-for-Windows)
-page. I was able to compile for Windows fairly easily using Ubuntu linux
-following those instructions. I have not tried to actually compile on a
-Windows machine.
+[wiki](https://github.com/fletcher/peg-multimarkdown/wiki/Building-for-Windows).
+I was able to compile for Windows fairly easily using Ubuntu linux following
+those instructions. I have not tried to actually compile on a Windows machine.
 
 (For those who are interested, I actually created an EC2 instance on Amazon
-and installed the necessary software to compile. I'll try and write down the
-exact steps, but it was pretty easy and probably cost me $0.02...)
+and installed the necessary software to compile. It was pretty easy and
+probably cost me $0.02...)
+
+Once you have the binary compiled, you can use the `windows-installer` branch
+and the `make installer` command to compile the files in the
+`windows_installer` directory into a zip file for use as a make-shift
+installation package.
 
 
 ## Linux ##
@@ -72,7 +77,8 @@ Once you have that installed, you can either download the source for
 
 Then, simply run `make` to compile the source. You can also run some test
 commands to verify that everything is working properly. Of note, it is normal
-to fail one test in the Markdown tests, but the others should pass.
+to fail one test in the Markdown tests, but the others should pass. You can
+then install the binary wherever you like.
 
 	make
 	make test
@@ -110,8 +116,11 @@ Once installed, you simply do something like the following:
   caution.
 
 **Note**: The Mac OS X installer installs `mmd` as an alias to `multimarkdown`
-for convenience. You could do the same on Windows (or rename the binary). You
-could do the same manually on linux.
+for convenience. You could do the same manually on linux. Alternatively, I
+create two aliases in my `.tcshrc` file to simplify things:
+
+	alias mmd		'multimarkdown -b'
+	alias mmd2tex	'multimarkdown -b -t latex'
 
 
 # Why create another version of MultiMarkdown? #
