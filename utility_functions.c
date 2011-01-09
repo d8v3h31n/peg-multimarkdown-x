@@ -362,7 +362,7 @@ static void localize_typography(GString *out, int character, int lang, int outpu
 							g_string_append_printf(out,"&#8250;");
 							break;
                         default:
-                            g_string_append_printf(out,"&lsquo;");
+                            g_string_append_printf(out,"&#8216;");
                         }
                     break;
                 case RSQUOTE:
@@ -374,11 +374,11 @@ static void localize_typography(GString *out, int character, int lang, int outpu
 							g_string_append_printf(out,"&#8249;");
 							break;
                         default:
-                            g_string_append_printf(out,"&rsquo;");
+                            g_string_append_printf(out,"&#8217;");
                         }
                     break;
                 case APOS:
-                    g_string_append_printf(out,"&rsquo;");
+                    g_string_append_printf(out,"&#8217;");
                     break;
                 case LDQUOTE:
                     switch (lang) {
@@ -387,7 +387,7 @@ static void localize_typography(GString *out, int character, int lang, int outpu
                             g_string_append_printf(out,"&#8222;");
                             break;
 						case GERMANGUILL:
-							g_string_append_printf(out,"&raquo;");
+							g_string_append_printf(out,"&#187;");
 							break;
                         case FRENCH:
                             g_string_append_printf(out,"&#171;");
@@ -396,7 +396,7 @@ static void localize_typography(GString *out, int character, int lang, int outpu
                             g_string_append_printf(out, "&#8221;");
                             break;
                         default:
-                            g_string_append_printf(out,"&ldquo;");
+                            g_string_append_printf(out,"&#8220;");
                         }
                     break;
                 case RDQUOTE:
@@ -409,23 +409,23 @@ static void localize_typography(GString *out, int character, int lang, int outpu
                             g_string_append_printf(out,"&#8220;");
                             break;
 						case GERMANGUILL:
-							g_string_append_printf(out,"&laquo");
+							g_string_append_printf(out,"&#171;");
 							break;
                         case FRENCH:
                             g_string_append_printf(out,"&#187;");
                             break;
                         default:
-                            g_string_append_printf(out,"&rdquo;");
+                            g_string_append_printf(out,"&#8221;");
                         }
                     break;
                 case NDASH:
-                    g_string_append_printf(out,"&ndash;");
+                    g_string_append_printf(out,"&#8211;");
                     break;
                 case MDASH:
-                    g_string_append_printf(out,"&mdash;");
+                    g_string_append_printf(out,"&#8212;");
                     break;
                 case ELLIP:
-                    g_string_append_printf(out,"&hellip;");
+                    g_string_append_printf(out,"&#8230;");
                     break;
                     default:;
             }

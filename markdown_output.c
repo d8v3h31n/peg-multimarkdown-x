@@ -461,8 +461,7 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
         g_string_append_printf(out, "</table>\n");
         break;
     case TABLESEPARATOR:
-	/* ignore column alignment in HTML for now */
-		table_alignment = elt->contents.str;
+        table_alignment = elt->contents.str;
         break;
     case TABLECAPTION:
         label = label_from_element_list(elt->children,obfuscate);
@@ -472,6 +471,16 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
         free(label);
         break;
     case TABLEHEAD:
+        /* print column alignment for XSLT processing if needed */
+        for (table_column=0;table_column<sizeof(table_alignment)-1;table_column++) {
+           if ( strncmp(&table_alignment[table_column],"r",1) == 0) {
+                g_string_append_printf(out, "<col align=\"right\"/>\n");
+            } else if ( strncmp(&table_alignment[table_column],"c",1) == 0) {
+                g_string_append_printf(out, "<col align=\"center\"/>\n");
+            } else {
+                g_string_append_printf(out, "<col align=\"left\"/>\n");
+            }
+        }
         cell_type = 'h';
         g_string_append_printf(out, "\n<thead>\n");
         print_html_element_list(out, elt->children, obfuscate);
@@ -501,6 +510,7 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
             g_string_append_printf(out, " colspan=\"%d\"",(int)strlen(elt->children->contents.str)+1);
         }
         g_string_append_printf(out, ">");
+        padded = 2;
         print_html_element_list(out, elt->children, obfuscate);
         g_string_append_printf(out, "</t%c>\n", cell_type);
         table_column++;
