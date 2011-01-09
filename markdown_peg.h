@@ -103,6 +103,7 @@ enum language {
     FRENCH,
     GERMAN,
     SWEDISH,
+    GERMANGUILL,
 };
 
 /* Semantic value of a parsing action. */

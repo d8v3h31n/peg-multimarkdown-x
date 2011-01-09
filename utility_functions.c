@@ -358,6 +358,9 @@ static void localize_typography(GString *out, int character, int lang, int outpu
                         case GERMAN:
                             g_string_append_printf(out,"&#8218;");
                             break;
+						case GERMANGUILL:
+							g_string_append_printf(out,"&#8250;");
+							break;
                         default:
                             g_string_append_printf(out,"&lsquo;");
                         }
@@ -367,6 +370,9 @@ static void localize_typography(GString *out, int character, int lang, int outpu
                         case GERMAN:
                             g_string_append_printf(out,"&#8216;");
                             break;
+						case GERMANGUILL:
+							g_string_append_printf(out,"&#8249;");
+							break;
                         default:
                             g_string_append_printf(out,"&rsquo;");
                         }
@@ -380,6 +386,9 @@ static void localize_typography(GString *out, int character, int lang, int outpu
                         case GERMAN:
                             g_string_append_printf(out,"&#8222;");
                             break;
+						case GERMANGUILL:
+							g_string_append_printf(out,"&raquo;");
+							break;
                         case FRENCH:
                             g_string_append_printf(out,"&#171;");
                             break;
@@ -399,6 +408,9 @@ static void localize_typography(GString *out, int character, int lang, int outpu
                         case GERMAN:
                             g_string_append_printf(out,"&#8220;");
                             break;
+						case GERMANGUILL:
+							g_string_append_printf(out,"&laquo");
+							break;
                         case FRENCH:
                             g_string_append_printf(out,"&#187;");
                             break;

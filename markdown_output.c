@@ -419,14 +419,14 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
     case METAKEY:
         if (strcmp(elt->contents.str, "title") == 0) {
             g_string_append_printf(out, "\t<title>");
-            print_html_element_list(out, elt->children, obfuscate);
+            print_html_element(out, elt->children, obfuscate);
             g_string_append_printf(out, "</title>\n");
         } else if (strcmp(elt->contents.str, "css") == 0) {
             g_string_append_printf(out, "\t<link type=\"text/css\" rel=\"stylesheet\" href=\"");
-            print_html_element_list(out, elt->children, obfuscate);
+            print_html_element(out, elt->children, obfuscate);
             g_string_append_printf(out, "\"/>\n");
         } else if (strcmp(elt->contents.str, "xhtmlheader") == 0) {
-            print_raw_element_list(out, elt->children);
+            print_raw_element(out, elt->children);
             g_string_append_printf(out, "\n");
         } else if (strcmp(elt->contents.str, "baseheaderlevel") == 0) {
             base_header_level = atoi(elt->children->contents.str);
@@ -434,6 +434,7 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
             label = label_from_element_list(elt->children, 0);
             if (strcmp(label, "dutch") == 0) { language = DUTCH; } else 
             if (strcmp(label, "german") == 0) { language = GERMAN; } else 
+            if (strcmp(label, "germanguillemets") == 0) { language = GERMANGUILL; } else 
             if (strcmp(label, "french") == 0) { language = FRENCH; } else 
             if (strcmp(label, "swedish") == 0) { language = SWEDISH; }
             free(label);
@@ -441,7 +442,7 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
             g_string_append_printf(out, "\t<meta name=\"");
             print_html_string(out, elt->contents.str, obfuscate);
             g_string_append_printf(out, "\" content=\"");
-            print_html_element_list(out, elt->children, obfuscate);
+            print_html_element(out, elt->children, obfuscate);
             g_string_append_printf(out, "\"/>\n");
         }
         break;
@@ -1648,7 +1649,7 @@ char * dimension_for_attribute(char *querystring, element *list) {
     
     if (strcmp(dimension,upper) == 0) {
         /* no units */
-        fprintf(stderr, "No units: %s\n", toupper(dimension));
+        fprintf(stderr, "No units: %s\n", (char *) toupper(dimension));
         g_string_append_printf(result, "pt");
     }
 
