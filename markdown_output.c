@@ -867,9 +867,9 @@ static void print_latex_element(GString *out, element *elt) {
         g_string_append_printf(out, "\n");
         break;
     case BLOCKQUOTE:
-        pad(out, 1);
+        pad(out, 2);
         g_string_append_printf(out, "\\begin{quote}");
-        padded = 0;
+		padded = 1;
         print_latex_element_list(out, elt->children);
         pad(out, 1);
         g_string_append_printf(out, "\\end{quote}");
@@ -984,6 +984,8 @@ static void print_latex_element(GString *out, element *elt) {
             latex_footer = elt->children->contents.str;
         } else if (strcmp(elt->contents.str, "bibtex") == 0) {
             g_string_append_printf(out, "\\def\\bibliocommand{\\bibliography{%s}}\n",elt->children->contents.str);
+        } else if (strcmp(elt->contents.str, "xhtmlheader") == 0) {
+        } else if (strcmp(elt->contents.str, "css") == 0) {
         } else {
             g_string_append_printf(out, "\\def\\");
             print_latex_string(out, elt->contents.str);
