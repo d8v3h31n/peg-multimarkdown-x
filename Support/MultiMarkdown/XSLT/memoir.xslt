@@ -1,11 +1,11 @@
 <?xml version='1.0' encoding='utf-8'?>
 
-<!-- XHTML-to-Memoir converter by Fletcher Penney
-	specifically designed for use with MultiMarkdown created XHTML
+<!-- memoir.xslt by Fletcher Penney
 
-	Uses the LaTeX memoir class for output	
+	Adds features to xhtml2latex.xslt that are designed to take advantage
+	of LaTeX features within the memoir class. 
 	
-	Requires MMD Version 3.0 or greater
+	Requires MultiMarkdown 3.0 or greater
 	
 -->
 

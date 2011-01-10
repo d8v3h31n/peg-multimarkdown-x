@@ -1,20 +1,16 @@
 <?xml version='1.0' encoding='utf-8'?>
 
-<!-- XHTML2LaTeX replace-substring utility file by Fletcher Penney
-	specifically designed for use with MultiMarkdown created XHTML
+<!-- clean-text.xslt by Fletcher Penney
+
+	Contains routine to convert special characters within text to
+	LaTeX friendly versions.
 	
-	Extracted this routine so that it can be changed more easily by users.
+	Requires MultiMarkdown 3.0 or greater
 	
-	This file is responsible for cleaning up special characters into
-		a LaTeX-friendly format.
-	
-	MultiMarkdown Version 2.0.b6
-		
-	$Id: clean-text.xslt 499 2008-03-23 13:03:19Z fletcher $
 -->
 
 <!-- 
-# Copyright (C) 2005-2008  Fletcher T. Penney <fletcher@fletcherpenney.net>
+# Copyright (C) 2005-2011  Fletcher T. Penney <fletcher@fletcherpenney.net>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by

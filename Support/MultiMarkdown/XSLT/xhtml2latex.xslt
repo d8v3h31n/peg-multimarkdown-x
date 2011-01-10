@@ -1,9 +1,11 @@
 <?xml version='1.0' encoding='utf-8'?>
 
-<!-- XHTML-to-Latex converter by Fletcher Penney
-	specifically designed for use with MultiMarkdown created XHTML
+<!-- xhtml2latex.xslt by Fletcher Penney
+
+	Contains core routines for converting XHTML to LaTeX, typically 
+	called by another XSLT file, such as memoir.xslt.
 	
-	Requires MMD Version 3.0 or greater
+	Requires MultiMarkdown 3.0 or greater
 	
 -->
 
@@ -461,7 +463,7 @@
 		<xsl:value-of select="$newline"/>
 	</xsl:template>
 	
-	<!-- MultiMarkdown math -->
+	<!-- MultiMarkdown 3.0 math -->
 	
 	<xsl:template match="html:span[@class='math']">
 		<xsl:value-of select="."/>
@@ -635,8 +637,6 @@
 	<!-- unordered list -->
 	<xsl:template match="html:ul">
 		<xsl:text>\begin{itemize}</xsl:text>
-		<xsl:value-of select="$newline"/>
-		<xsl:value-of select="$newline"/>
 		<xsl:apply-templates select="*"/>
 		<xsl:text>\end{itemize}</xsl:text>
 		<xsl:value-of select="$newline"/>
@@ -858,8 +858,8 @@
 	
 	<xsl:template match="html:tbody">
 		<xsl:apply-templates select="html:tr"/>
-		\bottomrule
-	</xsl:template>
+\bottomrule
+</xsl:template>
 
 	<xsl:template match="html:col">
 		<xsl:choose>

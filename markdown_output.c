@@ -588,7 +588,7 @@ static void print_latex_string(GString *out, char *str) {
             g_string_append_printf(out, "\\^{}");
             break;
         case '\\':
-            g_string_append_printf(out, "\\textbackslash{}");
+            g_string_append_printf(out, "$\\backslash$");
             break;
         case '~':
             g_string_append_printf(out, "\\ensuremath{\\sim}");
@@ -597,10 +597,10 @@ static void print_latex_string(GString *out, char *str) {
             g_string_append_printf(out, "\\textbar{}");
             break;
         case '<':
-            g_string_append_printf(out, "\\textless{}");
+            g_string_append_printf(out, "$<$");
             break;
         case '>':
-            g_string_append_printf(out, "\\textgreater{}");
+            g_string_append_printf(out, "$>$");
             break;
         default:
             g_string_append_c(out, *str);
@@ -758,7 +758,7 @@ static void print_latex_element(GString *out, element *elt) {
         free(width);
         break;
     case EMPH:
-        g_string_append_printf(out, "\\emph{");
+        g_string_append_printf(out, "{\\itshape ");
         print_latex_element_list(out, elt->children);
         g_string_append_printf(out, "}");
         break;
@@ -846,7 +846,6 @@ static void print_latex_element(GString *out, element *elt) {
         g_string_append_printf(out, "\n\\begin{itemize}");
         padded = 0;
         print_latex_element_list(out, elt->children);
-        pad(out, 1);
         g_string_append_printf(out, "\\end{itemize}");
         padded = 0;
         break;
@@ -1409,7 +1408,7 @@ static void print_memoir_element(GString *out, element *elt) {
             free(label);
         }
         g_string_append_printf(out, "}\n");
-        padded = 0;
+        padded = 1;
         break;
     default:
         /* most things are not changed for memoir output */
