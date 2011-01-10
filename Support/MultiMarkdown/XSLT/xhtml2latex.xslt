@@ -461,6 +461,12 @@
 		<xsl:value-of select="$newline"/>
 	</xsl:template>
 	
+	<!-- MultiMarkdown math -->
+	
+	<xsl:template match="html:span[@class='math']">
+		<xsl:value-of select="."/>
+	</xsl:template>
+	
 	<!-- footnote li -->
 	<!-- print contents of the matching footnote -->
 	<xsl:template match="html:li" mode="footnote">

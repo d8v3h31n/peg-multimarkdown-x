@@ -524,10 +524,10 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
     case MATHSPAN:
         if ( elt->contents.str[strlen(elt->contents.str)-1] == ']') {
             elt->contents.str[strlen(elt->contents.str)-3] = '\0';
-            g_string_append_printf(out, "%s\\]", elt->contents.str);
+            g_string_append_printf(out, "<span class=\"math\">%s\\]</span>", elt->contents.str);
         } else {
             elt->contents.str[strlen(elt->contents.str)-3] = '\0';
-            g_string_append_printf(out, "%s\\)", elt->contents.str);
+            g_string_append_printf(out, "<span class=\"math\">%s\\)</span>", elt->contents.str);
         }
         break;
     default: 
