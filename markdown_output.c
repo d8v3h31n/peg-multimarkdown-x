@@ -362,7 +362,7 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
             label = NULL;
         }
         if (strncmp(elt->contents.str,"[#",2) == 0) {
-            if (label != NULL) g_string_append_printf(out, "[%s]", label);
+            if (label != NULL) g_string_append_printf(out, "<span class=\"externalcitation\">[%s]</span>", label);
             g_string_append_printf(out, "%s",elt->contents.str);
         } else {
             if (elt->children->contents.str == NULL) {
@@ -1458,13 +1458,6 @@ static void print_beamer_element(GString *out, element *elt) {
             g_string_append_printf(out, "\\mode<all>\n");
             print_latex_footer(out);
             g_string_append_printf(out, "\\mode*\n");
-            break;
-        case VERBATIM:
-            pad(out, 1);
-            g_string_append_printf(out, "\n\\begin{semiverbatim}\n\n");
-            print_raw_element(out, elt);
-            g_string_append_printf(out, "\n\\end{semiverbatim}\n");
-            padded = 0;
             break;
         case LISTITEM:
             pad(out, 1);
