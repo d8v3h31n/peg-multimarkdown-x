@@ -1007,11 +1007,11 @@ static void print_latex_element(GString *out, element *elt) {
         pad(out, 2);
         g_string_append_printf(out, "\\begin{table}[htbp]\n\\begin{minipage}{\\linewidth}\n\\setlength{\\tymax}{0.5\\linewidth}\n\\centering\n\\small\n");
         print_latex_element_list(out, elt->children);
-        g_string_append_printf(out, "\n\\end{tabulary}\n\\end{minipage}\n\\end{table}\n");
+        g_string_append_printf(out, "\n\\end{tabular}\n\\end{minipage}\n\\end{table}\n");
         padded = 0;
         break;
     case TABLESEPARATOR:
-        g_string_append_printf(out, "\\begin{tabulary}{\\linewidth}{@{}%s@{}} \\\\ \\toprule\n", elt->contents.str);
+        g_string_append_printf(out, "\\begin{tabular}{@{}%s@{}} \\\\ \\toprule\n", elt->contents.str);
         break;
     case TABLECAPTION:
         label = label_from_element_list(elt->children,0);
