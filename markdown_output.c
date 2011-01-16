@@ -602,6 +602,9 @@ static void print_latex_string(GString *out, char *str) {
         case '>':
             g_string_append_printf(out, "$>$");
             break;
+		case '/':
+			g_string_append_printf(out, "\\slash ");
+			break;
         default:
             g_string_append_c(out, *str);
         }
