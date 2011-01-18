@@ -10,6 +10,7 @@ struct Link {
     char             *url;
     char             *title;
     struct Element   *attr;
+	char			*identifier;
 };
 
 typedef struct Link link;

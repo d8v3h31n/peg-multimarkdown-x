@@ -203,7 +203,12 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
     case IMAGE:
         g_string_append_printf(out, "<img src=\"");
         print_html_string(out, elt->contents.link->url, obfuscate);
-        g_string_append_printf(out, "\" alt=\"");
+        if ( extension(EXT_COMPATIBILITY) ) {
+			g_string_append_printf(out, "\"");
+		} else {
+			g_string_append_printf(out, "\" id=\"%s\"",elt->contents.link->identifier);
+		}
+        g_string_append_printf(out, " alt=\"");
         print_html_element_list(out, elt->contents.link->label, obfuscate);
         g_string_append_printf(out, "\"");
         if (strlen(elt->contents.link->title) > 0) {
@@ -750,12 +755,11 @@ static void print_latex_element(GString *out, element *elt) {
 
         g_string_append_printf(out, "]{%s}\n\\end{center}\n", elt->contents.link->url);
         if (strlen(elt->contents.link->title) > 0) {
-            label = label_from_string(elt->contents.link->title,0);
             g_string_append_printf(out, "\\caption{");
             print_latex_string(out, elt->contents.link->title);
-            g_string_append_printf(out, "}\n\\label{%s}\n", label);
-            free(label);
+			g_string_append_printf(out, "}\n");
         }
+        g_string_append_printf(out, "\\label{%s}\n", elt->contents.link->identifier);
         g_string_append_printf(out,"\\end{figure}\n");
         free(height);
         free(width);

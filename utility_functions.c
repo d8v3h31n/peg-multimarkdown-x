@@ -126,7 +126,7 @@ static element * mk_list(int key, element *lst) {
 }
 
 /* mk_link - constructor for LINK element */
-static element * mk_link(element *label, char *url, char *title, element *attr) {
+static element * mk_link(element *label, char *url, char *title, element *attr, char *id) {
     element *result;
     result = mk_element(LINK);
     result->contents.link = malloc(sizeof(link));
@@ -134,6 +134,7 @@ static element * mk_link(element *label, char *url, char *title, element *attr) 
     result->contents.link->url = strdup(url);
     result->contents.link->title = strdup(title);
     result->contents.link->attr = attr;
+	result->contents.link->identifier = strdup(id);
     return result;
 }
 
