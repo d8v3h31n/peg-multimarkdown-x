@@ -477,7 +477,7 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
         break;
     case TABLEHEAD:
         /* print column alignment for XSLT processing if needed */
-        for (table_column=0;table_column<sizeof(table_alignment)-1;table_column++) {
+        for (table_column=0;table_column<strlen(table_alignment);table_column++) {
            if ( strncmp(&table_alignment[table_column],"r",1) == 0) {
                 g_string_append_printf(out, "<col align=\"right\"/>\n");
             } else if ( strncmp(&table_alignment[table_column],"c",1) == 0) {
