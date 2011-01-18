@@ -51,7 +51,7 @@ MetaDataKeyValue = a:MetaDataKey
                 $$->children = b;
             }
 
-MetaDataKey = < Alphanumeric ( Sp ( Alphanumeric | '_' | ' ' | '-')+)* >
+MetaDataKey = < AlphanumericAscii ( Sp ( AlphanumericAscii | '_' | ' ' | '-')+)* >
 {
     char *label = label_from_string(yytext,0);
     $$ = mk_str(label);
@@ -591,7 +591,7 @@ Attribute = a:AttrKey '=' b:AttrValue Spnl
         $$->children = b;
     }
 
-AttrKey = < Alphanumeric+ >
+AttrKey = < AlphanumericAscii+ >
         {
             char *lab;
             lab = label_from_string(yytext,0);
@@ -607,7 +607,7 @@ AttrValue = (QuotedValue | UnQuotedValue)
 
 QuotedValue = '"' < (!'"' .)* > '"'
 
-UnQuotedValue = < Alphanumeric+ >
+UnQuotedValue = < AlphanumericAscii+ >
 
 Label = '[' ( !'^' !'#' &{ extension(EXT_NOTES) } | &. &{ !extension(EXT_NOTES) } )
         a:StartList
@@ -624,11 +624,11 @@ RefTitle =  ( RefTitleSingle | RefTitleDouble | RefTitleParens | EmptyTitle )
 
 EmptyTitle = < "" >
 
-RefTitleSingle = '\'' < ( !( '\'' Sp Newline | Newline | '\'' Sp Alphanumeric+ '=' ) . )* > '\''
+RefTitleSingle = '\'' < ( !( '\'' Sp Newline | Newline | '\'' Sp AlphanumericAscii+ '=' ) . )* > '\''
 
-RefTitleDouble = '"' < ( !('"' Sp Newline | Newline | '"' Sp Alphanumeric+ '=' ) . )* > '"'
+RefTitleDouble = '"' < ( !('"' Sp Newline | Newline | '"' Sp AlphanumericAscii+ '=' ) . )* > '"'
 
-RefTitleParens = '(' < ( !(')' Sp Newline | Newline | ')' Sp Alphanumeric+ '=' ) . )* > ')'
+RefTitleParens = '(' < ( !(')' Sp Newline | Newline | ')' Sp AlphanumericAscii+ '=' ) . )* > ')'
 
 References = a:StartList
              ( b:Reference { a = cons(b, a); } | SkipBlock )*
