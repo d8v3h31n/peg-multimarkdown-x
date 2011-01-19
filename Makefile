@@ -4,14 +4,11 @@ VERSION=3.0a4
 
 PROGRAM=multimarkdown
 
-ifeq ($(shell uname),Darwin)
-	# For compiling on Mac OS X, at least with glib2 from fink which is
-	# compiled for i386.  If it complains can remove the "-arch i386" part
-	CFLAGS ?= -Wall -O3 -ansi -arch i386
-else
-	# Otherwise
-	CFLAGS ?= -Wall -O3 -ansi
-endif
+# If you used fink to install gib2-dev, it might have been compiled for
+# the i386 architecture, causing an error.  Can try adding -arch i686 to 
+# CFLAGS
+
+CFLAGS ?= -Wall -O3 -ansi
 
 OBJS=markdown_parser.o markdown_output.o markdown_lib.o
 PEGDIR=peg-0.1.4
