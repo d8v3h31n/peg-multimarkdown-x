@@ -51,6 +51,8 @@ static void free_element_contents(element elt) {
         free(elt.contents.link->title);
         elt.contents.link->title = NULL;
         free_element_list(elt.contents.link->label);
+        free(elt.contents.link->identifier);
+        elt.contents.link->identifier = NULL;
 /*        free_element_list(elt.contents.link->attr);*/
         free(elt.contents.link);
         elt.contents.link = NULL;

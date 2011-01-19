@@ -15,6 +15,12 @@ This is a test of citations[p. 123][#first] for MultiMarkdown[#second].
 
 And an unlisted citation[#Author:1988].
 
+Empty locator.[#first][]
+
+Consecutive citations.[#first][#second]
+
+Consecutive citations.[#first][][#second][]
+
 
 [#first]: John Doe. *A Totally Fake Book*.  Vanity Press, 2006.
 
