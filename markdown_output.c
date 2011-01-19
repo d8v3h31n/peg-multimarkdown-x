@@ -204,10 +204,10 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
         g_string_append_printf(out, "<img src=\"");
         print_html_string(out, elt->contents.link->url, obfuscate);
         if ( extension(EXT_COMPATIBILITY) ) {
-			g_string_append_printf(out, "\"");
-		} else {
-			g_string_append_printf(out, "\" id=\"%s\"",elt->contents.link->identifier);
-		}
+            g_string_append_printf(out, "\"");
+        } else {
+            g_string_append_printf(out, "\" id=\"%s\"",elt->contents.link->identifier);
+        }
         g_string_append_printf(out, " alt=\"");
         print_html_element_list(out, elt->contents.link->label, obfuscate);
         g_string_append_printf(out, "\"");
@@ -607,9 +607,9 @@ static void print_latex_string(GString *out, char *str) {
         case '>':
             g_string_append_printf(out, "$>$");
             break;
-		case '/':
-			g_string_append_printf(out, "\\slash ");
-			break;
+        case '/':
+            g_string_append_printf(out, "\\slash ");
+            break;
         default:
             g_string_append_c(out, *str);
         }
@@ -757,7 +757,7 @@ static void print_latex_element(GString *out, element *elt) {
         if (strlen(elt->contents.link->title) > 0) {
             g_string_append_printf(out, "\\caption{");
             print_latex_string(out, elt->contents.link->title);
-			g_string_append_printf(out, "}\n");
+            g_string_append_printf(out, "}\n");
         }
         g_string_append_printf(out, "\\label{%s}\n", elt->contents.link->identifier);
         g_string_append_printf(out,"\\end{figure}\n");
@@ -875,7 +875,7 @@ static void print_latex_element(GString *out, element *elt) {
     case BLOCKQUOTE:
         pad(out, 2);
         g_string_append_printf(out, "\\begin{quote}");
-		padded = 1;
+        padded = 1;
         print_latex_element_list(out, elt->children);
         pad(out, 1);
         g_string_append_printf(out, "\\end{quote}");

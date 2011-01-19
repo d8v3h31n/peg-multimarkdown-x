@@ -541,16 +541,18 @@ ReferenceLinkSingle =  a:Label < (Spnl "[]")? >
                        }
 
 ExplicitLink =  l:Label Spnl '(' Sp s:Source Spnl t:Title Sp ')'
-                {	GString *text = g_string_new("");
-			char *label;
-                	print_raw_element_list(text, l->children);
-					label = label_from_string(text->str,0);
-					$$ = mk_link(l->children, s->contents.str, t->contents.str, NULL, label);
-	                g_string_free(text, TRUE);
-					free(label);
-                  free_element(s);
-                  free_element(t);
-                  free(l); }
+                {
+                    GString *text = g_string_new("");
+                    char *label;
+                    print_raw_element_list(text, l->children);
+                    label = label_from_string(text->str,0);
+                    $$ = mk_link(l->children, s->contents.str, t->contents.str, NULL, label);
+                    g_string_free(text, TRUE);
+                    free(label);
+                    free_element(s);
+                    free_element(t);
+                    free(l);
+                }
 
 Source  = ( '<' < SourceContents > '>' | < SourceContents > )
           { $$ = mk_str(yytext); }
@@ -580,10 +582,10 @@ AutoLinkEmail = '<' ( "mailto:" )? < [-A-Za-z0-9+_]+ '@' ( !Newline !'>' . )+ > 
 Reference = a:StartList NonindentSpace !"[]" l:Label ':' Spnl s:RefSrc Spnl 
         t:RefTitle (Spnl Attributes { a = cons($$,a);})? BlankLine*
         { 
-			char *label;
-			GString *text = g_string_new("");
-			print_raw_element_list(text, l->children);
-	        label = label_from_string(text->str,0);
+            char *label;
+            GString *text = g_string_new("");
+            print_raw_element_list(text, l->children);
+            label = label_from_string(text->str,0);
             if (a == NULL) {
                 $$ = mk_link(l->children, s->contents.str,
                     t->contents.str, a, label);
@@ -594,8 +596,8 @@ Reference = a:StartList NonindentSpace !"[]" l:Label ':' Spnl s:RefSrc Spnl
             free_element(s);
             free_element(t);
             free(l);
-			free(label);
-			g_string_free(text, TRUE);
+            free(label);
+            g_string_free(text, TRUE);
             $$->key = REFERENCE;
         }
 
