@@ -118,7 +118,7 @@ SetextHeading2 =  &(RawLine SetextBottom2)
 Heading = AtxHeading | SetextHeading
 
 HeadingSection = a:StartList Heading { a = cons($$, a); }
-    (!Heading Block {a = cons($$, a); })*
+    (BlankLine* !HeadingSection Block {a = cons($$, a); })*
     { $$ = mk_list(HEADINGSECTION, a);}
 
 BlockQuote = a:BlockQuoteRaw
@@ -944,7 +944,7 @@ Table = a:StartList b:StartList (TableCaption { b = cons($$, b);})?
     TableBody { $$->key = TABLEHEAD; a = cons($$, a); }
     (SeparatorLine { append_list($$,a); } )
     (TableBody { a = cons($$, a);} )*
-    (TableCaption { b = cons($$, b);} &BlankLine)? 
+	( (TableCaption { b = cons($$, b);} &BlankLine) | &BlankLine)
     # Requires blank line to end table "block"
     {
         if (b != NULL) { append_list(b,a); };

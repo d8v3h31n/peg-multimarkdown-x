@@ -1474,7 +1474,7 @@ static void print_beamer_element(GString *out, element *elt) {
         case HEADINGSECTION:
             if (elt->children->key -H1 + base_header_level == 3) {
                 pad(out,2);
-                g_string_append_printf(out, "\\begin{frame}");
+               g_string_append_printf(out, "\\begin{frame}");
                 if (list_contains_key(elt->children,VERBATIM)) {
                     g_string_append_printf(out, "[fragile]");
                 }
@@ -1488,7 +1488,7 @@ static void print_beamer_element(GString *out, element *elt) {
                 print_beamer_element_list(out, elt->children->next);
                 g_string_append_printf(out, "\n\n}\n\n");
             } else {
-                print_beamer_element_list(out, elt->children);              
+                print_beamer_element_list(out, elt->children);
             }
             break;
         case H1: case H2: case H3: case H4: case H5: case H6:
