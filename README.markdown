@@ -383,10 +383,13 @@ Thanks to John Gruber for the original [Markdown]. 'Nuff said.
 And thanks to the many contributors and users of the original MultiMarkdown
 that helped me refine the syntax and search out bugs.
 
+The `glib2` and `intl` libraries are part of [GTK+]. They are licensed under
+the GNU LGPL 2.1.
 
-[peg-markdown]: https://github.com/jgm/peg-markdown
-[Markdown]: http://daringfireball.net/projects/markdown/
-[MultiMarkdown]: http://fletcherpenney.net/multimarkdown/
-[peg-multimarkdown]: https://github.com/fletcher/peg-multimarkdown
-[fink]: http://www.finkproject.org/
-[downloads]: https://github.com/fletcher/peg-multimarkdown/downloads
+[peg-markdown]:			https://github.com/jgm/peg-markdown
+[Markdown]:				http://daringfireball.net/projects/markdown/
+[MultiMarkdown]:		http://fletcherpenney.net/multimarkdown/
+[peg-multimarkdown]:	https://github.com/fletcher/peg-multimarkdown
+[fink]:					http://www.finkproject.org/
+[downloads]:			http://github.com/fletcher/peg-multimarkdown/downloads
+[GTK+]:					http://www.gtk.org/
