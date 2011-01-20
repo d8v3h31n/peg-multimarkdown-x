@@ -1658,7 +1658,6 @@ char * dimension_for_attribute(char *querystring, element *list) {
     
     if (strcmp(dimension,upper) == 0) {
         /* no units */
-        fprintf(stderr, "No units: %s\n", (char *) toupper(dimension));
         g_string_append_printf(result, "pt");
     }
 
