@@ -10,6 +10,7 @@ struct Link {
     char             *url;
     char             *title;
     struct Element   *attr;
+    char            *identifier;
 };
 
 typedef struct Link link;
@@ -51,7 +52,7 @@ enum keys { LIST,   /* A generic list of values.  For ordered and bullet lists, 
             REFERENCE,
             NOTE,
             CITATION,
-			LOCATOR,
+            LOCATOR,
             DEFLIST,
             TERM,
             DEFINITION,
@@ -77,7 +78,7 @@ enum keys { LIST,   /* A generic list of values.  For ordered and bullet lists, 
             GLOSSARY,
             GLOSSARYTERM,
             GLOSSARYSORTKEY,
-			MATHSPAN
+            MATHSPAN
           };
 
 /* constants for managing Smart Typography */
@@ -103,6 +104,7 @@ enum language {
     FRENCH,
     GERMAN,
     SWEDISH,
+    GERMANGUILL,
 };
 
 /* Semantic value of a parsing action. */

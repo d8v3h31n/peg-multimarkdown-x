@@ -126,7 +126,7 @@ static element * mk_list(int key, element *lst) {
 }
 
 /* mk_link - constructor for LINK element */
-static element * mk_link(element *label, char *url, char *title, element *attr) {
+static element * mk_link(element *label, char *url, char *title, element *attr, char *id) {
     element *result;
     result = mk_element(LINK);
     result->contents.link = malloc(sizeof(link));
@@ -134,6 +134,7 @@ static element * mk_link(element *label, char *url, char *title, element *attr) 
     result->contents.link->url = strdup(url);
     result->contents.link->title = strdup(title);
     result->contents.link->attr = attr;
+    result->contents.link->identifier = strdup(id);
     return result;
 }
 
@@ -358,8 +359,11 @@ static void localize_typography(GString *out, int character, int lang, int outpu
                         case GERMAN:
                             g_string_append_printf(out,"&#8218;");
                             break;
+                        case GERMANGUILL:
+                            g_string_append_printf(out,"&#8250;");
+                            break;
                         default:
-                            g_string_append_printf(out,"&lsquo;");
+                            g_string_append_printf(out,"&#8216;");
                         }
                     break;
                 case RSQUOTE:
@@ -367,18 +371,24 @@ static void localize_typography(GString *out, int character, int lang, int outpu
                         case GERMAN:
                             g_string_append_printf(out,"&#8216;");
                             break;
+                        case GERMANGUILL:
+                            g_string_append_printf(out,"&#8249;");
+                            break;
                         default:
-                            g_string_append_printf(out,"&rsquo;");
+                            g_string_append_printf(out,"&#8217;");
                         }
                     break;
                 case APOS:
-                    g_string_append_printf(out,"&rsquo;");
+                    g_string_append_printf(out,"&#8217;");
                     break;
                 case LDQUOTE:
                     switch (lang) {
                         case DUTCH:
                         case GERMAN:
                             g_string_append_printf(out,"&#8222;");
+                            break;
+                        case GERMANGUILL:
+                            g_string_append_printf(out,"&#187;");
                             break;
                         case FRENCH:
                             g_string_append_printf(out,"&#171;");
@@ -387,7 +397,7 @@ static void localize_typography(GString *out, int character, int lang, int outpu
                             g_string_append_printf(out, "&#8221;");
                             break;
                         default:
-                            g_string_append_printf(out,"&ldquo;");
+                            g_string_append_printf(out,"&#8220;");
                         }
                     break;
                 case RDQUOTE:
@@ -399,21 +409,24 @@ static void localize_typography(GString *out, int character, int lang, int outpu
                         case GERMAN:
                             g_string_append_printf(out,"&#8220;");
                             break;
+                        case GERMANGUILL:
+                            g_string_append_printf(out,"&#171;");
+                            break;
                         case FRENCH:
                             g_string_append_printf(out,"&#187;");
                             break;
                         default:
-                            g_string_append_printf(out,"&rdquo;");
+                            g_string_append_printf(out,"&#8221;");
                         }
                     break;
                 case NDASH:
-                    g_string_append_printf(out,"&ndash;");
+                    g_string_append_printf(out,"&#8211;");
                     break;
                 case MDASH:
-                    g_string_append_printf(out,"&mdash;");
+                    g_string_append_printf(out,"&#8212;");
                     break;
                 case ELLIP:
-                    g_string_append_printf(out,"&hellip;");
+                    g_string_append_printf(out,"&#8230;");
                     break;
                     default:;
             }

@@ -36,7 +36,7 @@ precompiled binary from the [downloads] page. There's a bat file you can run
 that will move the included dll files, the executable, and a couple of
 convenience scripts to `C:\WINDOWS\system32`. If there's an easy way to make a
 proper installer, I am open to the idea, but only if it's pretty easy to do
-(preferably from the command line!) Also, if I should be installing these
+(preferably from the command line!). Also, if I should be installing these
 files somewhere else, please let me know.
 
 If you want to compile this yourself, you do it in the same way that you would
@@ -51,7 +51,7 @@ and installed the necessary software to compile. It was pretty easy and
 probably cost me $0.02...)
 
 Once you have the binary compiled, you can use the `windows-installer` branch
-and the `make installer` command to compile the files in the
+and the `make installer` command to package the files in the
 `windows_installer` directory into a zip file for use as a make-shift
 installation package.
 
@@ -70,7 +70,7 @@ Then you can use [fink] or something similar:
 
 	fink install glib2-shlibs glib2-dev
 
-Once you have that installed, you can either download the source for
+Once you have that installed, you can either download the source from
 [peg-multimarkdown], or you can use git:
 
 	git clone git://github.com/fletcher/peg-multimarkdown.git
@@ -115,9 +115,7 @@ Once installed, you simply do something like the following:
   overwrite existing files with the `html` or `tex` extension, so use with
   caution.
 
-**Note**: The Mac OS X installer installs `mmd` as an alias to `multimarkdown`
-for convenience. You could do the same manually on linux. Alternatively, I
-create two aliases in my `.tcshrc` file to simplify things:
+**Note**: I create two aliases in my `.tcshrc` file to simplify things:
 
 	alias mmd		'multimarkdown -b'
 	alias mmd2tex	'multimarkdown -b -t latex'
@@ -143,9 +141,9 @@ create two aliases in my `.tcshrc` file to simplify things:
 * I was interested in learning about PEG's and revisiting C programming.
 
 * The syntax has been fairly stable, and it would be nice to be able to
-  formalize is a bit better --- which happens by definition when using a PEG.
+  formalize it a bit --- which happens by definition when using a PEG.
 
-* I wanted to revisit the syntax and features and clean it up a bit.
+* I wanted to revisit the syntax and features and clean things up a bit.
 
 * Did I mention how much faster this is? And that it could (eventually) run on
   an iPhone?
@@ -212,13 +210,12 @@ use the `LaTeX Input` metadata to insert a `\input{file}` command. You can
 then store various template files in your texmf directory and call them with
 metadata, or with embedded raw LaTeX commands in your document. For example:
 
-	LaTeX Input:		mmd-memoir-header
-	LaTeX Input:		mmd-memoir-layout
+	LaTeX Input:		mmd-memoir-header  
 	Title:				Sample MultiMarkdown Document  
 	Author:				Fletcher T. Penney  
 	LaTeX Mode:			memoir  
-	LaTeX Input:		mmd-memoir-frontmatter
-	LaTeX Footer:		mmd-memoir-footer
+	LaTeX Input:		mmd-memoir-begin-doc  
+	LaTeX Footer:		mmd-memoir-footer  
 
 This would include several template files in the order that you see. The
 `LaTeX Footer` metadata inserts a template at the end of your document. Note
@@ -235,6 +232,10 @@ commands and doesn't require knowledge of XSLT programming.
 
 I recommend checking out the default [LaTeX Support Files] that are available
 on github. They are designed to serve as a starting point for your own needs.
+
+**Note**: You can still use this version of MultiMarkdown to convert text into
+XHTML, and then process the XHTML using XSLT to create a LaTeX document, just
+like you used to in MMD 2.0.
 
 [LaTeX Support Files]: https://github.com/fletcher/peg-multimarkdown-latex-support
 
@@ -297,7 +298,7 @@ formats --- one for XHTML, and one for LaTeX:
 In this section, when the document is converted into XHTML, the `blockquote`
 sections will be used as expected, and the `epigraph` will be ignored since it
 is inside a comment. Conversely, when processed into LaTeX, the raw HTML will
-be ignored, and the comment will be processed as raw text.
+be ignored, and the comment will be processed as raw LaTeX.
 
 You shouldn't need to use this feature, but if you want to specify exactly how
 a certain part of your document is processed into LaTeX, it's a neat trick.
@@ -338,20 +339,22 @@ indicate that math was included. MMD stumbled on this due to some issues with
 escaping, so instead we use `\\[ math \\]` and `\\( math \\)`. See an
 example:
 
-	latex input:	mmd-article-header
+	latex input:	mmd-article-header  
 	Title:			MultiMarkdown Math Example  
-	latex input:	mmd-article-begin-doc
-	latex footer:	mmd-memoir-footer
-	xhtml header:	<script type="text/javascript" src="http://localhost/~fletcher/math/mathjax/MathJax.js"></script>
-
-
-	An example of math within a paragraph --- \\({e}^{i\pi }+1=0\\) --- easy
-	enough.
-
+	latex input:	mmd-article-begin-doc  
+	latex footer:	mmd-memoir-footer  
+	xhtml header:	<script type="text/javascript"
+		src="http://localhost/~fletcher/math/mathjax/MathJax.js">
+		</script>
+				
+				
+	An example of math within a paragraph --- \\({e}^{i\pi }+1=0\\)
+	--- easy enough.
+	
 	And an equation on it's own:
-
+	
 	\\[ {x}_{1,2}=\frac{-b\pm \sqrt{{b}^{2}-4ac}}{2a} \\]
-
+	
 	That's it.
 
 You would, of course, need to change the `xhtml header` metadata to point to
@@ -380,10 +383,13 @@ Thanks to John Gruber for the original [Markdown]. 'Nuff said.
 And thanks to the many contributors and users of the original MultiMarkdown
 that helped me refine the syntax and search out bugs.
 
+The `glib2` and `intl` libraries are part of [GTK+]. They are licensed under
+the GNU LGPL 2.1.
 
-[peg-markdown]: https://github.com/jgm/peg-markdown
-[Markdown]: http://daringfireball.net/projects/markdown/
-[MultiMarkdown]: http://fletcherpenney.net/multimarkdown/
-[peg-multimarkdown]: https://github.com/fletcher/peg-multimarkdown
-[fink]: http://www.finkproject.org/
-[downloads]: https://github.com/fletcher/peg-multimarkdown/downloads
+[peg-markdown]:			https://github.com/jgm/peg-markdown
+[Markdown]:				http://daringfireball.net/projects/markdown/
+[MultiMarkdown]:		http://fletcherpenney.net/multimarkdown/
+[peg-multimarkdown]:	https://github.com/fletcher/peg-multimarkdown
+[fink]:					http://www.finkproject.org/
+[downloads]:			http://github.com/fletcher/peg-multimarkdown/downloads
+[GTK+]:					http://www.gtk.org/
