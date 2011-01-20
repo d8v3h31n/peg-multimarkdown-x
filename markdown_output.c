@@ -203,7 +203,12 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
     case IMAGE:
         g_string_append_printf(out, "<img src=\"");
         print_html_string(out, elt->contents.link->url, obfuscate);
-        g_string_append_printf(out, "\" alt=\"");
+        if ( extension(EXT_COMPATIBILITY) ) {
+            g_string_append_printf(out, "\"");
+        } else {
+            g_string_append_printf(out, "\" id=\"%s\"",elt->contents.link->identifier);
+        }
+        g_string_append_printf(out, " alt=\"");
         print_html_element_list(out, elt->contents.link->label, obfuscate);
         g_string_append_printf(out, "\"");
         if (strlen(elt->contents.link->title) > 0) {
@@ -362,7 +367,7 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
             label = NULL;
         }
         if (strncmp(elt->contents.str,"[#",2) == 0) {
-            if (label != NULL) g_string_append_printf(out, "[%s]", label);
+            if (label != NULL) g_string_append_printf(out, "<span class=\"externalcitation\">[%s]</span>", label);
             g_string_append_printf(out, "%s",elt->contents.str);
         } else {
             if (elt->children->contents.str == NULL) {
@@ -419,14 +424,14 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
     case METAKEY:
         if (strcmp(elt->contents.str, "title") == 0) {
             g_string_append_printf(out, "\t<title>");
-            print_html_element_list(out, elt->children, obfuscate);
+            print_html_element(out, elt->children, obfuscate);
             g_string_append_printf(out, "</title>\n");
         } else if (strcmp(elt->contents.str, "css") == 0) {
             g_string_append_printf(out, "\t<link type=\"text/css\" rel=\"stylesheet\" href=\"");
-            print_html_element_list(out, elt->children, obfuscate);
+            print_html_element(out, elt->children, obfuscate);
             g_string_append_printf(out, "\"/>\n");
         } else if (strcmp(elt->contents.str, "xhtmlheader") == 0) {
-            print_raw_element_list(out, elt->children);
+            print_raw_element(out, elt->children);
             g_string_append_printf(out, "\n");
         } else if (strcmp(elt->contents.str, "baseheaderlevel") == 0) {
             base_header_level = atoi(elt->children->contents.str);
@@ -434,6 +439,7 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
             label = label_from_element_list(elt->children, 0);
             if (strcmp(label, "dutch") == 0) { language = DUTCH; } else 
             if (strcmp(label, "german") == 0) { language = GERMAN; } else 
+            if (strcmp(label, "germanguillemets") == 0) { language = GERMANGUILL; } else 
             if (strcmp(label, "french") == 0) { language = FRENCH; } else 
             if (strcmp(label, "swedish") == 0) { language = SWEDISH; }
             free(label);
@@ -441,7 +447,7 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
             g_string_append_printf(out, "\t<meta name=\"");
             print_html_string(out, elt->contents.str, obfuscate);
             g_string_append_printf(out, "\" content=\"");
-            print_html_element_list(out, elt->children, obfuscate);
+            print_html_element(out, elt->children, obfuscate);
             g_string_append_printf(out, "\"/>\n");
         }
         break;
@@ -460,8 +466,7 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
         g_string_append_printf(out, "</table>\n");
         break;
     case TABLESEPARATOR:
-	/* ignore column alignment in HTML for now */
-		table_alignment = elt->contents.str;
+        table_alignment = elt->contents.str;
         break;
     case TABLECAPTION:
         label = label_from_element_list(elt->children,obfuscate);
@@ -471,6 +476,16 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
         free(label);
         break;
     case TABLEHEAD:
+        /* print column alignment for XSLT processing if needed */
+        for (table_column=0;table_column<strlen(table_alignment);table_column++) {
+           if ( strncmp(&table_alignment[table_column],"r",1) == 0) {
+                g_string_append_printf(out, "<col align=\"right\"/>\n");
+            } else if ( strncmp(&table_alignment[table_column],"c",1) == 0) {
+                g_string_append_printf(out, "<col align=\"center\"/>\n");
+            } else {
+                g_string_append_printf(out, "<col align=\"left\"/>\n");
+            }
+        }
         cell_type = 'h';
         g_string_append_printf(out, "\n<thead>\n");
         print_html_element_list(out, elt->children, obfuscate);
@@ -500,6 +515,7 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
             g_string_append_printf(out, " colspan=\"%d\"",(int)strlen(elt->children->contents.str)+1);
         }
         g_string_append_printf(out, ">");
+        padded = 2;
         print_html_element_list(out, elt->children, obfuscate);
         g_string_append_printf(out, "</t%c>\n", cell_type);
         table_column++;
@@ -513,10 +529,10 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
     case MATHSPAN:
         if ( elt->contents.str[strlen(elt->contents.str)-1] == ']') {
             elt->contents.str[strlen(elt->contents.str)-3] = '\0';
-            g_string_append_printf(out, "%s\\]", elt->contents.str);
+            g_string_append_printf(out, "<span class=\"math\">%s\\]</span>", elt->contents.str);
         } else {
             elt->contents.str[strlen(elt->contents.str)-3] = '\0';
-            g_string_append_printf(out, "%s\\)", elt->contents.str);
+            g_string_append_printf(out, "<span class=\"math\">%s\\)</span>", elt->contents.str);
         }
         break;
     default: 
@@ -577,7 +593,7 @@ static void print_latex_string(GString *out, char *str) {
             g_string_append_printf(out, "\\^{}");
             break;
         case '\\':
-            g_string_append_printf(out, "\\textbackslash{}");
+            g_string_append_printf(out, "$\\backslash$");
             break;
         case '~':
             g_string_append_printf(out, "\\ensuremath{\\sim}");
@@ -586,10 +602,13 @@ static void print_latex_string(GString *out, char *str) {
             g_string_append_printf(out, "\\textbar{}");
             break;
         case '<':
-            g_string_append_printf(out, "\\textless{}");
+            g_string_append_printf(out, "$<$");
             break;
         case '>':
-            g_string_append_printf(out, "\\textgreater{}");
+            g_string_append_printf(out, "$>$");
+            break;
+        case '/':
+            g_string_append_printf(out, "\\slash ");
             break;
         default:
             g_string_append_c(out, *str);
@@ -736,18 +755,17 @@ static void print_latex_element(GString *out, element *elt) {
 
         g_string_append_printf(out, "]{%s}\n\\end{center}\n", elt->contents.link->url);
         if (strlen(elt->contents.link->title) > 0) {
-            label = label_from_string(elt->contents.link->title,0);
             g_string_append_printf(out, "\\caption{");
             print_latex_string(out, elt->contents.link->title);
-            g_string_append_printf(out, "}\n\\label{%s}\n", label);
-            free(label);
+            g_string_append_printf(out, "}\n");
         }
+        g_string_append_printf(out, "\\label{%s}\n", elt->contents.link->identifier);
         g_string_append_printf(out,"\\end{figure}\n");
         free(height);
         free(width);
         break;
     case EMPH:
-        g_string_append_printf(out, "\\emph{");
+        g_string_append_printf(out, "{\\itshape ");
         print_latex_element_list(out, elt->children);
         g_string_append_printf(out, "}");
         break;
@@ -835,7 +853,6 @@ static void print_latex_element(GString *out, element *elt) {
         g_string_append_printf(out, "\n\\begin{itemize}");
         padded = 0;
         print_latex_element_list(out, elt->children);
-        pad(out, 1);
         g_string_append_printf(out, "\\end{itemize}");
         padded = 0;
         break;
@@ -856,9 +873,9 @@ static void print_latex_element(GString *out, element *elt) {
         g_string_append_printf(out, "\n");
         break;
     case BLOCKQUOTE:
-        pad(out, 1);
+        pad(out, 2);
         g_string_append_printf(out, "\\begin{quote}");
-        padded = 0;
+        padded = 1;
         print_latex_element_list(out, elt->children);
         pad(out, 1);
         g_string_append_printf(out, "\\end{quote}");
@@ -966,13 +983,13 @@ static void print_latex_element(GString *out, element *elt) {
         } else if (strcmp(elt->contents.str, "baseheaderlevel") == 0) {
             base_header_level = atoi(elt->children->contents.str);
         } else if (strcmp(elt->contents.str, "latexinput") == 0) {
-            g_string_append_printf(out, "\\input{");
-            print_latex_string(out, elt->children->contents.str);
-            g_string_append_printf(out, "}\n");
+            g_string_append_printf(out, "\\input{%s}\n", elt->children->contents.str);
         } else if (strcmp(elt->contents.str, "latexfooter") == 0) {
             latex_footer = elt->children->contents.str;
         } else if (strcmp(elt->contents.str, "bibtex") == 0) {
             g_string_append_printf(out, "\\def\\bibliocommand{\\bibliography{%s}}\n",elt->children->contents.str);
+        } else if (strcmp(elt->contents.str, "xhtmlheader") == 0) {
+        } else if (strcmp(elt->contents.str, "css") == 0) {
         } else {
             g_string_append_printf(out, "\\def\\");
             print_latex_string(out, elt->contents.str);
@@ -995,11 +1012,11 @@ static void print_latex_element(GString *out, element *elt) {
         pad(out, 2);
         g_string_append_printf(out, "\\begin{table}[htbp]\n\\begin{minipage}{\\linewidth}\n\\setlength{\\tymax}{0.5\\linewidth}\n\\centering\n\\small\n");
         print_latex_element_list(out, elt->children);
-        g_string_append_printf(out, "\n\\end{tabulary}\n\\end{minipage}\n\\end{table}\n");
+        g_string_append_printf(out, "\n\\end{tabular}\n\\end{minipage}\n\\end{table}\n");
         padded = 0;
         break;
     case TABLESEPARATOR:
-        g_string_append_printf(out, "\\begin{tabulary}{\\linewidth}{@{}%s@{}} \\\\ \\toprule\n", elt->contents.str);
+        g_string_append_printf(out, "\\begin{tabular}{@{}%s@{}} \\\\ \\toprule\n", elt->contents.str);
         break;
     case TABLECAPTION:
         label = label_from_element_list(elt->children,0);
@@ -1396,7 +1413,7 @@ static void print_memoir_element(GString *out, element *elt) {
             free(label);
         }
         g_string_append_printf(out, "}\n");
-        padded = 0;
+        padded = 1;
         break;
     default:
         /* most things are not changed for memoir output */
@@ -1447,13 +1464,6 @@ static void print_beamer_element(GString *out, element *elt) {
             print_latex_footer(out);
             g_string_append_printf(out, "\\mode*\n");
             break;
-        case VERBATIM:
-            pad(out, 1);
-            g_string_append_printf(out, "\n\\begin{semiverbatim}\n\n");
-            print_raw_element(out, elt);
-            g_string_append_printf(out, "\n\\end{semiverbatim}\n");
-            padded = 0;
-            break;
         case LISTITEM:
             pad(out, 1);
             g_string_append_printf(out, "\\item<+-> ");
@@ -1464,7 +1474,7 @@ static void print_beamer_element(GString *out, element *elt) {
         case HEADINGSECTION:
             if (elt->children->key -H1 + base_header_level == 3) {
                 pad(out,2);
-                g_string_append_printf(out, "\\begin{frame}");
+               g_string_append_printf(out, "\\begin{frame}");
                 if (list_contains_key(elt->children,VERBATIM)) {
                     g_string_append_printf(out, "[fragile]");
                 }
@@ -1478,7 +1488,7 @@ static void print_beamer_element(GString *out, element *elt) {
                 print_beamer_element_list(out, elt->children->next);
                 g_string_append_printf(out, "\n\n}\n\n");
             } else {
-                print_beamer_element_list(out, elt->children);              
+                print_beamer_element_list(out, elt->children);
             }
             break;
         case H1: case H2: case H3: case H4: case H5: case H6:
@@ -1648,7 +1658,6 @@ char * dimension_for_attribute(char *querystring, element *list) {
     
     if (strcmp(dimension,upper) == 0) {
         /* no units */
-        fprintf(stderr, "No units: %s\n", toupper(dimension));
         g_string_append_printf(result, "pt");
     }
 
