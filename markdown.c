@@ -34,7 +34,7 @@ static int extensions;
  ***********************************************************************/
 
 #define VERSION "3.0a6"
-#define COPYRIGHT "portions Copyright (c) 2010 Fletcher T. Penney.\n" \
+#define COPYRIGHT "portions Copyright (c) 2010-2011 Fletcher T. Penney.\n" \
                   "original Copyright (c) 2008-2009 John MacFarlane.  License GPLv2+ or MIT.\n" \
                   "This is free software: you are free to change and redistribute it.\n" \
                   "There is NO WARRANTY, to the extent permitted by law."
