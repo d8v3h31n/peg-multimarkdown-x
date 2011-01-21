@@ -469,11 +469,17 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
         table_alignment = elt->contents.str;
         break;
     case TABLECAPTION:
-        label = label_from_element_list(elt->children,obfuscate);
+        if (elt->children->key == TABLELABEL) {
+            label = label_from_element_list(elt->children->children,obfuscate);
+        } else {
+            label = label_from_element_list(elt->children,obfuscate);
+        }
         g_string_append_printf(out, "<caption id=\"%s\">", label);
         print_html_element_list(out, elt->children, obfuscate);
         g_string_append_printf(out, "</caption>\n");
         free(label);
+        break;
+    case TABLELABEL:
         break;
     case TABLEHEAD:
         /* print column alignment for XSLT processing if needed */
@@ -1019,11 +1025,17 @@ static void print_latex_element(GString *out, element *elt) {
         g_string_append_printf(out, "\\begin{tabular}{@{}%s@{}} \\\\ \\toprule\n", elt->contents.str);
         break;
     case TABLECAPTION:
-        label = label_from_element_list(elt->children,0);
+        if (elt->children->key == TABLELABEL) {
+            label = label_from_element_list(elt->children->children,0);
+        } else {
+            label = label_from_element_list(elt->children,0);
+        }
         g_string_append_printf(out, "\\caption{");
         print_latex_element_list(out, elt->children);
         g_string_append_printf(out, "}\n\\label{%s}\n",label);
         free(label);
+        break;
+    case TABLELABEL:
         break;
     case TABLEHEAD:
         print_latex_element_list(out, elt->children);

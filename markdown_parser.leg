@@ -944,7 +944,7 @@ Table = a:StartList b:StartList (TableCaption { b = cons($$, b);})?
     TableBody { $$->key = TABLEHEAD; a = cons($$, a); }
     (SeparatorLine { append_list($$,a); } )
     (TableBody { a = cons($$, a);} )*
-	( (TableCaption { b = cons($$, b);} &BlankLine) | &BlankLine)
+    ( (TableCaption { b = cons($$, b);} &BlankLine) | &BlankLine)
     # Requires blank line to end table "block"
     {
         if (b != NULL) { append_list(b,a); };
@@ -1003,9 +1003,13 @@ RightAlign = '-'+ ':' &(!'-' !':')
 
 CellDivider = '|'
 
-TableCaption = a:Label Newline
+TableCaption = a:Label ( b:Label { b->key = TABLELABEL})? Newline
 { $$ = a;
     $$->key = TABLECAPTION;
+    if ( b->key == TABLELABEL) {
+        b->next = $$->children;
+        $$->children = b;
+    }
 }
 
 AutoLabel = '[' < (!']' .)+ > ']' 

@@ -66,12 +66,17 @@ installed. For example, on ubuntu:
 For other linux distributions, you will need to do something similar.
 
 On Mac OS X, please note that you will need to install the Developer Tools.
-Then you can use [fink] or something similar:
+You then need to install a few libraries. I used [homebrew]:
+
+	brew install pkg-config glib gettext
+
+You can also use [fink] or something similar (though this caused some machine
+architecture incompatibilities):
 
 	fink install glib2-shlibs glib2-dev
 
-Once you have that installed, you can either download the source from
-[peg-multimarkdown], or you can use git:
+Once you have the libraries installed, you can either download the source from
+[peg-multimarkdown], or (preferentially) you can use git:
 
 	git clone git://github.com/fletcher/peg-multimarkdown.git
 
@@ -393,3 +398,4 @@ the GNU LGPL 2.1.
 [fink]:					http://www.finkproject.org/
 [downloads]:			http://github.com/fletcher/peg-multimarkdown/downloads
 [GTK+]:					http://www.gtk.org/
+[homebrew]:				https://github.com/mxcl/homebrew
