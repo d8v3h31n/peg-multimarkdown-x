@@ -53,9 +53,3 @@ latextest: $(PROGRAM)
 
 leak-check: $(PROGRAM)
 	valgrind --leak-check=full ./multimarkdown TEST.markdown > TEST.html
-
-installer: $(PROGRAM)
-	cp multimarkdown mac_installer/Package_Root/usr/local/bin/multimarkdown
-	./multimarkdown README > mac_installer/Resources/README.html
-	./multimarkdown mac_installer/Resources/Welcome.txt > mac_installer/Resources/Welcome.html
-	./multimarkdown LICENSE > mac_installer/Resources/License.html
