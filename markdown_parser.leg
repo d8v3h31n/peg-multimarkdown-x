@@ -892,7 +892,7 @@ AutoLabels = a:StartList ( b:Heading
             } | c:TableCaption {
                 GString *label = g_string_new("");
                 char *lab;
-                print_raw_element_list(label, c->children);
+                print_raw_element_list(label, c->children->children);
                 lab = label_from_string(label->str,0);
                 a = cons(mk_str(lab), a);
                 free(lab);
@@ -901,7 +901,7 @@ AutoLabels = a:StartList ( b:Heading
             | (TableBody)+ c:TableCaption {
                 GString *label = g_string_new("");
                 char *lab;
-                print_raw_element_list(label, c->children);
+                print_raw_element_list(label, c->children->children);
                 lab = label_from_string(label->str,0);
                 a = cons(mk_str(lab), a);
                 free(lab);
