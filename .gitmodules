@@ -1,0 +1,3 @@
+[submodule "MarkdownTest"]
+	path = MarkdownTest
+	url = git@github.com:fletcher/MMD-Test-Suite.git
