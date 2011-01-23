@@ -853,6 +853,8 @@ CitationReferenceDouble = b:Label < Spnl > !"[]" ref:RawCitationReference
                         sprintf(s, "[#%s]", ref->contents.str);
                         $$ = mk_str(s);
                         $$->key = CITATION;
+                        b->key = LOCATOR;
+                        $$->children = b;
                         free(s);
                     }
                 }
