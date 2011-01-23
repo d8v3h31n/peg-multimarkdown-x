@@ -419,7 +419,15 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
         break;
     case METADATA:
         /* Metadata is present, so this should be a "complete" document */
-        print_html_header(out, elt, obfuscate);
+        html_footer = TRUE;
+        if ((strcmp(elt->children->contents.str, "baseheaderlevel") == 0)
+            && (elt->children->next == NULL)) {
+                /* if only meta key is base header level, don't make complete doc */
+                print_html_element_list(out, elt->children, obfuscate);
+                html_footer = FALSE;
+            } else {
+                print_html_header(out, elt, obfuscate);
+            }
         break;
     case METAKEY:
         if (strcmp(elt->contents.str, "title") == 0) {
@@ -455,7 +463,6 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
         print_html_string(out, elt->contents.str, obfuscate);
         break;
     case FOOTER:
-        html_footer = TRUE;
         break;
     case HEADINGSECTION:
         print_html_element_list(out, elt->children, obfuscate);
