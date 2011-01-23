@@ -198,6 +198,10 @@ title, author, date, or whatever you like. If you don't want to include any
 real metadata, including "format: complete" will still trigger a complete
 document, just like it used to.
 
+**NOTE**: If the *only* metadata present is `Base Header Level` then a
+complete document will not be triggered. This can be useful when combining
+various documents together.
+
 The old approach (even though it was hidden from most users) was a bit of a
 kludge, and this should be more elegant, and more flexible.
 
