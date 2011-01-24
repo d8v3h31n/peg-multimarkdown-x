@@ -250,7 +250,9 @@ static bool find_note(element **result, char *label) {
 
 /* print_raw_element - print an element as original text */
 static void print_raw_element(GString *out, element *elt) {
-    g_string_append_printf(out, "%s", elt->contents.str);
+    if (elt->contents.str != NULL) {
+        g_string_append_printf(out, "%s", elt->contents.str);
+    }
 }
 
 /* print_raw_element_list - print a list of elements as original text */
