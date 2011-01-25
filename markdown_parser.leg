@@ -835,7 +835,7 @@ RawNoteBlock =  a:StartList
 
 CitationReference = CitationReferenceDouble | CitationReferenceSingle
 
-CitationReferenceDouble = b:Label < Spnl > !"[]" ref:RawCitationReference
+CitationReferenceDouble = !"[]" b:Label < Spnl > !"[]" ref:RawCitationReference
                 {   element *match;
                     if (find_note(&match, ref->contents.str)) {
                         /* This citation is specified within the document */
@@ -859,7 +859,8 @@ CitationReferenceDouble = b:Label < Spnl > !"[]" ref:RawCitationReference
                     }
                 }
 
-CitationReferenceSingle =  ref:RawCitationReference < (Spnl "[]")? >
+CitationReferenceSingle =  (( "[]" Spnl ref:RawCitationReference )
+			| ( ref:RawCitationReference < (Spnl "[]")? > ))
                 {   element *match;
                     if (find_note(&match, ref->contents.str)) {
                         $$ = mk_element(CITATION);
