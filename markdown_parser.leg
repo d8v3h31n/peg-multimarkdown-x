@@ -954,7 +954,8 @@ Definition = (a:StartList b:StartList
 Table = a:StartList b:StartList (TableCaption { b = cons($$, b);})?
     TableBody { $$->key = TABLEHEAD; a = cons($$, a); }
     (SeparatorLine { append_list($$,a); } )
-    (TableBody { a = cons($$, a);} )*
+    (TableBody { a = cons($$, a);} )
+    (BlankLine TableBody { a = cons($$, a); } )*
     ( (TableCaption { b = cons($$, b);} &BlankLine) | &BlankLine)
     # Requires blank line to end table "block"
     {
@@ -962,7 +963,7 @@ Table = a:StartList b:StartList (TableCaption { b = cons($$, b);})?
         $$ = mk_list(TABLE, a);
     }
 
-TableBody = a:StartList (TableRow {a = cons($$, a);})+ BlankLine?
+TableBody = a:StartList (TableRow {a = cons($$, a);})+
     { $$ = mk_list(TABLEBODY, a);}
 
 TableRow = a:StartList
