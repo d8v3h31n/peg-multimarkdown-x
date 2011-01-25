@@ -860,7 +860,7 @@ CitationReferenceDouble = !"[]" b:Label < Spnl > !"[]" ref:RawCitationReference
                 }
 
 CitationReferenceSingle =  (( "[]" Spnl ref:RawCitationReference )
-			| ( ref:RawCitationReference < (Spnl "[]")? > ))
+            | ( ref:RawCitationReference < (Spnl "[]")? > ))
                 {   element *match;
                     if (find_note(&match, ref->contents.str)) {
                         $$ = mk_element(CITATION);
