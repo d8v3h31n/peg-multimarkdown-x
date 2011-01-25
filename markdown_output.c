@@ -1305,6 +1305,11 @@ void print_element_list(GString *out, element *elt, int format, int exts) {
     endnotes = NULL;
     notenumber = 0;
 
+    /* And MultiMarkdown globals */
+    base_header_level = 1;
+    language = ENGLISH;
+    html_footer = FALSE;
+    
     extensions = exts;
     padded = 2;  /* set padding to 2, so no extra blank lines at beginning */
 
