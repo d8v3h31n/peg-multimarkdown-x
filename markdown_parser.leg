@@ -1018,7 +1018,7 @@ CellDivider = '|'
 TableCaption = a:Label ( b:Label { b->key = TABLELABEL})? Newline
 { $$ = a;
     $$->key = TABLECAPTION;
-    if ( b->key == TABLELABEL) {
+    if ( (b != NULL) && (b->key == TABLELABEL)) {
         b->next = $$->children;
         $$->children = b;
     }
