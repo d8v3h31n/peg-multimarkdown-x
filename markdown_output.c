@@ -1003,6 +1003,7 @@ static void print_latex_element(GString *out, element *elt) {
             g_string_append_printf(out, "\\def\\bibliocommand{\\bibliography{%s}}\n",elt->children->contents.str);
         } else if (strcmp(elt->contents.str, "xhtmlheader") == 0) {
         } else if (strcmp(elt->contents.str, "css") == 0) {
+        } else if (strcmp(elt->contents.str, "language") == 0) {
         } else {
             g_string_append_printf(out, "\\def\\");
             print_latex_string(out, elt->contents.str);
