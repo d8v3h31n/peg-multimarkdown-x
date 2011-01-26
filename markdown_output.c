@@ -1050,7 +1050,11 @@ static void print_latex_element(GString *out, element *elt) {
         break;
     case TABLEBODY:
         print_latex_element_list(out, elt->children);
-        g_string_append_printf(out, "\n\\bottomrule\n");
+        if ( ( elt->next != NULL ) && (elt->next->key == TABLEBODY) ) {
+            g_string_append_printf(out, "\n\\midrule\n");
+        } else {
+            g_string_append_printf(out, "\n\\bottomrule\n");
+        }
         break;
     case TABLEROW:
         print_latex_element_list(out, elt->children);
