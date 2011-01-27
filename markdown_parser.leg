@@ -857,6 +857,15 @@ CitationReferenceDouble = !"[]" b:Label < Spnl > !"[]" ref:RawCitationReference
                         $$->children = b;
                         free(s);
                     }
+                    GString *label = g_string_new("");
+                    char *lab;
+                    print_raw_element_list(label, b->children);
+                    lab = label_from_string(label->str,0);
+                    if (strcmp(lab,"notcited") == 0 ) {
+                        $$->key = NOCITATION;
+                    }
+                    g_string_free(label, true);
+                    free(lab);
                 }
 
 CitationReferenceSingle =  (( "[]" Spnl ref:RawCitationReference )

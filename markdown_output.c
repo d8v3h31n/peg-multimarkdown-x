@@ -356,6 +356,7 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
         break;
     case GLOSSARYSORTKEY:
         break;
+    case NOCITATION:
     case CITATION:
         if ((elt->children != NULL) && (elt->children->key == LOCATOR)) {
             GString *temp = g_string_new("");
@@ -367,9 +368,15 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
             label = NULL;
         }
         if (strncmp(elt->contents.str,"[#",2) == 0) {
-            if (label != NULL) g_string_append_printf(out, "<span class=\"externalcitation\">[%s]</span>", label);
-            g_string_append_printf(out, "%s",elt->contents.str);
+            /* reference specified externally */
+            if ( elt->key == NOCITATION ) {
+                g_string_append_printf(out, "<span class=\"notcited\" id=\"%s\"/>", elt->contents.str);
+            } else {
+                if (label != NULL) g_string_append_printf(out, "<span class=\"externalcitation\">[%s]</span>", label);
+                g_string_append_printf(out, "%s",elt->contents.str);
+            }
         } else {
+            /* reference specified within the MMD document */
             if (elt->children->contents.str == NULL) {
                 elt->children->key = CITATION;
                 add_endnote(elt->children);
@@ -380,8 +387,13 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
                 elt->children->contents.str = strdup(buf);
             }
             if (label != NULL) {
-                g_string_append_printf(out, "<a class=\"citation\" href=\"#fn:%s\" title=\"Jump to citation\">[%s, %s]</a>",
-                    elt->children->contents.str, label, elt->children->contents.str);
+                if ( elt->key == NOCITATION ) {
+                    g_string_append_printf(out, "<span class=\"notcited\" id=\"%s\"/>",
+                        elt->children->contents.str);
+                } else {
+                    g_string_append_printf(out, "<a class=\"citation\" href=\"#fn:%s\" title=\"Jump to citation\">[%s, %s]</a>",
+                        elt->children->contents.str, label, elt->children->contents.str);
+                }
                 elt->children = NULL;               
             } else {
                 g_string_append_printf(out, "<a class=\"citation\" href=\"#fn:%s\" title=\"Jump to citation\">[%s]</a>",
@@ -931,29 +943,42 @@ static void print_latex_element(GString *out, element *elt) {
     case REFERENCE:
         /* Nonprinting */
         break;
+    case NOCITATION:
     case CITATION:
         if (strncmp(elt->contents.str,"[#",2) == 0) {
             /* This should be used as a bibtex citation key after trimming */
             elt->contents.str[strlen(elt->contents.str)-1] = '\0';
-            if ((elt->children != NULL) && (elt->children->key == LOCATOR)){
-                g_string_append_printf(out, "~\\cite[");
-                print_latex_element(out,elt->children);
-                g_string_append_printf(out, "]{%s}",&elt->contents.str[2]);
+            if (elt->key == NOCITATION ) {
+                g_string_append_printf(out, "~\\nocite{%s}", &elt->contents.str[2]);
             } else {
-                g_string_append_printf(out, "~\\cite{%s}", &elt->contents.str[2]);
+                if ((elt->children != NULL) && (elt->children->key == LOCATOR)) {
+                    g_string_append_printf(out, "~\\cite[");
+                    print_latex_element(out,elt->children);
+                    g_string_append_printf(out, "]{%s}",&elt->contents.str[2]);
+                } else {
+                    g_string_append_printf(out, "~\\cite{%s}", &elt->contents.str[2]);
+                }
             }
         } else {
             /* This citation was specified in the document itself */
-            if ((elt->children != NULL) && (elt->children->key == LOCATOR)){
-                g_string_append_printf(out, "~\\cite[");
-                print_latex_element(out,elt->children);
-                g_string_append_printf(out, "]{%s}",elt->contents.str);
+            if (elt->key == NOCITATION ) {
+                g_string_append_printf(out, "~\\nocite{%s}", elt->contents.str);
                 element *temp;
                 temp = elt->children;
                 elt->children = temp->next;
                 free_element(temp);
             } else {
-                g_string_append_printf(out, "~\\cite{%s}", elt->contents.str);
+                if ((elt->children != NULL) && (elt->children->key == LOCATOR)){
+                    g_string_append_printf(out, "~\\cite[");
+                    print_latex_element(out,elt->children);
+                    g_string_append_printf(out, "]{%s}",elt->contents.str);
+                    element *temp;
+                    temp = elt->children;
+                    elt->children = temp->next;
+                    free_element(temp);
+                } else {
+                    g_string_append_printf(out, "~\\cite{%s}", elt->contents.str);
+                }
             }
             if (elt->children->contents.str == NULL) {
                 elt->children->contents.str = strdup(elt->contents.str);
