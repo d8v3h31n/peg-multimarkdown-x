@@ -964,7 +964,7 @@ Table = a:StartList b:StartList (TableCaption { b = cons($$, b);})?
     TableBody { $$->key = TABLEHEAD; a = cons($$, a); }
     (SeparatorLine { append_list($$,a); } )
     (TableBody { a = cons($$, a);} )
-    (BlankLine TableBody { a = cons($$, a); } )*
+    (BlankLine !TableCaption TableBody { a = cons($$, a); } )*
     ( (TableCaption { b = cons($$, b);} &BlankLine) | &BlankLine)
     # Requires blank line to end table "block"
     {
@@ -996,8 +996,8 @@ CellStr = < (!CellDivider NormalChar) (!CellDivider NormalChar | '_'+ &Alphanume
         { $$ = mk_str(yytext); }
 
 
-FullCell = Sp a:StartList  ((!CellDivider CellStr | !Newline !CellDivider !Str Inline ) { a = cons($$,a)})+
-    ( ' '* CellDivider )?
+FullCell = Sp a:StartList  ((!CellDivider CellStr | !Newline !Endline !CellDivider !Str Inline ) { a = cons($$,a)})+
+    Sp ( CellDivider )?
     { $$ = mk_list(TABLECELL,a); }
 
 EmptyCell = Sp CellDivider
@@ -1011,7 +1011,7 @@ SeparatorLine = a:StartList ( CellDivider | AlignmentCell { a = cons($$,a);})
     }
 
 AlignmentCell = Sp (!CellDivider ( LeftAlign | CenterAlign | RightAlign))
-    ( Sp CellDivider )?
+    Sp ( CellDivider )?
 
 LeftAlign = ':'? '-'+ &(!'-' !':')
     { $$ = mk_str("l");}
@@ -1024,7 +1024,7 @@ RightAlign = '-'+ ':' &(!'-' !':')
 
 CellDivider = '|'
 
-TableCaption = a:Label ( b:Label { b->key = TABLELABEL})? Newline
+TableCaption = a:Label ( b:Label { b->key = TABLELABEL})? Sp Newline
 { $$ = a;
     $$->key = TABLECAPTION;
     if ( (b != NULL) && (b->key == TABLELABEL)) {
