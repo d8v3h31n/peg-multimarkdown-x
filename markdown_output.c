@@ -60,7 +60,7 @@ static void print_beamer_element(GString *out, element *elt);
 element * print_html_headingsection(GString *out, element *list, bool obfuscate);
 
 static bool list_contains_key(element *list, int key);
-
+static bool is_html_complete_doc(element *meta);
 static int find_latex_mode(int format, element *list);
 element * metadata_for_key(char *key, element *list);
 element * element_for_attribute(char *querystring, element *list);
@@ -431,15 +431,12 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
         break;
     case METADATA:
         /* Metadata is present, so this should be a "complete" document */
-        html_footer = TRUE;
-        if ((strcmp(elt->children->contents.str, "baseheaderlevel") == 0)
-            && (elt->children->next == NULL)) {
-                /* if only meta key is base header level, don't make complete doc */
-                print_html_element_list(out, elt->children, obfuscate);
-                html_footer = FALSE;
-            } else {
-                print_html_header(out, elt, obfuscate);
-            }
+		html_footer = is_html_complete_doc(elt);
+		if (html_footer) {
+			print_html_header(out, elt, obfuscate);
+		} else {
+			print_html_element_list(out, elt->children, obfuscate);
+		}
         break;
     case METAKEY:
         if (strcmp(elt->contents.str, "title") == 0) {
@@ -1721,4 +1718,21 @@ char * dimension_for_attribute(char *querystring, element *list) {
     dimension = result->str;
     g_string_free(result, false);
     return(dimension);
+}
+
+/* Check metadata keys and determine if I need a complete document */
+static bool is_html_complete_doc(element *meta) {
+	element *step;
+	step = meta->children;
+	
+	while (step != NULL) {
+		if (strcmp(step->contents.str, "baseheaderlevel") != 0) {
+			if (strcmp(step->contents.str, "language") !=0 ){
+				return TRUE;
+			}
+		}
+		step = step->next;
+	}
+	
+	return FALSE;
 }
