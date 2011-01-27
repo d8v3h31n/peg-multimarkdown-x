@@ -6,6 +6,8 @@ extern int strcasecmp(const char *string1, const char *string2);
 static char *label_from_string(char *str, bool obfuscate) ;
 static void localize_typography(GString *out, int character, int language, int output);
 
+static void print_raw_element_list(GString *out, element *list);
+
 /**********************************************************************
 
   List manipulation functions
@@ -250,7 +252,11 @@ static bool find_note(element **result, char *label) {
 
 /* print_raw_element - print an element as original text */
 static void print_raw_element(GString *out, element *elt) {
-    g_string_append_printf(out, "%s", elt->contents.str);
+    if (elt->contents.str != NULL) {
+        g_string_append_printf(out, "%s", elt->contents.str);
+    } else {
+        print_raw_element_list(out, elt->children);
+    }
 }
 
 /* print_raw_element_list - print a list of elements as original text */
