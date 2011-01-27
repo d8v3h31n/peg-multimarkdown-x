@@ -991,14 +991,14 @@ ExtendedCell = (EmptyCell | FullCell) <CellDivider+>
         $$->children = span;
     }
 
-FullCell = Sp <  ((!Newline !CellDivider !('\\' '|') .)+ | ("\\|"))+ >
+
+CellStr = < (!CellDivider NormalChar) (!CellDivider NormalChar | '_'+ &Alphanumeric)* >
+        { $$ = mk_str(yytext); }
+
+
+FullCell = Sp a:StartList  ((!CellDivider CellStr | !Newline !CellDivider !Str Inline ) { a = cons($$,a)})+
     ( ' '* CellDivider )?
-    { element *raw;
-        raw = mk_str(yytext);
-        raw->key = RAW;
-        $$ = mk_element(TABLECELL);
-        $$->children = raw;
-    }
+    { $$ = mk_list(TABLECELL,a); }
 
 EmptyCell = Sp CellDivider
 { $$ = mk_element(TABLECELL);}
