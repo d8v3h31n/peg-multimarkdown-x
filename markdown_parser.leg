@@ -906,7 +906,7 @@ AutoLabels = a:StartList ( b:Heading
                 a = cons(mk_str(lab), a);
                 free(lab);
                 g_string_free(label,true);
-                free_element_list(c);}
+                free_element_list(c);} TableBody
             | (TableBody)+ c:TableCaption {
                 GString *label = g_string_new("");
                 char *lab;
