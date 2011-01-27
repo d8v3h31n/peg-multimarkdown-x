@@ -541,13 +541,7 @@ ReferenceLinkSingle =  a:Label < (Spnl "[]")? >
 
 ExplicitLink =  l:Label Spnl '(' Sp s:Source Spnl t:Title Sp ')'
                 {
-                    GString *text = g_string_new("");
-                    char *label;
-                    print_raw_element_list(text, l->children);
-                    label = label_from_string(text->str,0);
-                    $$ = mk_link(l->children, s->contents.str, t->contents.str, NULL, label);
-                    g_string_free(text, TRUE);
-                    free(label);
+                    $$ = mk_link(l->children, s->contents.str, t->contents.str, NULL, "");
                     free_element(s);
                     free_element(t);
                     free(l);
