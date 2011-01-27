@@ -372,8 +372,10 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
             if ( elt->key == NOCITATION ) {
                 g_string_append_printf(out, "<span class=\"notcited\" id=\"%s\"/>", elt->contents.str);
             } else {
-                if (label != NULL) g_string_append_printf(out, "<span class=\"externalcitation\">[%s]</span>", label);
+				g_string_append_printf(out, "<span class=\"externalcitation\">");
+                if (label != NULL) g_string_append_printf(out, "[%s]", label);
                 g_string_append_printf(out, "%s",elt->contents.str);
+				g_string_append_printf(out, "</span>");
             }
         } else {
             /* reference specified within the MMD document */
