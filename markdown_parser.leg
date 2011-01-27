@@ -509,8 +509,7 @@ ReferenceLinkDouble =  a:Label < Spnl > !"[]" b:Label
                             } else {
                                element *result;
                                result = mk_element(LIST);
-                               result->children = cons(mk_str("["), cons(a, cons(mk_str("]"), cons(mk_str(yytext),
-                                                   cons(mk_str("["), cons(b, mk_str("]")))))));
+                               result->children = cons(mk_str("["), cons(a, cons(mk_str("]"), cons(mk_str("["), cons(b, mk_str("]"))))));
                                $$ = result;
                            }
                        }
