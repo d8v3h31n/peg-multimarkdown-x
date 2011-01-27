@@ -452,7 +452,7 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
             g_string_append_printf(out, "\n");
         } else if (strcmp(elt->contents.str, "baseheaderlevel") == 0) {
             base_header_level = atoi(elt->children->contents.str);
-        } else if (strcmp(elt->contents.str, "language") == 0) {
+        } else if (strcmp(elt->contents.str, "quoteslanguage") == 0) {
             label = label_from_element_list(elt->children, 0);
             if (strcmp(label, "dutch") == 0) { language = DUTCH; } else 
             if (strcmp(label, "german") == 0) { language = GERMAN; } else 
@@ -1025,7 +1025,7 @@ static void print_latex_element(GString *out, element *elt) {
             g_string_append_printf(out, "\\def\\bibliocommand{\\bibliography{%s}}\n",elt->children->contents.str);
         } else if (strcmp(elt->contents.str, "xhtmlheader") == 0) {
         } else if (strcmp(elt->contents.str, "css") == 0) {
-        } else if (strcmp(elt->contents.str, "language") == 0) {
+        } else if (strcmp(elt->contents.str, "quoteslanguage") == 0) {
         } else {
             g_string_append_printf(out, "\\def\\");
             print_latex_string(out, elt->contents.str);
@@ -1727,7 +1727,7 @@ static bool is_html_complete_doc(element *meta) {
 	
 	while (step != NULL) {
 		if (strcmp(step->contents.str, "baseheaderlevel") != 0) {
-			if (strcmp(step->contents.str, "language") !=0 ){
+			if (strcmp(step->contents.str, "quoteslanguage") !=0 ){
 				return TRUE;
 			}
 		}
