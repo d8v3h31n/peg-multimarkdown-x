@@ -433,12 +433,12 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
         break;
     case METADATA:
         /* Metadata is present, so this should be a "complete" document */
-		html_footer = is_html_complete_doc(elt);
-		if (html_footer) {
-			print_html_header(out, elt, obfuscate);
-		} else {
-			print_html_element_list(out, elt->children, obfuscate);
-		}
+        html_footer = is_html_complete_doc(elt);
+        if (html_footer) {
+            print_html_header(out, elt, obfuscate);
+        } else {
+            print_html_element_list(out, elt->children, obfuscate);
+        }
         break;
     case METAKEY:
         if (strcmp(elt->contents.str, "title") == 0) {
