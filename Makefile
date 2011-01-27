@@ -1,6 +1,6 @@
 ALL : multimarkdown
 
-VERSION=3.0a7
+VERSION=3.0a8
 
 PROGRAM=multimarkdown
 
@@ -40,15 +40,15 @@ distclean: clean
 	make -C $(PEGDIR) spotless
 
 test: $(PROGRAM)
-	cd MarkdownTest_1.0.3; \
+	cd MarkdownTest; \
 	./MarkdownTest.pl --Script=../$(PROGRAM) --Tidy  --Flags="-c"
 
 mmdtest: $(PROGRAM)
-	cd MarkdownTest_1.0.3; \
+	cd MarkdownTest; \
 	./MarkdownTest.pl --Script=../$(PROGRAM) --Tidy --testdir=MultiMarkdownTests
 
 latextest: $(PROGRAM)
-	cd MarkdownTest_1.0.3; \
+	cd MarkdownTest; \
 	./MarkdownTest.pl --Script=../$(PROGRAM) --testdir=LaTeXTests --Flags="-t latex"
 
 leak-check: $(PROGRAM)

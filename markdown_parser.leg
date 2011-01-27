@@ -835,7 +835,7 @@ RawNoteBlock =  a:StartList
 
 CitationReference = CitationReferenceDouble | CitationReferenceSingle
 
-CitationReferenceDouble = b:Label < Spnl > !"[]" ref:RawCitationReference
+CitationReferenceDouble = !"[]" b:Label < Spnl > !"[]" ref:RawCitationReference
                 {   element *match;
                     if (find_note(&match, ref->contents.str)) {
                         /* This citation is specified within the document */
@@ -853,11 +853,23 @@ CitationReferenceDouble = b:Label < Spnl > !"[]" ref:RawCitationReference
                         sprintf(s, "[#%s]", ref->contents.str);
                         $$ = mk_str(s);
                         $$->key = CITATION;
+                        b->key = LOCATOR;
+                        $$->children = b;
                         free(s);
                     }
+                    GString *label = g_string_new("");
+                    char *lab;
+                    print_raw_element_list(label, b->children);
+                    lab = label_from_string(label->str,0);
+                    if (strcmp(lab,"notcited") == 0 ) {
+                        $$->key = NOCITATION;
+                    }
+                    g_string_free(label, true);
+                    free(lab);
                 }
 
-CitationReferenceSingle =  ref:RawCitationReference < (Spnl "[]")? >
+CitationReferenceSingle =  (( "[]" Spnl ref:RawCitationReference )
+            | ( ref:RawCitationReference < (Spnl "[]")? > ))
                 {   element *match;
                     if (find_note(&match, ref->contents.str)) {
                         $$ = mk_element(CITATION);
@@ -892,7 +904,11 @@ AutoLabels = a:StartList ( b:Heading
             } | c:TableCaption {
                 GString *label = g_string_new("");
                 char *lab;
-                print_raw_element_list(label, c->children);
+                if (c->children->key == TABLELABEL) {
+                    print_raw_element_list(label, c->children->children);
+                } else {
+                    print_raw_element_list(label, c->children);
+                }
                 lab = label_from_string(label->str,0);
                 a = cons(mk_str(lab), a);
                 free(lab);
@@ -901,7 +917,11 @@ AutoLabels = a:StartList ( b:Heading
             | (TableBody)+ c:TableCaption {
                 GString *label = g_string_new("");
                 char *lab;
-                print_raw_element_list(label, c->children);
+                if (c->children->key == TABLELABEL) {
+                    print_raw_element_list(label, c->children->children);
+                } else {
+                    print_raw_element_list(label, c->children);
+                }
                 lab = label_from_string(label->str,0);
                 a = cons(mk_str(lab), a);
                 free(lab);
@@ -943,7 +963,8 @@ Definition = (a:StartList b:StartList
 Table = a:StartList b:StartList (TableCaption { b = cons($$, b);})?
     TableBody { $$->key = TABLEHEAD; a = cons($$, a); }
     (SeparatorLine { append_list($$,a); } )
-    (TableBody { a = cons($$, a);} )*
+    (TableBody { a = cons($$, a);} )
+    (BlankLine TableBody { a = cons($$, a); } )*
     ( (TableCaption { b = cons($$, b);} &BlankLine) | &BlankLine)
     # Requires blank line to end table "block"
     {
@@ -951,7 +972,7 @@ Table = a:StartList b:StartList (TableCaption { b = cons($$, b);})?
         $$ = mk_list(TABLE, a);
     }
 
-TableBody = a:StartList (TableRow {a = cons($$, a);})+ BlankLine?
+TableBody = a:StartList (TableRow {a = cons($$, a);})+
     { $$ = mk_list(TABLEBODY, a);}
 
 TableRow = a:StartList
@@ -970,14 +991,14 @@ ExtendedCell = (EmptyCell | FullCell) <CellDivider+>
         $$->children = span;
     }
 
-FullCell = Sp <  ((!Newline !CellDivider !('\\' '|') .)+ | ("\\|"))+ >
+
+CellStr = < (!CellDivider NormalChar) (!CellDivider NormalChar | '_'+ &Alphanumeric)* >
+        { $$ = mk_str(yytext); }
+
+
+FullCell = Sp a:StartList  ((!CellDivider CellStr | !Newline !CellDivider !Str Inline ) { a = cons($$,a)})+
     ( ' '* CellDivider )?
-    { element *raw;
-        raw = mk_str(yytext);
-        raw->key = RAW;
-        $$ = mk_element(TABLECELL);
-        $$->children = raw;
-    }
+    { $$ = mk_list(TABLECELL,a); }
 
 EmptyCell = Sp CellDivider
 { $$ = mk_element(TABLECELL);}
@@ -1006,7 +1027,7 @@ CellDivider = '|'
 TableCaption = a:Label ( b:Label { b->key = TABLELABEL})? Newline
 { $$ = a;
     $$->key = TABLECAPTION;
-    if ( b->key == TABLELABEL) {
+    if ( (b != NULL) && (b->key == TABLELABEL)) {
         b->next = $$->children;
         $$->children = b;
     }
