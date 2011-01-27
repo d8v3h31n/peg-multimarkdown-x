@@ -1728,17 +1728,17 @@ char * dimension_for_attribute(char *querystring, element *list) {
 
 /* Check metadata keys and determine if I need a complete document */
 static bool is_html_complete_doc(element *meta) {
-	element *step;
-	step = meta->children;
-	
-	while (step != NULL) {
-		if (strcmp(step->contents.str, "baseheaderlevel") != 0) {
-			if (strcmp(step->contents.str, "quoteslanguage") !=0 ){
-				return TRUE;
-			}
-		}
-		step = step->next;
-	}
-	
-	return FALSE;
+    element *step;
+    step = meta->children;
+    
+    while (step != NULL) {
+        if (strcmp(step->contents.str, "baseheaderlevel") != 0) {
+            if (strcmp(step->contents.str, "quoteslanguage") !=0 ){
+                return TRUE;
+            }
+        }
+        step = step->next;
+    }
+    
+    return FALSE;
 }
