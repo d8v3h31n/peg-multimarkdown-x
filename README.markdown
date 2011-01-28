@@ -268,23 +268,6 @@ and partly out of necessity.  Specifically:
 * Footnote numbers are surrounded by "[]" in the text.
 
 
-## Headers ##
-
-If you use closing hashes at the end of your header, there needs to be a
-preceding space:
-
-This:
-
-	### Header ###
-
-not this:
-
-	### Header###
-
-This is a difference from the behavior of Markdown and many of its other
-derivatives. However, at the moment it's not a priority for me to change it.
-
-
 ## Raw HTML ##
 
 Because the original MultiMarkdown processed the text document into XHTML
