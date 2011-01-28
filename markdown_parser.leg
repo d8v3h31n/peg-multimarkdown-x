@@ -3,6 +3,8 @@
 
   markdown_parser.leg - markdown parser in C using a PEG grammar.
   (c) 2008 John MacFarlane (jgm at berkeley dot edu).
+  
+  portions Copyright (c) 2010-2011 Fletcher T Penney
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License or the MIT
@@ -725,11 +727,16 @@ Ellipsis = ("..." | ". . .")
 
 Dash = EmDash | EnDash
 
-EnDash = ( "--" | '-' &Digit)
-         { $$ = mk_element(ENDASH); }
+EnDash = < ( "--" | '-' &Digit) >
+         { $$ = mk_element(ENDASH); 
+            $$->contents.str  = strdup(yytext);
+         }
 
-EmDash = ("---" )
-         { $$ = mk_element(EMDASH); }
+EmDash = ( <"---"> )
+         { $$ = mk_element(EMDASH);
+            $$->contents.str  = strdup(yytext);
+         }
+
 
 SingleQuoteStart = '\'' ![)!\],.;:-? \t\n] !( ( "s" | "t" | "m" | "ve" | "ll" | "re" ) !Alphanumeric )
 

@@ -2,6 +2,8 @@
 
   markdown.c - markdown in C using a PEG grammar.
   (c) 2008 John MacFarlane (jgm at berkeley dot edu).
+  
+  portions Copyright (c) 2010-2011 Fletcher T Penney
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License or the MIT
