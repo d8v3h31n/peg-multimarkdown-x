@@ -763,7 +763,7 @@ static void print_latex_element(GString *out, element *elt) {
         g_string_append_printf(out, "\\begin{figure}\n\\begin{center}\n\\includegraphics[");
         if ((height == NULL) && (width == NULL)) {
             /* No dimensions given */
-            g_string_append_printf(out,"width=\\textwidth, height=.75\\textheight");
+            g_string_append_printf(out,"keepaspectratio,width=\\textwidth, height=.75\\textheight");
         } else {
             /* at least one dimension given */
             if ((height != NULL) && (width != NULL)) {
