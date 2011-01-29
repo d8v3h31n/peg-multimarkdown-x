@@ -54,7 +54,7 @@ latextest: $(PROGRAM)
 xslttest: $(PROGRAM)
 	cd MarkdownTest; \
 	./MarkdownTest.pl --Script=../$(PROGRAM) --testdir=MultiMarkdownTests \
-	--TrailFlags="| xsltproc -nonet -novalid ../Support/XSLT/memoir.xslt -" --ext=".tex"
+	--TrailFlags="| xsltproc -nonet -novalid ../Support/XSLT/xhtml2latex.xslt -" --ext=".tex"
 
 leak-check: $(PROGRAM)
 	valgrind --leak-check=full ./multimarkdown TEST.markdown > TEST.html
