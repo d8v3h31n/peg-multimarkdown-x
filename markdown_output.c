@@ -760,7 +760,7 @@ static void print_latex_element(GString *out, element *elt) {
         /* Figure if we have height, width, neither */
         height = dimension_for_attribute("height", elt->contents.link->attr);
         width = dimension_for_attribute("width", elt->contents.link->attr);
-        g_string_append_printf(out, "\\begin{figure}\n\\begin{center}\n\\includegraphics[keepaspectratio,");
+        g_string_append_printf(out, "\\begin{figure}\n\\begin{center}\n\\includegraphics[");
         if ((height == NULL) && (width == NULL)) {
             /* No dimensions given */
             g_string_append_printf(out,"width=\\textwidth, height=.75\\textheight");
