@@ -763,7 +763,7 @@ static void print_latex_element(GString *out, element *elt) {
         g_string_append_printf(out, "\\begin{figure}\n\\begin{center}\n\\includegraphics[");
         if ((height == NULL) && (width == NULL)) {
             /* No dimensions given */
-            g_string_append_printf(out,"keepaspectratio,width=\\textwidth, height=.75\\textheight");
+            g_string_append_printf(out,"keepaspectratio,width=\\textwidth,height=0.75\\textheight");
         } else {
             /* at least one dimension given */
             if ((height != NULL) && (width != NULL)) {
@@ -998,7 +998,9 @@ static void print_latex_element(GString *out, element *elt) {
     case DEFLIST:
         g_string_append_printf(out, "\\begin{description}\n");
         print_latex_element_list(out, elt->children);
+        pad(out,1);
         g_string_append_printf(out, "\\end{description}\n");
+        padded = 1;
         break;
     case TERM:
         g_string_append_printf(out, "\\item[%s] ", elt->contents.str);
