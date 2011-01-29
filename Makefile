@@ -49,7 +49,7 @@ mmdtest: $(PROGRAM)
 
 latextest: $(PROGRAM)
 	cd MarkdownTest; \
-	./MarkdownTest.pl --Script=../$(PROGRAM) --testdir=LaTeXTests --Flags="-t latex"
+	./MarkdownTest.pl --Script=../$(PROGRAM) --testdir=MultiMarkdownTests --Flags="-t latex" --ext=".tex"
 
 leak-check: $(PROGRAM)
 	valgrind --leak-check=full ./multimarkdown TEST.markdown > TEST.html
