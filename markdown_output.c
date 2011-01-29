@@ -933,6 +933,7 @@ static void print_latex_element(GString *out, element *elt) {
                 g_string_append_printf(out, "}");
                 padded = 0;
             }
+            elt->children = NULL;
         }
         break;
     case GLOSSARY:
