@@ -211,7 +211,7 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
             g_string_append_printf(out, "\" id=\"%s\"",elt->contents.link->identifier);
         }
         g_string_append_printf(out, " alt=\"");
-        print_html_element_list(out, elt->contents.link->label, obfuscate);
+        print_raw_element_list(out, elt->contents.link->label);
         g_string_append_printf(out, "\"");
         if (strlen(elt->contents.link->title) > 0) {
             g_string_append_printf(out, " title=\"");
