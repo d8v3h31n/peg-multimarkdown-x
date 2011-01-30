@@ -339,8 +339,13 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
                 sprintf(buf,"%d",notenumber);
                 /* Assign footnote number for future use */
                 elt->children->contents.str = strdup(buf);
-                g_string_append_printf(out, "<a href=\"#fn:%d\" id=\"fnref:%d\" title=\"see footnote\" class=\"footnote\">[%d]</a>",
-                    notenumber, notenumber, notenumber);
+                if (elt->children->key == GLOSSARYTERM) {
+					g_string_append_printf(out, "<a href=\"#fn:%d\" id=\"fnref:%d\" title=\"see footnote\" class=\"footnote glossary\">[%d]</a>",
+			                    notenumber, notenumber, notenumber);
+				} else {
+					g_string_append_printf(out, "<a href=\"#fn:%d\" id=\"fnref:%d\" title=\"see footnote\" class=\"footnote\">[%d]</a>",
+			                    notenumber, notenumber, notenumber);
+				}
             } else {
                 /* The referenced note has already been used */
                 g_string_append_printf(out, "<a href=\"#fn:%s\" title=\"see footnote\" class=\"footnote\">[%s]</a>",
@@ -353,7 +358,14 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
         /* Shouldn't do anything */
         break;
     case GLOSSARYTERM:
-        print_html_string(out, elt->children->contents.str, obfuscate);
+        g_string_append_printf(out,"<span class=\"glossary name\">");
+		print_html_string(out, elt->children->contents.str, obfuscate);
+        g_string_append_printf(out, "</span>");
+        if ((elt->next != NULL) && (elt->next->key == GLOSSARYSORTKEY) ) {
+            g_string_append_printf(out, "<span class=\"glossary sort\" style=\"display:none\">");
+            print_html_string(out, elt->next->contents.str, obfuscate);
+            g_string_append_printf(out, "</span>");
+        }
         g_string_append_printf(out, ": ");
         break;
     case GLOSSARYSORTKEY:
