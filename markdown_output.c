@@ -741,7 +741,9 @@ static void print_latex_element(GString *out, element *elt) {
                 ( strcmp(elt->contents.link->label->contents.str, 
                 elt->contents.link->url) == 0 )) {
             /* This is a <link> */
-            g_string_append_printf(out, "\\url{%s}", elt->contents.link->url);
+            g_string_append_printf(out, "\\href{%s}{", elt->contents.link->url);
+			print_latex_string(out, elt->contents.link->url);
+			g_string_append_printf(out, "}");
         } else if ( (elt->contents.link->label != NULL) && 
                 ( strcmp(&elt->contents.link->url[7], 
                 elt->contents.link->label->contents.str) == 0 )) {
