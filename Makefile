@@ -49,7 +49,8 @@ mmdtest: $(PROGRAM)
 
 latextest: $(PROGRAM)
 	cd MarkdownTest; \
-	./MarkdownTest.pl --Script=../$(PROGRAM) --testdir=MultiMarkdownTests --Flags="-t latex" --ext=".tex"
+	./MarkdownTest.pl --Script=../$(PROGRAM) --testdir=MultiMarkdownTests --Flags="-t latex" --ext=".tex"; \
+	./MarkdownTest.pl --Script=../$(PROGRAM) --testdir=BeamerTests --Flags="-t latex" --ext=".tex"
 
 xslttest: $(PROGRAM)
 	cd MarkdownTest; \
