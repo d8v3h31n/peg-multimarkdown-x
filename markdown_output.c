@@ -889,7 +889,7 @@ static void print_latex_element(GString *out, element *elt) {
         padded = 0;
         break;
     case ORDEREDLIST:
-        pad(out, 1);
+        pad(out, 2);
         g_string_append_printf(out, "\\begin{enumerate}");
         padded = 0;
         print_latex_element_list(out, elt->children);
@@ -999,17 +999,23 @@ static void print_latex_element(GString *out, element *elt) {
         print_latex_element_list(out, elt->children);
         break;
     case DEFLIST:
-        g_string_append_printf(out, "\\begin{description}\n");
+        g_string_append_printf(out, "\\begin{description}");
+		padded = 0;
         print_latex_element_list(out, elt->children);
         pad(out,1);
-        g_string_append_printf(out, "\\end{description}\n");
-        padded = 1;
-        break;
+        g_string_append_printf(out, "\\end{description}");
+		padded = 0;
+		break;
     case TERM:
-        g_string_append_printf(out, "\\item[%s] ", elt->contents.str);
-        break;
+		pad(out,2);
+		g_string_append_printf(out, "\\item[%s]", elt->contents.str);
+		padded = 0;
+		break;
     case DEFINITION:
-        print_latex_element_list(out, elt->children);
+		pad(out,2);
+		padded = 2;
+		print_latex_element_list(out, elt->children);
+		padded = 0;
         break;
     case METADATA:
         /* Metadata is present, so this should be a "complete" document */
