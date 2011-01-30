@@ -40,6 +40,7 @@ static void free_element_contents(element elt) {
       case ATTRKEY:
       case GLOSSARY:
       case GLOSSARYTERM:
+      case NOTELABEL:
         free(elt.contents.str);
         elt.contents.str = NULL;
         break;

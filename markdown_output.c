@@ -3,6 +3,8 @@
   markdown_output.c - functions for printing Elements parsed by 
                       markdown_peg.
   (c) 2008 John MacFarlane (jgm at berkeley dot edu).
+  
+  portions Copyright (c) 2010-2011 Fletcher T Penney
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License or the MIT
@@ -60,7 +62,7 @@ static void print_beamer_element(GString *out, element *elt);
 element * print_html_headingsection(GString *out, element *list, bool obfuscate);
 
 static bool list_contains_key(element *list, int key);
-
+static bool is_html_complete_doc(element *meta);
 static int find_latex_mode(int format, element *list);
 element * metadata_for_key(char *key, element *list);
 element * element_for_attribute(char *querystring, element *list);
@@ -209,7 +211,7 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
             g_string_append_printf(out, "\" id=\"%s\"",elt->contents.link->identifier);
         }
         g_string_append_printf(out, " alt=\"");
-        print_html_element_list(out, elt->contents.link->label, obfuscate);
+        print_raw_element_list(out, elt->contents.link->label);
         g_string_append_printf(out, "\"");
         if (strlen(elt->contents.link->title) > 0) {
             g_string_append_printf(out, " title=\"");
@@ -325,6 +327,9 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
     case REFERENCE:
         /* Nonprinting */
         break;
+    case NOTELABEL:
+        /* Nonprinting */
+        break;
     case NOTE:
         /* if contents.str == 0, then print note; else ignore, since this
          * is a note block that has been incorporated into the notes list */
@@ -337,8 +342,13 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
                 sprintf(buf,"%d",notenumber);
                 /* Assign footnote number for future use */
                 elt->children->contents.str = strdup(buf);
-                g_string_append_printf(out, "<a href=\"#fn:%d\" id=\"fnref:%d\" title=\"see footnote\" class=\"footnote\">[%d]</a>",
-                    notenumber, notenumber, notenumber);
+                if (elt->children->key == GLOSSARYTERM) {
+                    g_string_append_printf(out, "<a href=\"#fn:%d\" id=\"fnref:%d\" title=\"see footnote\" class=\"footnote glossary\">[%d]</a>",
+                                notenumber, notenumber, notenumber);
+                } else {
+                    g_string_append_printf(out, "<a href=\"#fn:%d\" id=\"fnref:%d\" title=\"see footnote\" class=\"footnote\">[%d]</a>",
+                                notenumber, notenumber, notenumber);
+                }
             } else {
                 /* The referenced note has already been used */
                 g_string_append_printf(out, "<a href=\"#fn:%s\" title=\"see footnote\" class=\"footnote\">[%s]</a>",
@@ -351,7 +361,14 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
         /* Shouldn't do anything */
         break;
     case GLOSSARYTERM:
+        g_string_append_printf(out,"<span class=\"glossary name\">");
         print_html_string(out, elt->children->contents.str, obfuscate);
+        g_string_append_printf(out, "</span>");
+        if ((elt->next != NULL) && (elt->next->key == GLOSSARYSORTKEY) ) {
+            g_string_append_printf(out, "<span class=\"glossary sort\" style=\"display:none\">");
+            print_html_string(out, elt->next->contents.str, obfuscate);
+            g_string_append_printf(out, "</span>");
+        }
         g_string_append_printf(out, ": ");
         break;
     case GLOSSARYSORTKEY:
@@ -372,8 +389,10 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
             if ( elt->key == NOCITATION ) {
                 g_string_append_printf(out, "<span class=\"notcited\" id=\"%s\"/>", elt->contents.str);
             } else {
-                if (label != NULL) g_string_append_printf(out, "<span class=\"externalcitation\">[%s]</span>", label);
+                g_string_append_printf(out, "<span class=\"externalcitation\">");
+                if (label != NULL) g_string_append_printf(out, "[%s]", label);
                 g_string_append_printf(out, "%s",elt->contents.str);
+                g_string_append_printf(out, "</span>");
             }
         } else {
             /* reference specified within the MMD document */
@@ -388,17 +407,27 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
             }
             if (label != NULL) {
                 if ( elt->key == NOCITATION ) {
-                    g_string_append_printf(out, "<span class=\"notcited\" id=\"%s\"/>",
+                    g_string_append_printf(out, "<span class=\"notcited\" id=\"%s\">",
                         elt->children->contents.str);
                 } else {
-                    g_string_append_printf(out, "<a class=\"citation\" href=\"#fn:%s\" title=\"Jump to citation\">[%s, %s]</a>",
+                    g_string_append_printf(out, "<a class=\"citation\" href=\"#fn:%s\" title=\"Jump to citation\">[<span class=\"locator\">%s</span>, %s]",
                         elt->children->contents.str, label, elt->children->contents.str);
                 }
                 elt->children = NULL;               
             } else {
-                g_string_append_printf(out, "<a class=\"citation\" href=\"#fn:%s\" title=\"Jump to citation\">[%s]</a>",
+                g_string_append_printf(out, "<a class=\"citation\" href=\"#fn:%s\" title=\"Jump to citation\">[%s]",
                     elt->children->contents.str, elt->children->contents.str);
                 elt->children = NULL;
+            }
+            g_string_append_printf(out, "<span class=\"citekey\" style=\"display:none\">%s</span>", elt->contents.str);
+            if (label != NULL) {
+                if ( elt->key == NOCITATION ) {
+                    g_string_append_printf(out,"</span>");
+                } else {
+                    g_string_append_printf(out,"</a>");
+                }
+            } else {
+                g_string_append_printf(out,"</a>");
             }
         }
         free(label);
@@ -431,15 +460,12 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
         break;
     case METADATA:
         /* Metadata is present, so this should be a "complete" document */
-        html_footer = TRUE;
-        if ((strcmp(elt->children->contents.str, "baseheaderlevel") == 0)
-            && (elt->children->next == NULL)) {
-                /* if only meta key is base header level, don't make complete doc */
-                print_html_element_list(out, elt->children, obfuscate);
-                html_footer = FALSE;
-            } else {
-                print_html_header(out, elt, obfuscate);
-            }
+        html_footer = is_html_complete_doc(elt);
+        if (html_footer) {
+            print_html_header(out, elt, obfuscate);
+        } else {
+            print_html_element_list(out, elt->children, obfuscate);
+        }
         break;
     case METAKEY:
         if (strcmp(elt->contents.str, "title") == 0) {
@@ -455,7 +481,7 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
             g_string_append_printf(out, "\n");
         } else if (strcmp(elt->contents.str, "baseheaderlevel") == 0) {
             base_header_level = atoi(elt->children->contents.str);
-        } else if (strcmp(elt->contents.str, "language") == 0) {
+        } else if (strcmp(elt->contents.str, "quoteslanguage") == 0) {
             label = label_from_element_list(elt->children, 0);
             if (strcmp(label, "dutch") == 0) { language = DUTCH; } else 
             if (strcmp(label, "german") == 0) { language = GERMAN; } else 
@@ -579,7 +605,14 @@ static void print_html_endnotes(GString *out) {
         counter++;
         pad(out, 1);
         if (note_elt->key == CITATION) {
-            g_string_append_printf(out, "<li id=\"fn:%s\">\n", note_elt->contents.str);
+            g_string_append_printf(out, "<li id=\"fn:%s\" class=\"citation\"><span class=\"citekey\" style=\"display:none\">", note_elt->contents.str);
+            element *temp = note_elt;
+            while ( temp != NULL ) {
+                if (temp->key == NOTELABEL)
+                    print_html_string(out, temp->contents.str, 0);
+                temp = temp->next;
+            }
+            g_string_append_printf(out, "</span>");
             padded = 2;
             print_html_element_list(out, note_elt->children, false);
             pad(out, 1);
@@ -587,7 +620,7 @@ static void print_html_endnotes(GString *out) {
         } else {
             g_string_append_printf(out, "<li id=\"fn:%d\">\n", counter);
             padded = 2;
-           print_html_element_list(out, note_elt, false);
+            print_html_element_list(out, note_elt, false);
             g_string_append_printf(out, " <a href=\"#fnref:%d\" title=\"return to article\" class=\"reversefootnote\">&#160;&#8617;</a>", counter);
             pad(out, 1);
             g_string_append_printf(out, "</li>");
@@ -730,16 +763,22 @@ static void print_latex_element(GString *out, element *elt) {
             /* This is a link to anchor within document */
             label = label_from_string(elt->contents.link->url,0);
             if (elt->contents.link->label != NULL) {
-                print_latex_element_list(out, elt->contents.link->label);
+                    print_latex_element_list(out, elt->contents.link->label);
                 g_string_append_printf(out, " (\\autoref\{%s})", label);             
             } else {
                 g_string_append_printf(out, "\\autoref\{%s}", label);
             }
             free(label);
-        } else if ( strcmp(elt->contents.link->label->contents.str, elt->contents.link->url) == 0 ) {
+        } else if ( (elt->contents.link->label != NULL) &&
+                ( strcmp(elt->contents.link->label->contents.str, 
+                elt->contents.link->url) == 0 )) {
             /* This is a <link> */
-            g_string_append_printf(out, "\\url{%s}", elt->contents.link->url);
-        } else if ( strcmp(&elt->contents.link->url[7], elt->contents.link->label->contents.str) == 0 ) {
+            g_string_append_printf(out, "\\href{%s}{", elt->contents.link->url);
+            print_latex_string(out, elt->contents.link->url);
+            g_string_append_printf(out, "}");
+        } else if ( (elt->contents.link->label != NULL) && 
+                ( strcmp(&elt->contents.link->url[7], 
+                elt->contents.link->label->contents.str) == 0 )) {
             /* This is a <mailto> */
             g_string_append_printf(out, "\\href{%s}{%s}", elt->contents.link->url, &elt->contents.link->url[7]);
         } else {
@@ -755,10 +794,10 @@ static void print_latex_element(GString *out, element *elt) {
         /* Figure if we have height, width, neither */
         height = dimension_for_attribute("height", elt->contents.link->attr);
         width = dimension_for_attribute("width", elt->contents.link->attr);
-        g_string_append_printf(out, "\\begin{figure}\n\\begin{center}\n\\includegraphics[keepaspectratio,");
+        g_string_append_printf(out, "\\begin{figure}\n\\centering\n\\includegraphics[");
         if ((height == NULL) && (width == NULL)) {
             /* No dimensions given */
-            g_string_append_printf(out,"width=\\textwidth, height=.75\\textheight");
+            g_string_append_printf(out,"keepaspectratio,width=\\textwidth,height=0.75\\textheight");
         } else {
             /* at least one dimension given */
             if ((height != NULL) && (width != NULL)) {
@@ -778,7 +817,7 @@ static void print_latex_element(GString *out, element *elt) {
             }
         }
 
-        g_string_append_printf(out, "]{%s}\n\\end{center}\n", elt->contents.link->url);
+        g_string_append_printf(out, "]{%s}\n", elt->contents.link->url);
         if (strlen(elt->contents.link->title) > 0) {
             g_string_append_printf(out, "\\caption{");
             print_latex_string(out, elt->contents.link->title);
@@ -882,7 +921,7 @@ static void print_latex_element(GString *out, element *elt) {
         padded = 0;
         break;
     case ORDEREDLIST:
-        pad(out, 1);
+        pad(out, 2);
         g_string_append_printf(out, "\\begin{enumerate}");
         padded = 0;
         print_latex_element_list(out, elt->children);
@@ -906,6 +945,9 @@ static void print_latex_element(GString *out, element *elt) {
         g_string_append_printf(out, "\\end{quote}");
         padded = 0;
         break;
+    case NOTELABEL:
+        /* Nonprinting */
+        break;
     case NOTE:
         /* if contents.str == 0, then print note; else ignore, since this
          * is a note block that has been incorporated into the notes list */
@@ -928,6 +970,7 @@ static void print_latex_element(GString *out, element *elt) {
                 g_string_append_printf(out, "}");
                 padded = 0;
             }
+            elt->children = NULL;
         }
         break;
     case GLOSSARY:
@@ -991,15 +1034,23 @@ static void print_latex_element(GString *out, element *elt) {
         print_latex_element_list(out, elt->children);
         break;
     case DEFLIST:
-        g_string_append_printf(out, "\\begin{description}\n");
+        g_string_append_printf(out, "\\begin{description}");
+        padded = 0;
         print_latex_element_list(out, elt->children);
-        g_string_append_printf(out, "\\end{description}\n");
+        pad(out,1);
+        g_string_append_printf(out, "\\end{description}");
+        padded = 0;
         break;
     case TERM:
-        g_string_append_printf(out, "\\item[%s] ", elt->contents.str);
+        pad(out,2);
+        g_string_append_printf(out, "\\item[%s]", elt->contents.str);
+        padded = 0;
         break;
     case DEFINITION:
+        pad(out,2);
+        padded = 2;
         print_latex_element_list(out, elt->children);
+        padded = 0;
         break;
     case METADATA:
         /* Metadata is present, so this should be a "complete" document */
@@ -1028,7 +1079,7 @@ static void print_latex_element(GString *out, element *elt) {
             g_string_append_printf(out, "\\def\\bibliocommand{\\bibliography{%s}}\n",elt->children->contents.str);
         } else if (strcmp(elt->contents.str, "xhtmlheader") == 0) {
         } else if (strcmp(elt->contents.str, "css") == 0) {
-        } else if (strcmp(elt->contents.str, "language") == 0) {
+        } else if (strcmp(elt->contents.str, "quoteslanguage") == 0) {
         } else {
             g_string_append_printf(out, "\\def\\");
             print_latex_string(out, elt->contents.str);
@@ -1084,7 +1135,7 @@ static void print_latex_element(GString *out, element *elt) {
         break;
     case TABLEROW:
         print_latex_element_list(out, elt->children);
-        g_string_append_printf(out, " \\\\\n");
+        g_string_append_printf(out, "\\\\\n");
         break;
     case TABLECELL:
         padded = 2;
@@ -1301,6 +1352,9 @@ static void print_groff_mm_element(GString *out, element *elt, int count) {
         pad(out, 1);
         g_string_append_printf(out, ".DE");
         padded = 0;
+        break;
+    case NOTELABEL:
+        /* Nonprinting */
         break;
     case NOTE:
         /* if contents.str == 0, then print note; else ignore, since this
@@ -1721,4 +1775,21 @@ char * dimension_for_attribute(char *querystring, element *list) {
     dimension = result->str;
     g_string_free(result, false);
     return(dimension);
+}
+
+/* Check metadata keys and determine if I need a complete document */
+static bool is_html_complete_doc(element *meta) {
+    element *step;
+    step = meta->children;
+    
+    while (step != NULL) {
+        if (strcmp(step->contents.str, "baseheaderlevel") != 0) {
+            if (strcmp(step->contents.str, "quoteslanguage") !=0 ){
+                return TRUE;
+            }
+        }
+        step = step->next;
+    }
+    
+    return FALSE;
 }
