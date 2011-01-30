@@ -807,7 +807,11 @@ Note =          &{ extension(EXT_NOTES) }
                 a:StartList
                 ( RawNoteBlock { a = cons($$, a); } )
                 ( &Indent RawNoteBlock { a = cons($$, a); } )*
-                {   $$ = mk_list(NOTE, a);
+                {   element *label;
+                    label = mk_str(ref->contents.str);
+                    label->key = NOTELABEL;
+                    a = cons(label,a);
+                    $$ = mk_list(NOTE, a);
                     $$->contents.str = strdup(ref->contents.str);
                 }
 
@@ -996,7 +1000,7 @@ CellStr = < (!CellDivider NormalChar) (!CellDivider NormalChar | '_'+ &Alphanume
         { $$ = mk_str(yytext); }
 
 
-FullCell = Sp a:StartList  ((!CellDivider CellStr | !Newline !Endline !CellDivider !Str Inline ) { a = cons($$,a)})+
+FullCell = Sp a:StartList  ((!CellDivider CellStr | !Newline !Endline !CellDivider !Str !(Sp &CellDivider) Inline ) { a = cons($$,a)})+
     Sp ( CellDivider )?
     { $$ = mk_list(TABLECELL,a); }
 

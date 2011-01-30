@@ -327,6 +327,9 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
     case REFERENCE:
         /* Nonprinting */
         break;
+    case NOTELABEL:
+        /* Nonprinting */
+        break;
     case NOTE:
         /* if contents.str == 0, then print note; else ignore, since this
          * is a note block that has been incorporated into the notes list */
@@ -340,12 +343,12 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
                 /* Assign footnote number for future use */
                 elt->children->contents.str = strdup(buf);
                 if (elt->children->key == GLOSSARYTERM) {
-					g_string_append_printf(out, "<a href=\"#fn:%d\" id=\"fnref:%d\" title=\"see footnote\" class=\"footnote glossary\">[%d]</a>",
-			                    notenumber, notenumber, notenumber);
-				} else {
-					g_string_append_printf(out, "<a href=\"#fn:%d\" id=\"fnref:%d\" title=\"see footnote\" class=\"footnote\">[%d]</a>",
-			                    notenumber, notenumber, notenumber);
-				}
+                    g_string_append_printf(out, "<a href=\"#fn:%d\" id=\"fnref:%d\" title=\"see footnote\" class=\"footnote glossary\">[%d]</a>",
+                                notenumber, notenumber, notenumber);
+                } else {
+                    g_string_append_printf(out, "<a href=\"#fn:%d\" id=\"fnref:%d\" title=\"see footnote\" class=\"footnote\">[%d]</a>",
+                                notenumber, notenumber, notenumber);
+                }
             } else {
                 /* The referenced note has already been used */
                 g_string_append_printf(out, "<a href=\"#fn:%s\" title=\"see footnote\" class=\"footnote\">[%s]</a>",
@@ -359,7 +362,7 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
         break;
     case GLOSSARYTERM:
         g_string_append_printf(out,"<span class=\"glossary name\">");
-		print_html_string(out, elt->children->contents.str, obfuscate);
+        print_html_string(out, elt->children->contents.str, obfuscate);
         g_string_append_printf(out, "</span>");
         if ((elt->next != NULL) && (elt->next->key == GLOSSARYSORTKEY) ) {
             g_string_append_printf(out, "<span class=\"glossary sort\" style=\"display:none\">");
@@ -404,17 +407,27 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
             }
             if (label != NULL) {
                 if ( elt->key == NOCITATION ) {
-                    g_string_append_printf(out, "<span class=\"notcited\" id=\"%s\"/>",
+                    g_string_append_printf(out, "<span class=\"notcited\" id=\"%s\">",
                         elt->children->contents.str);
                 } else {
-                    g_string_append_printf(out, "<a class=\"citation\" href=\"#fn:%s\" title=\"Jump to citation\">[%s, %s]</a>",
+                    g_string_append_printf(out, "<a class=\"citation\" href=\"#fn:%s\" title=\"Jump to citation\">[<span class=\"locator\">%s</span>, %s]",
                         elt->children->contents.str, label, elt->children->contents.str);
                 }
                 elt->children = NULL;               
             } else {
-                g_string_append_printf(out, "<a class=\"citation\" href=\"#fn:%s\" title=\"Jump to citation\">[%s]</a>",
+                g_string_append_printf(out, "<a class=\"citation\" href=\"#fn:%s\" title=\"Jump to citation\">[%s]",
                     elt->children->contents.str, elt->children->contents.str);
                 elt->children = NULL;
+            }
+            g_string_append_printf(out, "<span class=\"citekey\" style=\"display:none\">%s</span>", elt->contents.str);
+            if (label != NULL) {
+                if ( elt->key == NOCITATION ) {
+                    g_string_append_printf(out,"</span>");
+                } else {
+                    g_string_append_printf(out,"</a>");
+                }
+            } else {
+                g_string_append_printf(out,"</a>");
             }
         }
         free(label);
@@ -592,7 +605,14 @@ static void print_html_endnotes(GString *out) {
         counter++;
         pad(out, 1);
         if (note_elt->key == CITATION) {
-            g_string_append_printf(out, "<li id=\"fn:%s\">\n", note_elt->contents.str);
+            g_string_append_printf(out, "<li id=\"fn:%s\" class=\"citation\"><span class=\"citekey\" style=\"display:none\">", note_elt->contents.str);
+            element *temp = note_elt;
+            while ( temp != NULL ) {
+                if (temp->key == NOTELABEL)
+                    print_html_string(out, temp->contents.str, 0);
+                temp = temp->next;
+            }
+            g_string_append_printf(out, "</span>");
             padded = 2;
             print_html_element_list(out, note_elt->children, false);
             pad(out, 1);
@@ -600,7 +620,7 @@ static void print_html_endnotes(GString *out) {
         } else {
             g_string_append_printf(out, "<li id=\"fn:%d\">\n", counter);
             padded = 2;
-           print_html_element_list(out, note_elt, false);
+            print_html_element_list(out, note_elt, false);
             g_string_append_printf(out, " <a href=\"#fnref:%d\" title=\"return to article\" class=\"reversefootnote\">&#160;&#8617;</a>", counter);
             pad(out, 1);
             g_string_append_printf(out, "</li>");
@@ -754,8 +774,8 @@ static void print_latex_element(GString *out, element *elt) {
                 elt->contents.link->url) == 0 )) {
             /* This is a <link> */
             g_string_append_printf(out, "\\href{%s}{", elt->contents.link->url);
-			print_latex_string(out, elt->contents.link->url);
-			g_string_append_printf(out, "}");
+            print_latex_string(out, elt->contents.link->url);
+            g_string_append_printf(out, "}");
         } else if ( (elt->contents.link->label != NULL) && 
                 ( strcmp(&elt->contents.link->url[7], 
                 elt->contents.link->label->contents.str) == 0 )) {
@@ -925,6 +945,9 @@ static void print_latex_element(GString *out, element *elt) {
         g_string_append_printf(out, "\\end{quote}");
         padded = 0;
         break;
+    case NOTELABEL:
+        /* Nonprinting */
+        break;
     case NOTE:
         /* if contents.str == 0, then print note; else ignore, since this
          * is a note block that has been incorporated into the notes list */
@@ -1012,22 +1035,22 @@ static void print_latex_element(GString *out, element *elt) {
         break;
     case DEFLIST:
         g_string_append_printf(out, "\\begin{description}");
-		padded = 0;
+        padded = 0;
         print_latex_element_list(out, elt->children);
         pad(out,1);
         g_string_append_printf(out, "\\end{description}");
-		padded = 0;
-		break;
+        padded = 0;
+        break;
     case TERM:
-		pad(out,2);
-		g_string_append_printf(out, "\\item[%s]", elt->contents.str);
-		padded = 0;
-		break;
+        pad(out,2);
+        g_string_append_printf(out, "\\item[%s]", elt->contents.str);
+        padded = 0;
+        break;
     case DEFINITION:
-		pad(out,2);
-		padded = 2;
-		print_latex_element_list(out, elt->children);
-		padded = 0;
+        pad(out,2);
+        padded = 2;
+        print_latex_element_list(out, elt->children);
+        padded = 0;
         break;
     case METADATA:
         /* Metadata is present, so this should be a "complete" document */
@@ -1112,7 +1135,7 @@ static void print_latex_element(GString *out, element *elt) {
         break;
     case TABLEROW:
         print_latex_element_list(out, elt->children);
-        g_string_append_printf(out, " \\\\\n");
+        g_string_append_printf(out, "\\\\\n");
         break;
     case TABLECELL:
         padded = 2;
@@ -1329,6 +1352,9 @@ static void print_groff_mm_element(GString *out, element *elt, int count) {
         pad(out, 1);
         g_string_append_printf(out, ".DE");
         padded = 0;
+        break;
+    case NOTELABEL:
+        /* Nonprinting */
         break;
     case NOTE:
         /* if contents.str == 0, then print note; else ignore, since this
