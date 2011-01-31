@@ -917,7 +917,7 @@ static void print_latex_element(GString *out, element *elt) {
         g_string_append_printf(out, "\n\\begin{itemize}");
         padded = 0;
         print_latex_element_list(out, elt->children);
-        g_string_append_printf(out, "\\end{itemize}");
+        g_string_append_printf(out, "\n\\end{itemize}");
         padded = 0;
         break;
     case ORDEREDLIST:
