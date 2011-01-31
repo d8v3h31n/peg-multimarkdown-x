@@ -65,6 +65,7 @@ win-installer: $(PROGRAM)
 	zip -r windows_installer/MultiMarkdown-Windows-$(VERSION).zip windows_installer -x windows_installer/MultiMarkdown*.zip
 
 mac-installer: $(PROGRAM)
+	mkdir mac_installer/Package_Root/usr/local/bin
 	cp multimarkdown mac_installer/Package_Root/usr/local/bin/multimarkdown
 	./multimarkdown README > mac_installer/Resources/README.html
 	./multimarkdown mac_installer/Resources/Welcome.txt > mac_installer/Resources/Welcome.html
