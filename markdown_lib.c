@@ -187,17 +187,16 @@ char * markdown_to_string(char *text, int extensions, int output_format) {
    metadata key (e.g. "LateX Mode")/
    Returns a null-terminated string, which must be freed after use. */
 char * extract_metadata_value(char *text, int extensions, char *key) {
-	char *value;
-	element *result;
-	char *meta;
+    char *value;
+    element *result;
+    char *meta;
     GString *formatted_text;
 
     formatted_text = preformat_text(text);
-	
-	result = parse_metadata_only(formatted_text->str, extensions);
-	
-	value = metavalue_for_key(key, result->children);
-	fprintf(stderr, "%s\n", value);
-	free_element_list(result);
-	return value;
+    
+    result = parse_metadata_only(formatted_text->str, extensions);
+    
+    value = metavalue_for_key(key, result->children);
+    free_element_list(result);
+    return value;
 }

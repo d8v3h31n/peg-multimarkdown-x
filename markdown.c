@@ -79,6 +79,7 @@ int main(int argc, char * argv[]) {
     static gboolean opt_allext = FALSE;
     static gboolean opt_compatibility = FALSE;
     static gboolean opt_batchmode = FALSE;
+    static gchar *opt_extract_meta = FALSE;
 
     static GOptionEntry entries[] =
     {
@@ -90,6 +91,7 @@ int main(int argc, char * argv[]) {
       { "filter-styles", 0, 0, G_OPTION_ARG_NONE, &opt_filter_styles, "filter out HTML styles", NULL },
       { "compatibility", 'c', 0, G_OPTION_ARG_NONE, &opt_compatibility, "markdown compatibility mode", NULL },
       { "batch", 'b', 0, G_OPTION_ARG_NONE, &opt_batchmode, "process multiple files automatically", NULL },
+      { "extract", 'x', 0, G_OPTION_ARG_STRING, &opt_extract_meta, "extract and display specified metadata", NULL },
       { NULL }
     };
 
@@ -180,6 +182,13 @@ int main(int argc, char * argv[]) {
                     g_string_append_c(inputbuf, curchar);
                 fclose(input);
 
+                /* Display metadata on request */
+                if (opt_extract_meta) {
+                    out = extract_metadata_value(inputbuf->str, extensions, opt_extract_meta);
+                    fprintf(stdout, "%s\n", out);
+                    return(EXIT_SUCCESS);
+                }
+                
                 /* remove file extension, if present */
                 fake = argv[i+1];
                 if (strrchr(fake, '.') != NULL) {
@@ -201,7 +210,6 @@ int main(int argc, char * argv[]) {
                     perror(opt_output);
                     return 1;
                 }
-				extract_metadata_value(inputbuf->str, extensions, "Author");
                
                 out = markdown_to_string(inputbuf->str, extensions, output_format);
 
@@ -234,7 +242,14 @@ int main(int argc, char * argv[]) {
            }
         }
 
-        /* we allow "-" as a synonym for stdout here */
+        /* Display metadata on request */
+        if (opt_extract_meta) {
+            out = extract_metadata_value(inputbuf->str, extensions, opt_extract_meta);
+            fprintf(stdout, "%s\n", out);
+            return(EXIT_SUCCESS);
+        }
+        
+       /* we allow "-" as a synonym for stdout here */
         if (opt_output == NULL || strcmp(opt_output, "-") == 0)
             output = stdout;
         else if (!(output = fopen(opt_output, "w"))) {
