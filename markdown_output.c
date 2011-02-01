@@ -1696,21 +1696,35 @@ static int find_latex_mode(int format, element *list) {
 element * metadata_for_key(char *key, element *list) {
     element *step = NULL;
     step = list;
-    
+	char *label;
+	
+	fprintf(stderr, "test1\n");
+	label = label_from_string(key,0);
+	
+	fprintf(stderr, "test2\n");
     while (step != NULL) {
+		fprintf(stderr, "test2b\n");
         if (step->key == METADATA) {
-            /* search METAKEY children */
+ 			fprintf(stderr, "test2c\n");
+           /* search METAKEY children */
             step = step->children;
             while ( step != NULL) {
-                if (strcmp(step->contents.str, key) == 0) {
+                if (strcmp(step->contents.str, label) == 0) {
+					fprintf(stderr, "test3\n");
+					free(label);
                     return step;
                 }
                 step = step->next;
             }
+			fprintf(stderr, "test4\n");
+			free(label);
             return NULL;
         }
-        step = step->next;
+ 		fprintf(stderr, "test5\n");
+       step = step->next;
     }
+	fprintf(stderr, "test6\n");
+	free(label);
     return NULL;
 }
 

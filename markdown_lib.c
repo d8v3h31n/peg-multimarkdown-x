@@ -182,3 +182,37 @@ char * markdown_to_string(char *text, int extensions, int output_format) {
 }
 
 /* vim:set ts=4 sw=4: */
+
+/* extract_metadata_value - parse document and return value of specified
+   metadata key (e.g. "LateX Mode")/
+   Returns a null-terminated string, which must be freed after use. */
+char * extract_metadata_value(char *text, int extensions, char *key) {
+	char *value;
+	element *result;
+	element *meta;
+    GString *formatted_text;
+
+    formatted_text = preformat_text(text);
+	
+	fprintf(stderr, "test parse_metadata_only\n");
+	result = parse_metadata_only(formatted_text->str, extensions);
+
+/*    print_element_list(formatted_text, result, HTML_FORMAT, extensions);*/
+	
+	fprintf(stderr, "test result handling\n");
+	if (result != NULL) {
+		fprintf(stderr, "result not NULL - search metadata\n");
+
+		meta = metadata_for_key(key, result);
+		fprintf(stderr, "looked for matching meta\n");
+	}
+
+	if (meta != NULL) {
+		fprintf(stderr, "meta %s = %s\n", key, meta->children->contents.str);
+
+		value = strdup(meta->contents.str);		
+	}
+	free_element_list(result);
+	
+	return value;
+}

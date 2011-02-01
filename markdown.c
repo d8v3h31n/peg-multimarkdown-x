@@ -201,7 +201,8 @@ int main(int argc, char * argv[]) {
                     perror(opt_output);
                     return 1;
                 }
-                
+				extract_metadata_value(inputbuf->str, extensions, "Author");
+               
                 out = markdown_to_string(inputbuf->str, extensions, output_format);
 
                 fprintf(output, "%s\n", out);
@@ -240,7 +241,6 @@ int main(int argc, char * argv[]) {
             perror(opt_output);
             return 1;
         }
-
 
         out = markdown_to_string(inputbuf->str, extensions, output_format);
         fprintf(output, "%s\n", out);

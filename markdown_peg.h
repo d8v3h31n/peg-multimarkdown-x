@@ -132,3 +132,5 @@ void free_element_list(element * elt);
 void free_element(element *elt);
 void print_element_list(GString *out, element *elt, int format, int exts);
 
+
+char * extract_metadata_value(char *text, int extensions, char *key);
