@@ -65,6 +65,8 @@ static bool list_contains_key(element *list, int key);
 static bool is_html_complete_doc(element *meta);
 static int find_latex_mode(int format, element *list);
 element * metadata_for_key(char *key, element *list);
+char * metavalue_for_key(char *key, element *list);
+
 element * element_for_attribute(char *querystring, element *list);
 char * dimension_for_attribute(char *querystring, element *list);
 
@@ -1696,30 +1698,60 @@ static int find_latex_mode(int format, element *list) {
 element * metadata_for_key(char *key, element *list) {
     element *step = NULL;
     step = list;
-	char *label;
-	
-	label = label_from_string(key,0);
-	
+    char *label;
+    
+    label = label_from_string(key,0);
+    
     while (step != NULL) {
         if (step->key == METADATA) {
-            /* search METAKEY children */
+           /* search METAKEY children */
             step = step->children;
             while ( step != NULL) {
                 if (strcmp(step->contents.str, label) == 0) {
-					free(label);
+                    free(label);
                     return step;
                 }
                 step = step->next;
             }
-			free(label);
+            free(label);
             return NULL;
         }
-        step = step->next;
+       step = step->next;
     }
-	free(label);
+    free(label);
     return NULL;
 }
 
+
+/* find specified metadata key, if present */
+char * metavalue_for_key(char *key, element *list) {
+    element *step = NULL;
+    step = list;
+    char *label;
+    char *result;
+    
+    label = label_from_string(key,0);
+    
+    while (step != NULL) {
+        if (step->key == METADATA) {
+           /* search METAKEY children */
+            step = step->children;
+            while ( step != NULL) {
+                if (strcmp(step->contents.str, label) == 0) {
+                    free(label);
+                    result = strdup(step->children->contents.str);
+                   return result;
+                }
+                step = step->next;
+            }
+            free(label);
+            return NULL;
+        }
+       step = step->next;
+    }
+    free(label);
+    return NULL;
+}
 
 /* find attribute, if present */
 element * element_for_attribute(char *querystring, element *list) {
