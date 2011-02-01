@@ -91,7 +91,7 @@ int main(int argc, char * argv[]) {
       { "filter-styles", 0, 0, G_OPTION_ARG_NONE, &opt_filter_styles, "filter out HTML styles", NULL },
       { "compatibility", 'c', 0, G_OPTION_ARG_NONE, &opt_compatibility, "markdown compatibility mode", NULL },
       { "batch", 'b', 0, G_OPTION_ARG_NONE, &opt_batchmode, "process multiple files automatically", NULL },
-      { "extract", 'x', 0, G_OPTION_ARG_STRING, &opt_extract_meta, "extract and display specified metadata", NULL },
+      { "extract", 'e', 0, G_OPTION_ARG_STRING, &opt_extract_meta, "extract and display specified metadata", NULL },
       { NULL }
     };
 
