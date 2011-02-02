@@ -1738,8 +1738,14 @@ char * metavalue_for_key(char *key, element *list) {
             step = step->children;
             while ( step != NULL) {
                 if (strcmp(step->contents.str, label) == 0) {
+                    /* Found a match */
+                    if ((strcmp(label,"latexmode") == 0) ||
+                        (strcmp(label,"quoteslanguage") == 0)) {
+                        result = label_from_string(step->children->contents.str,0);
+                    } else {
+                        result = strdup(step->children->contents.str);
+                    }
                     free(label);
-                    result = strdup(step->children->contents.str);
                    return result;
                 }
                 step = step->next;
