@@ -1108,7 +1108,7 @@ static void print_latex_element(GString *out, element *elt) {
         padded = 0;
         break;
     case TABLESEPARATOR:
-        g_string_append_printf(out, "\\begin{tabular}{@{}%s@{}} \\\\ \\toprule\n", elt->contents.str);
+        g_string_append_printf(out, "\\begin{tabular}{@{}%s@{}} \\toprule\n", elt->contents.str);
         break;
     case TABLECAPTION:
         if (elt->children->key == TABLELABEL) {
@@ -1484,6 +1484,20 @@ static void print_memoir_element(GString *out, element *elt) {
         break;
     case HEADINGSECTION:
         print_memoir_element_list(out, elt->children);
+        break;
+    case DEFLIST:
+        g_string_append_printf(out, "\\begin{description}");
+        padded = 0;
+        print_memoir_element_list(out, elt->children);
+        pad(out,1);
+        g_string_append_printf(out, "\\end{description}");
+        padded = 0;
+        break;
+    case DEFINITION:
+        pad(out,2);
+        padded = 2;
+        print_memoir_element_list(out, elt->children);
+        padded = 0;
         break;
     case H1: case H2: case H3: case H4: case H5: case H6:
         pad(out, 2);
