@@ -696,7 +696,7 @@ static void print_latex_endnotes(GString *out) {
     }
     pad(out, 1);
     g_string_append_printf(out, "\\end{thebibliography}\n");
-
+    padded = 1;
     g_slist_free(endnotes);
 }
 
@@ -1456,7 +1456,8 @@ void print_latex_header(GString *out, element *elt) {
 
 void print_latex_footer(GString *out) {
     if (latex_footer != NULL) {
-        g_string_append_printf(out, "\n\n\\input{%s}\n\n\\end{document}", latex_footer);
+        pad(out,2);
+        g_string_append_printf(out, "\\input{%s}\n\n\\end{document}", latex_footer);
     }
 }
 
