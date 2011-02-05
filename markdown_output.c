@@ -941,7 +941,7 @@ static void print_latex_element(GString *out, element *elt) {
     case BLOCKQUOTE:
         pad(out, 2);
         g_string_append_printf(out, "\\begin{quote}");
-        padded = 1;
+        padded = 0;
         print_latex_element_list(out, elt->children);
         pad(out, 1);
         g_string_append_printf(out, "\\end{quote}");
@@ -1562,7 +1562,7 @@ static void print_beamer_endnotes(GString *out) {
         return;
     note = g_slist_reverse(endnotes);
     pad(out,2);
-    g_string_append_printf(out, "\\part{Bibliography}\n\\begin{frame}[allowframebreaks]\n\\frametitle{Bibliography}\n\\def\\newblock{}\n\\begin{thebibliography}{0}");
+    g_string_append_printf(out, "\\part{Bibliography}\n\\begin{frame}[allowframebreaks]\n\\frametitle{Bibliography}\n\\def\\newblock{}\n\\begin{thebibliography}{0}\n");
     while (note != NULL) {
         note_elt = note->data;
         pad(out, 1);
