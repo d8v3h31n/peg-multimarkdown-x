@@ -1573,8 +1573,8 @@ static void print_beamer_endnotes(GString *out) {
         note = note->next;
     }
     pad(out, 1);
-    g_string_append_printf(out, "\\end{thebibliography}\n\\end{frame}\n");
-
+    g_string_append_printf(out, "\\end{thebibliography}\n\\end{frame}\n\n");
+    padded = 2;
     g_slist_free(endnotes);
 }
 
@@ -1606,6 +1606,7 @@ static void print_beamer_element(GString *out, element *elt) {
                 padded = 0;
                 print_beamer_element_list(out, elt->children);
                 g_string_append_printf(out, "\n\n\\end{frame}\n\n");
+                padded = 2;
             } else if (elt->children->key -H1 + base_header_level == 4) {
                 pad(out, 1);
                 g_string_append_printf(out, "\\mode<article>{\n");
