@@ -6,4 +6,8 @@
 # Pass arguments on to the binary to convert text to LaTeX
 #
 
-multimarkdown -b -t latex $@
+until [ "$*" = "" ]
+do
+	multimarkdown -b -t latex "$1"
+	shift
+done

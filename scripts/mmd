@@ -6,4 +6,9 @@
 # Pass arguments on to the binary to convert text to XHTML
 #
 
-multimarkdown -b $@
+until [ "$*" = "" ]
+do
+	multimarkdown -b "$1"
+	shift
+done
+
