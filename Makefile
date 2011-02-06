@@ -1,6 +1,6 @@
 ALL : multimarkdown
 
-VERSION=3.0b1
+VERSION=3.0b2
 
 PROGRAM=multimarkdown
 
@@ -31,7 +31,7 @@ markdown_parser.c : markdown_parser.leg $(LEG) markdown_peg.h parsing_functions.
 clean:
 	rm -f markdown_parser.c $(PROGRAM) $(OBJS); \
 	make -C $(PEGDIR) clean; \
-	rm mac_installer/Package_Root/usr/local/bin/multimarkdown; \
+	rm -rf mac_installer/Package_Root/usr/local/bin; \
 	rm mac_installer/Resources/*.html; \
 	rm windows_installer/README.txt; \
 	rm windows_installer/multimarkdown.exe
@@ -50,12 +50,17 @@ mmdtest: $(PROGRAM)
 latextest: $(PROGRAM)
 	cd MarkdownTest; \
 	./MarkdownTest.pl --Script=../$(PROGRAM) --testdir=MultiMarkdownTests --Flags="-t latex" --ext=".tex"; \
-	./MarkdownTest.pl --Script=../$(PROGRAM) --testdir=BeamerTests --Flags="-t latex" --ext=".tex"
+	./MarkdownTest.pl --Script=../$(PROGRAM) --testdir=BeamerTests --Flags="-t latex" --ext=".tex"; \
+	./MarkdownTest.pl --Script=../$(PROGRAM) --testdir=MemoirTests --Flags="-t latex" --ext=".tex"
 
 xslttest: $(PROGRAM)
 	cd MarkdownTest; \
-	./MarkdownTest.pl --Script=../$(PROGRAM) --testdir=MultiMarkdownTests \
-	--TrailFlags="| xsltproc -nonet -novalid ../Support/XSLT/xhtml2latex.xslt -" --ext=".tex"
+	./MarkdownTest.pl --Script=/bin/cat --testdir=MultiMarkdownTests \
+	--TrailFlags="| ../Support/bin/mmd2xslt" --ext=".tex"; \
+	./MarkdownTest.pl --Script=/bin/cat --testdir=BeamerTests \
+	--TrailFlags="| ../Support/bin/mmd2xslt" --ext=".tex"; \
+	./MarkdownTest.pl --Script=/bin/cat --testdir=MemoirTests \
+	--TrailFlags="| ../Support/bin/mmd2xslt" --ext=".tex"; \
 
 leak-check: $(PROGRAM)
 	valgrind --leak-check=full ./multimarkdown TEST.markdown > TEST.html
@@ -66,7 +71,7 @@ win-installer: $(PROGRAM)
 
 mac-installer: $(PROGRAM)
 	mkdir mac_installer/Package_Root/usr/local/bin
-	cp multimarkdown mmd mmd2tex mac_installer/Package_Root/usr/local/bin/
+	cp multimarkdown scripts/mmd scripts/mmd2tex mac_installer/Package_Root/usr/local/bin/
 	./multimarkdown README > mac_installer/Resources/README.html
 	./multimarkdown mac_installer/Resources/Welcome.txt > mac_installer/Resources/Welcome.html
 	./multimarkdown LICENSE > mac_installer/Resources/License.html
