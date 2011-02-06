@@ -1,5 +1,6 @@
 #!/bin/sh
-# MultiMarkdown convenience script
+#
+# mmd2tex --- MultiMarkdown convenience script
 #	<http://fletcherpenney.net/multimarkdown/>
 #	Fletcher T. Penney
 #
