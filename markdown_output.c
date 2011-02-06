@@ -1613,6 +1613,7 @@ static void print_beamer_element(GString *out, element *elt) {
                 padded = 0;
                 print_beamer_element_list(out, elt->children->next);
                 g_string_append_printf(out, "\n\n}\n\n");
+                padded = 2;
             } else {
                 print_beamer_element_list(out, elt->children);
             }
