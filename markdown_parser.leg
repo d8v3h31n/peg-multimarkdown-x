@@ -47,6 +47,15 @@ MetaData =  a:StartList (MetaDataKeyValue { a = cons($$, a); })+
                 $$->key = METADATA;
             }
 
+MetaDataOnly = a:StartList
+             ( b:MetaData { a = cons(b, a); } | SkipBlock )*
+             { parse_result = mk_list(LIST,a); }
+
+OldMetaDataOnly =  a:StartList ( &{ !extension(EXT_COMPATIBILITY) }
+		        &( MetaDataKey Sp ':' Sp (!Newline)) MetaData
+		            { a = cons($$, a);} )? SkipBlock*
+				{ parse_result = reverse(a);}
+
 MetaDataKeyValue = a:MetaDataKey
             Sp ':' Sp b:MetaDataValue
             { $$ = a;

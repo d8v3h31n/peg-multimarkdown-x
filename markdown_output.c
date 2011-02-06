@@ -65,6 +65,8 @@ static bool list_contains_key(element *list, int key);
 static bool is_html_complete_doc(element *meta);
 static int find_latex_mode(int format, element *list);
 element * metadata_for_key(char *key, element *list);
+char * metavalue_for_key(char *key, element *list);
+
 element * element_for_attribute(char *querystring, element *list);
 char * dimension_for_attribute(char *querystring, element *list);
 
@@ -694,7 +696,7 @@ static void print_latex_endnotes(GString *out) {
     }
     pad(out, 1);
     g_string_append_printf(out, "\\end{thebibliography}\n");
-
+    padded = 1;
     g_slist_free(endnotes);
 }
 
@@ -794,7 +796,7 @@ static void print_latex_element(GString *out, element *elt) {
         /* Figure if we have height, width, neither */
         height = dimension_for_attribute("height", elt->contents.link->attr);
         width = dimension_for_attribute("width", elt->contents.link->attr);
-        g_string_append_printf(out, "\\begin{figure}\n\\centering\n\\includegraphics[");
+        g_string_append_printf(out, "\\begin{figure}[htbp]\n\\centering\n\\includegraphics[");
         if ((height == NULL) && (width == NULL)) {
             /* No dimensions given */
             g_string_append_printf(out,"keepaspectratio,width=\\textwidth,height=0.75\\textheight");
@@ -917,7 +919,7 @@ static void print_latex_element(GString *out, element *elt) {
         g_string_append_printf(out, "\n\\begin{itemize}");
         padded = 0;
         print_latex_element_list(out, elt->children);
-        g_string_append_printf(out, "\\end{itemize}");
+        g_string_append_printf(out, "\n\\end{itemize}");
         padded = 0;
         break;
     case ORDEREDLIST:
@@ -939,7 +941,7 @@ static void print_latex_element(GString *out, element *elt) {
     case BLOCKQUOTE:
         pad(out, 2);
         g_string_append_printf(out, "\\begin{quote}");
-        padded = 1;
+        padded = 0;
         print_latex_element_list(out, elt->children);
         pad(out, 1);
         g_string_append_printf(out, "\\end{quote}");
@@ -1106,7 +1108,7 @@ static void print_latex_element(GString *out, element *elt) {
         padded = 0;
         break;
     case TABLESEPARATOR:
-        g_string_append_printf(out, "\\begin{tabular}{@{}%s@{}} \\\\ \\toprule\n", elt->contents.str);
+        g_string_append_printf(out, "\\begin{tabular}{@{}%s@{}} \\toprule\n", elt->contents.str);
         break;
     case TABLECAPTION:
         if (elt->children->key == TABLELABEL) {
@@ -1454,7 +1456,8 @@ void print_latex_header(GString *out, element *elt) {
 
 void print_latex_footer(GString *out) {
     if (latex_footer != NULL) {
-        g_string_append_printf(out, "\n\n\\input{%s}\n\n\\end{document}", latex_footer);
+        pad(out,2);
+        g_string_append_printf(out, "\\input{%s}\n\n\\end{document}", latex_footer);
     }
 }
 
@@ -1482,6 +1485,20 @@ static void print_memoir_element(GString *out, element *elt) {
         break;
     case HEADINGSECTION:
         print_memoir_element_list(out, elt->children);
+        break;
+    case DEFLIST:
+        g_string_append_printf(out, "\\begin{description}");
+        padded = 0;
+        print_memoir_element_list(out, elt->children);
+        pad(out,1);
+        g_string_append_printf(out, "\\end{description}");
+        padded = 0;
+        break;
+    case DEFINITION:
+        pad(out,2);
+        padded = 2;
+        print_memoir_element_list(out, elt->children);
+        padded = 0;
         break;
     case H1: case H2: case H3: case H4: case H5: case H6:
         pad(out, 2);
@@ -1545,7 +1562,7 @@ static void print_beamer_endnotes(GString *out) {
         return;
     note = g_slist_reverse(endnotes);
     pad(out,2);
-    g_string_append_printf(out, "\\part{Bibliography}\n\\begin{frame}[allowframebreaks]\n\\frametitle{Bibliography}\n\\def\\newblock{}\n\\begin{thebibliography}{0}");
+    g_string_append_printf(out, "\\part{Bibliography}\n\\begin{frame}[allowframebreaks]\n\\frametitle{Bibliography}\n\\def\\newblock{}\n\\begin{thebibliography}{0}\n");
     while (note != NULL) {
         note_elt = note->data;
         pad(out, 1);
@@ -1556,8 +1573,8 @@ static void print_beamer_endnotes(GString *out) {
         note = note->next;
     }
     pad(out, 1);
-    g_string_append_printf(out, "\\end{thebibliography}\n\\end{frame}\n");
-
+    g_string_append_printf(out, "\\end{thebibliography}\n\\end{frame}\n\n");
+    padded = 2;
     g_slist_free(endnotes);
 }
 
@@ -1589,6 +1606,7 @@ static void print_beamer_element(GString *out, element *elt) {
                 padded = 0;
                 print_beamer_element_list(out, elt->children);
                 g_string_append_printf(out, "\n\n\\end{frame}\n\n");
+                padded = 2;
             } else if (elt->children->key -H1 + base_header_level == 4) {
                 pad(out, 1);
                 g_string_append_printf(out, "\\mode<article>{\n");
@@ -1696,24 +1714,66 @@ static int find_latex_mode(int format, element *list) {
 element * metadata_for_key(char *key, element *list) {
     element *step = NULL;
     step = list;
+    char *label;
+    
+    label = label_from_string(key,0);
     
     while (step != NULL) {
         if (step->key == METADATA) {
-            /* search METAKEY children */
+           /* search METAKEY children */
             step = step->children;
             while ( step != NULL) {
-                if (strcmp(step->contents.str, key) == 0) {
+                if (strcmp(step->contents.str, label) == 0) {
+                    free(label);
                     return step;
                 }
                 step = step->next;
             }
+            free(label);
             return NULL;
         }
-        step = step->next;
+       step = step->next;
     }
+    free(label);
     return NULL;
 }
 
+
+/* find specified metadata key, if present */
+char * metavalue_for_key(char *key, element *list) {
+    element *step = NULL;
+    step = list;
+    char *label;
+    char *result;
+    
+    label = label_from_string(key,0);
+    
+    while (step != NULL) {
+        if (step->key == METADATA) {
+           /* search METAKEY children */
+            step = step->children;
+            while ( step != NULL) {
+                if (strcmp(step->contents.str, label) == 0) {
+                    /* Found a match */
+                    if ((strcmp(label,"latexmode") == 0) ||
+                        (strcmp(label,"quoteslanguage") == 0)) {
+                        result = label_from_string(step->children->contents.str,0);
+                    } else {
+                        result = strdup(step->children->contents.str);
+                    }
+                    free(label);
+                   return result;
+                }
+                step = step->next;
+            }
+            free(label);
+            return NULL;
+        }
+       step = step->next;
+    }
+    free(label);
+    return NULL;
+}
 
 /* find attribute, if present */
 element * element_for_attribute(char *querystring, element *list) {

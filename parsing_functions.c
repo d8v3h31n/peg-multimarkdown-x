@@ -150,3 +150,19 @@ element * parse_markdown_with_metadata(char *string, int extensions, element *re
     return parse_result;
 
 }
+
+element * parse_metadata_only(char *string, int extensions) {
+
+    char *oldcharbuf;
+    syntax_extensions = extensions;
+
+    oldcharbuf = charbuf;
+    charbuf = string;
+
+    yyparsefrom(yy_MetaDataOnly);
+
+    charbuf = oldcharbuf;          /* restore charbuf to original value */
+    return parse_result;
+
+}
+
