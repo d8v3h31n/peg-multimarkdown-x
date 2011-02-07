@@ -32,6 +32,7 @@ clean:
 	rm -f markdown_parser.c $(PROGRAM) $(OBJS); \
 	make -C $(PEGDIR) clean; \
 	rm -rf mac_installer/Package_Root/usr/local/bin; \
+	rm -rf mac_installer/Support_Root; \
 	rm mac_installer/Resources/*.html; \
 	rm windows_installer/README.txt; \
 	rm windows_installer/multimarkdown.exe
@@ -71,11 +72,13 @@ win-installer: $(PROGRAM)
 
 mac-installer: $(PROGRAM)
 	mkdir mac_installer/Package_Root/usr/local/bin
+	mkdir -p mac_installer/Support_Root/Library/Application\ Support
 	cp multimarkdown scripts/mmd scripts/mmd2tex mac_installer/Package_Root/usr/local/bin/
 	./multimarkdown README > mac_installer/Resources/README.html
 	./multimarkdown mac_installer/Resources/Welcome.txt > mac_installer/Resources/Welcome.html
 	./multimarkdown LICENSE > mac_installer/Resources/License.html
 	./multimarkdown mac_installer/Resources/Support_Welcome.txt > mac_installer/Resources/Support_Welcome.html
+	cp -r Support mac_installer/Support_Root/Library/Application\ Support/MultiMarkdown
 
 # Requires installation of the platypus command line tool to create
 # a drag and drop application for Mac OS X
