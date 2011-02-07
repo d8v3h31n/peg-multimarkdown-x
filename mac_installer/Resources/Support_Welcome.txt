@@ -1,0 +1,21 @@
+Title:	Installer Welcome Message
+
+This custom installer will install the **MultiMarkdown** directory into
+`~/Library/Application Support/MultiMarkdown`. This directory contains a few
+utility scripts and XSLT files that enable use of MultiMarkdown with
+[Scrivener] and adds some additional features when using the [TextMate][]
+[bundle].
+
+This package does **not** include the actual MultiMarkdown binary --- that
+requires a separate installer.
+
+For more information, please check out the MultiMarkdown [web
+site](http://fletcherpenney.net/multimarkdown/).
+
+You will be guided through the steps necessary to install this software.
+
+[Scrivener]: http://www.literatureandlatte.com/
+
+[TextMate]: http://macromates.com/
+
+[bundle]: https://github.com/fletcher/markdown.tmbundle
