@@ -6,6 +6,13 @@ utility scripts and XSLT files that enable use of MultiMarkdown with
 [Scrivener] and adds some additional features when using the [TextMate][]
 [bundle].
 
+**NOTE**: This package will overwrite certain files if you have previously
+installed MultiMarkdown 2.0 in your `Application Support` folder. It will
+leave most of the files untouched, but will overwrite some of the core XSLT
+files and the core convenience scripts in `/bin`. You may wish to back that
+folder up just in case (or better yet, move it to another location and start
+fresh)
+
 This package does **not** include the actual MultiMarkdown binary --- that
 requires a separate installer.
 
