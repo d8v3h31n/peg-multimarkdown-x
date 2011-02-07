@@ -75,6 +75,7 @@ mac-installer: $(PROGRAM)
 	./multimarkdown README > mac_installer/Resources/README.html
 	./multimarkdown mac_installer/Resources/Welcome.txt > mac_installer/Resources/Welcome.html
 	./multimarkdown LICENSE > mac_installer/Resources/License.html
+	./multimarkdown mac_installer/Resources/Support_Welcome.txt > mac_installer/Resources/Support_Welcome.html
 
 # Requires installation of the platypus command line tool to create
 # a drag and drop application for Mac OS X
