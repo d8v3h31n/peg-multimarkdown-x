@@ -65,7 +65,7 @@ xslttest: $(PROGRAM)
 leak-check: $(PROGRAM)
 	valgrind --leak-check=full ./multimarkdown TEST.markdown > TEST.html
 
-win-installer: $(PROGRAM)
+win-installer:
 	cp README.markdown windows_installer/README.txt
 	zip -r windows_installer/MultiMarkdown-Windows-$(VERSION).zip windows_installer -x windows_installer/MultiMarkdown*.zip
 
