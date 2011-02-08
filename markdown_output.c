@@ -831,7 +831,7 @@ static void print_latex_element(GString *out, element *elt) {
         free(width);
         break;
     case EMPH:
-        g_string_append_printf(out, "{\\itshape ");
+        g_string_append_printf(out, "\\emph{");
         print_latex_element_list(out, elt->children);
         g_string_append_printf(out, "}");
         break;
@@ -1520,7 +1520,7 @@ static void print_memoir_element(GString *out, element *elt) {
                 g_string_append_printf(out, "\\subsubsection{");
                 break;
             default:
-                g_string_append_printf(out, "{\\itshape ");
+                g_string_append_printf(out, "\\emph{");
                 break;
         }
         /* generate a label for each header (MMD)*/
@@ -1632,7 +1632,7 @@ static void print_beamer_element(GString *out, element *elt) {
                     g_string_append_printf(out, "\\frametitle{");
                     break;
                 default:
-                    g_string_append_printf(out, "{\\itshape ");
+                    g_string_append_printf(out, "\\emph{");
                     break;
             }
             /* generate a label for each header (MMD)*/
