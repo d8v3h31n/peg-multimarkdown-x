@@ -3,7 +3,7 @@
   markdown.c - markdown in C using a PEG grammar.
   (c) 2008 John MacFarlane (jgm at berkeley dot edu).
   
-  portions Copyright (c) 2010-2011 Fletcher T Penney
+  portions Copyright (c) 2010-2011 Fletcher T. Penney
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License or the MIT
@@ -35,7 +35,7 @@ static int extensions;
 
  ***********************************************************************/
 
-#define VERSION "3.0b2"
+#define VERSION "3.0b3"
 #define COPYRIGHT "portions Copyright (c) 2010-2011 Fletcher T. Penney.\n" \
                   "original Copyright (c) 2008-2009 John MacFarlane.  License GPLv2+ or MIT.\n" \
                   "This is free software: you are free to change and redistribute it.\n" \

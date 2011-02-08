@@ -4,7 +4,7 @@
                       markdown_peg.
   (c) 2008 John MacFarlane (jgm at berkeley dot edu).
   
-  portions Copyright (c) 2010-2011 Fletcher T Penney
+  portions Copyright (c) 2010-2011 Fletcher T. Penney
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License or the MIT
@@ -1613,6 +1613,7 @@ static void print_beamer_element(GString *out, element *elt) {
                 padded = 0;
                 print_beamer_element_list(out, elt->children->next);
                 g_string_append_printf(out, "\n\n}\n\n");
+                padded = 2;
             } else {
                 print_beamer_element_list(out, elt->children);
             }
