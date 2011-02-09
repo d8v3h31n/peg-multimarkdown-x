@@ -4,3 +4,6 @@
 [submodule "Support"]
 	path = Support
 	url = git@github.com:fletcher/MMD-Support.git
+[submodule "documentation"]
+	path = documentation
+	url = git@github.com:fletcher/peg-multimarkdown.wiki.git
