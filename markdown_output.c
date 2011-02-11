@@ -643,6 +643,7 @@ static void print_html_endnotes(GString *out) {
 
 /* print_latex_string - print string, escaping for LaTeX */
 static void print_latex_string(GString *out, char *str) {
+	char *tmp;
     while (*str != '\0') {
         switch (*str) {
           case '{': case '}': case '$': case '%':
@@ -669,6 +670,20 @@ static void print_latex_string(GString *out, char *str) {
             break;
         case '/':
             g_string_append_printf(out, "\\slash ");
+            break;
+        case '\n':
+            tmp = str;
+            tmp--;
+            if (*tmp == ' ') {
+                tmp--;
+                if (*tmp == ' ') {
+                    g_string_append_printf(out, "\\\\\n");
+                } else {
+                    g_string_append_printf(out, "\n");
+                }
+            } else {
+                g_string_append_printf(out, "\n");
+            }
             break;
         default:
             g_string_append_c(out, *str);
