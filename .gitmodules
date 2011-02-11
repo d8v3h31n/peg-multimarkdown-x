@@ -7,3 +7,6 @@
 [submodule "documentation"]
 	path = documentation
 	url = git@github.com:fletcher/peg-multimarkdown.wiki.git
+[submodule "samples"]
+	path = samples
+	url = git@github.com:fletcher/MultiMarkdown-Gallery.git
