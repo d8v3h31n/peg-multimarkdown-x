@@ -97,6 +97,24 @@ Block =     BlankLine*
             | Para
             | Plain )
 
+HeadingSectionBlock =
+            BlankLine*
+            !Heading
+            ( BlockQuote
+            | Verbatim
+            | DefinitionList
+            | Glossary
+            | Note
+            | Reference
+            | HorizontalRule
+            | OrderedList
+            | BulletList
+            | HtmlBlock
+            | StyleBlock
+            | Table
+            | Para
+            | Plain )
+
 Para =      NonindentSpace a:Inlines BlankLine+
             { $$ = a; $$->key = PARA; }
 
@@ -129,7 +147,7 @@ SetextHeading2 =  &(RawLine SetextBottom2)
 Heading = AtxHeading | SetextHeading
 
 HeadingSection = a:StartList Heading { a = cons($$, a); }
-    (BlankLine* !HeadingSection Block {a = cons($$, a); })*
+    (HeadingSectionBlock {a = cons($$, a); })*
     { $$ = mk_list(HEADINGSECTION, a);}
 
 BlockQuote = a:BlockQuoteRaw
