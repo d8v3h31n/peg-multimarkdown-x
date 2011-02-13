@@ -16,7 +16,8 @@ enum markdown_formats {
     LATEX_FORMAT,
     MEMOIR_FORMAT,
     BEAMER_FORMAT,
-    GROFF_MM_FORMAT
+    GROFF_MM_FORMAT,
+    ODF_FORMAT
 };
 
 GString * markdown_to_g_string(char *text, int extensions, int output_format);

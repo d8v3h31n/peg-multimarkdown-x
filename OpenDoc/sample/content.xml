@@ -1,0 +1,1074 @@
+<?xml version="1.0" ?>
+ <office:document-content office:version="1.0"
+   xmlns:chart="urn:oasis:names:tc:opendocument:xmlns:chart:1.0"
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:dom="http://www.w3.org/2001/xml-events"
+   xmlns:dr3d="urn:oasis:names:tc:opendocument:xmlns:dr3d:1.0"
+   xmlns:draw="urn:oasis:names:tc:opendocument:xmlns:drawing:1.0"
+   xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0"
+   xmlns:form="urn:oasis:names:tc:opendocument:xmlns:form:1.0"
+   xmlns:math="http://www.w3.org/1998/Math/MathML"
+   xmlns:meta="urn:oasis:names:tc:opendocument:xmlns:meta:1.0"
+   xmlns:number="urn:oasis:names:tc:opendocument:xmlns:datastyle:1.0"
+   xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0"
+   xmlns:ooo="http://openoffice.org/2004/office"
+   xmlns:oooc="http://openoffice.org/2004/calc"
+   xmlns:ooow="http://openoffice.org/2004/writer"
+   xmlns:script="urn:oasis:names:tc:opendocument:xmlns:script:1.0"
+   xmlns:style="urn:oasis:names:tc:opendocument:xmlns:style:1.0"
+   xmlns:svg="urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0"
+   xmlns:table="urn:oasis:names:tc:opendocument:xmlns:table:1.0"
+   xmlns:text="urn:oasis:names:tc:opendocument:xmlns:text:1.0"
+   xmlns:xforms="http://www.w3.org/2002/xforms"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<office:body>
+<office:text>
+<text:h1>Introduction</text:h1><text:p>This document is a guide to understanding and using MultiMarkdown. It was
+created as a , and thus was written by various contributors. Feel free
+to contribute your own improvements!</text:p><text:h1>What is Markdown?</text:h1><text:p>To understand what MultiMarkdown is, you first should be familiar with
+. The best description of what Markdown is comes from John Grubers
+Markdown web site:</text:p><text:h1>What is MultiMarkdown?</text:h1><text:p>Markdown is great, but it lacked a few features that would allow it to work
+with documents, rather than just pieces of a web page.</text:p><text:p>I wrote MultiMarkdown in order to leverage Markdowns syntax, but to extend it
+to work with complete documents that could ultimately be converted from text
+into other formats, including complete XHTML documents, LaTeX, PDF, RTF, or
+even (shudder) Microsoft Word documents. These various formats are supported
+to varying degrees by various versions of MultiMarkdown and work differently
+on different operating systems. The two  output formats are XHTML and
+LaTeX (for now at least).</text:p><text:p>In addition to the ability to work with complete documents and conversion to
+other formats, the Markdown syntax was lacking a few things. Michel Fortin
+added a few additional syntax tools when writing . Some
+of his ideas were implemented and expanded on in MultiMarkdown, in addition to
+more features not available in other Markdown implementations. These features
+include tables, footnotes, citation support, image and link attributes,
+cross-references, math support, and more.</text:p><text:p>John Gruber may disagree with me, but I really did try to stick with his
+proclaimed vision whenever I added a new syntax format to MultiMarkdown. The
+quality that attracted me to Markdown the most was its clean format. Reading a
+plain text document written in Markdown is . It makes sense, and it
+looks like it was designed for people, not computers. To the extent possible,
+I tried to keep this same concept in mind when working on MultiMarkdown.</text:p><text:p>I may or may not have succeeded in this.</text:p><text:p>In the vein of Markdowns multiple definitions, you can think of MultiMarkdown
+as:</text:p><text:h1>Where is this Guide Kept?</text:h1><text:p>This Users Guide is designed to be viewed as a single XHTML document, or as a
+PDF after being processed by LaTeX. When processed by MultiMarkdown and
+combined as a single document, it will demonstrate many of the features that
+MultiMarkdown offers, and should be fairly easy to navigate.</text:p><text:p>The source text documents are actually stored in a wiki on Github so that the
+document can easily be worked on by anyone with a Github account:</text:p><text:p></text:p><text:p>: Currently, the Github wiki software supports Markdown, but not
+MultiMarkdown. This means that certain MultiMarkdown specific features will
+not work on the wiki, but will work when the source is processed by
+MultiMarkdown separately from the wiki.</text:p><text:p>You can download a copy of the source files using the instructions contained
+at the wiki itself. Additionally, the source is linked to from within the
+source project for MultiMarkdown in the  directory. If you
+download the source, you can can compile a copy of the documentation
+automatically with:</text:p><text:p>(This command requires perl to be installed  Ill work on an alternative
+for Windows users without perl).</text:p><text:h1>How do I install MultiMarkdown?</text:h1><text:h1>Mac OS X</text:h1><text:p>The easiest way to install MultiMarkdown on the Mac is to use the installer
+from the  page. Simply choose the latest version of the
+MultiMarkdown-Mac zipfile and download it. Double-click the file to unzip it,
+and then double click the installer that appears.</text:p><text:p>If you primarily intend to use MultiMarkdown from within , or
+, you may wish to also download and install the Support files. This
+places additional convenience scripts in  which is where Scrivener and TextMate will generally
+look for it. This installer is also available from the  page.</text:p><text:p>For more advanced users, the installer puts the  binary and two
+convenience scripts,  and  in the  directory. As
+long as  is included in your PATH environment variable, you
+can use these binaries from the command line or from other programs.</text:p><text:p>If you wish to compile MultiMarkdown from source for yourself:</text:p><text:p>Then you can compile:</text:p><text:p>Then simply move the binary and convenience scripts to your desired location.</text:p><text:h1>Linux</text:h1><text:p>There is no installer for *nix systems, but you can compile from source fairly
+easily. For example, on :</text:p><text:p>Other flavors of linux will require variations of the first command.</text:p><text:p>Then just put the binaries wherever you like.</text:p><text:h1>Windows</text:h1><text:p>The easiest way to install MultiMarkdown on Windows is to download the
+ package from the  page. It contains a zipfile that
+includes the  batch file. This batch file will
+install multimarkdown, the required libraries, and two convenience scripts to
+. Ive had some trouble when installing as a user that is
+not an Administrator, and Ive had trouble on occasion trying to run the
+program when not an Administrator. I welcome ideas on a better way to install
+the program on Windows. I also have only tested this on Windows XP.</text:p><text:p>If you want to compile for yourself, check out the instructions on the
+.</text:p><text:h1>How do I use MultiMarkdown?</text:h1><text:p>There are several ways to use MultiMarkdown, depending on your needs. You can
+use the  command line tool, you can use MultiMarkdown with
+several applications that support it directly, or you can use a drag and drop
+approach.</text:p><text:h1>Command Line Usage</text:h1><text:p>First, verify that you have properly installed MultiMarkdown:</text:p><text:p>If you dont see a message telling you which version of MultiMarkdown is
+installed, check out Troubleshooting.</text:p><text:p>To learn more about the command line options to multimarkdown:</text:p><text:p>Once you have properly installed MultiMarkdown:</text:p><text:p>will convert the plain text file  into XHTML output. To save the
+results to a file:</text:p><text:p>A shortcut to this is to use MultiMarkdowns batch mode, which will save the
+output to the same base filename that is input, with the extension  (or
+ for LaTeX output):</text:p><text:p>A benefit of batch mode is that you can process multiple files at once:</text:p><text:p>If you want to create LaTeX output instead of XHTML:</text:p><text:p>There are also two convenience scripts included with MultiMarkdown:</text:p><text:p>These scripts run MultiMarkdown in batch mode to generate XHTML or LaTeX files
+respectively. These scripts are included with the Mac or Windows installers,
+and are available for *nix in the  directory in the source project.
+They are intended to be used as shortcuts for the most common command line
+options.</text:p><text:h1>Command Line Options</text:h1><text:p>There are several options when running MultiMarkdown from the command line.</text:p><text:p>Compatibility mode causes MultiMarkdown to output XHTML that is compatible
+with that output from the original Markdown. This allows it to pass the
+original Markdown test suite. Syntax features that dont exist in regular
+Markdown will still be output using the regular MultiMarkdown output
+formatting.</text:p><text:p>The extract feature outputs the value of the specified metadata key. This is
+used in my convenience scripts to help choose the proper LaTeX output mode,
+and could be used in other circumstances as well.</text:p><text:p>This options specified the format that MultiMarkdown outputs. The default is
+html. If you use the  metadata, then MultiMarkdown will
+automatically choose  or  as directed without using these
+command line options. Using that metadata will also allow the various
+convenience scripts to choose the correct output format as well.</text:p><text:p>This option tells MultiMarkdown to process the text included within HTML tags
+in the source document.</text:p><text:p>Other options are available by checking out , but
+the ones listed above are the primary options.</text:p><text:p>TODO: need to describe more options</text:p><text:h1>Advanced Mode</text:h1><text:p>MultiMarkdown version 2.0 had to first convert the source file to XHTML, and
+then applied XSLT files to convert to the final LaTeX format. Since
+MultiMarkdown 3.0 can create LaTeX directly, this approach is no longer
+necessary.</text:p><text:p>The one benefit of that approach, however, was that it became possible to
+perform a wide range of customizations on exactly how the LaTeX output was
+created by customizing the XSLT files.</text:p><text:p>If you install the Support files on Mac or Linux, you can still use the
+advanced XSLT method to generate LaTeX output. For the time being, this
+approach doesnt work with Windows, but it would be fairly easy to create a
+batch script or perl script to implement this feature on Windows.</text:p><text:p>Keep in mind, however, that because of the more advanced mechanism of handling
+LaTeX in MultiMarkdown 3.0, you can do a great deal of customization without
+needing to use an XSLT file.</text:p><text:p>The  script will convert a plain text file into LaTeX that is
+virtually identical with that created by the regular LaTeX approach.</text:p><text:p>There are a few differences in the two approaches, however:</text:p><text:h1>Recommendations</text:h1><text:p>I recommend that you become familiar with the  approach to using
+MultiMarkdown before trying to experiment with XSLT. The basic approach is
+faster, and easier, and the results can still be customized quite a bit.</text:p><text:p>Then you can experiment with modifying XSLT to further customize your output
+as needed.</text:p><text:p>If you have XSLT files that you used in MultiMarkdown 2.0, you will likely
+need to modify them to recognize the XHTML output generated by MultiMarkdown
+3.0. You can use the default XSLT files as a guide to what is different.</text:p><text:h1>Mac OS X Applications</text:h1><text:p>There are several applications that have built-in support for MultiMarkdown,
+or that can easily use it with a plug-in.</text:p><text:h1>Using MultiMarkdown with TextMate</text:h1><text:p>If you want to run MultiMarkdown from directly within , you should
+install my MultiMarkdown . This is a modified version of the original
+Markdown bundle for TextMate that includes better support for MultiMarkdown.</text:p><text:p>This bundle will work with MultiMarkdown 2.0, or with MultiMarkdown 3.0 if you
+install the MultiMarkdown-Support files (available from the downloads
+).</text:p><text:h1>Using MultiMarkdown with Scrivener</text:h1><text:p> is a great program for writers using Mac OS X. It includes built
+in support for MultiMarkdown. If you want to use MultiMarkdown 3.0 with
+Scrivener, you need to install the Support files in . The MultiMarkdown-Support installer is available from
+the downloads  and will install these files for you.</text:p><text:h1>Drag and Drop</text:h1><text:p>There is a set of applications forthcoming that easily allow you to use drag
+and drop to process MultiMarkdown files.</text:p><text:p>TODO: link to these, describe how to use them</text:p><text:h1>Using MultiMarkdown in Windows</text:h1><text:p>You can use the same command line approach with Windows as described
+previously. While there arent drag and drop applications per se for the
+Windows system, there are two shortcuts included in the installer that will
+allow you to drop text files on them in the same manner.</text:p><text:h1>MultiMarkdown and LaTeX</text:h1><text:p>Of note  is a complex set of programs. MultiMarkdown doesnt include
+LaTeX in the installer  its up to the user to install a working LaTeX
+setup on their machine if you want to use it.</text:p><text:p>What MultiMarkdown does is make it easier to generate documents using the
+LaTeX syntax. It should handle 80% of the documents that 80% of MultiMarkdown
+need. It doesnt handle all circumstances, and sometimes you will need to hand
+code your LaTeX yourself.</text:p><text:p>In those cases you have a few options. MultiMarkdown will pass text included
+in XHTML comments along to the LaTeX as raw output. For example:</text:p><text:p>You can also include your desired LaTeX code in a separate file and link to it:</text:p><text:p>If you have questions about LaTeX itself, I cant help. Youre welcome to send
+your question to the , and perhaps someone will
+be able to offer some assistance. But you would be better off asking a group
+dedicated to LaTeX instead.</text:p><text:p>If the problem is that MultiMarkdown itself is generating invalid LaTeX, then
+of course I want to know about it so I can fix it.</text:p><text:h1>How do I create a MultiMarkdown document?</text:h1><text:p>The general concept in MultiMarkdown is that it should be easy for someone to
+type a plain text file that is human-readable, and then use the MultiMarkdown
+program to convert that text file into a more complicated computer language
+such as XHTML or LaTeX. This allows you to create high quality output without
+having to spend hours and hours fiddling with font sizes, margins, etc.</text:p><text:p>The first step in learning to use MultiMarkdown is to learn how to use
+. MultiMarkdown is an
+extension to Markdown, and builds off of the basic fundamentals used in
+Markdown.</text:p><text:p>I recommend starting by familiarizing yourself with the Markdown  and
+ pages.</text:p><text:p>Once youre familiar with the basics of Markdown, it will be relatively easy
+to pick up the advanced features included in MultiMarkdown.</text:p><text:h1>Metadata</text:h1><text:p>It is possible to include special metadata at the top of a MultiMarkdown
+document, such as title, author, etc. This information can then be used to
+control how MultiMarkdown processes the document, or can be used in certain
+output formats in special ways.</text:p><text:p>The syntax for including metadata is simple.</text:p><text:h1>Complete documents vs &#8220;snippets&#8221;</text:h1><text:p>In order to include metadata information such as a title, the XHTML document
+created by MultiMarkdown must be  This means that it starts with
+something that looks like:</text:p><text:p>If you include metadata in your document (with two exceptions), then you will
+generate a complete document. If you dont include metadata, then you will
+instead generate a  The snippet will just include the relevant
+portion of XHTML, but will not include the  or  elements.</text:p><text:p>Metadata that is only intended to affect the way MultiMarkdown process the
+output will not trigger a complete document. Currently, this means you can use
+ or  and still output a snippet if you
+dont include any other metadata.</text:p><text:p>When generating LaTeX output the same rules apply. Of note, it was not
+possible to generate LaTeX snippets with MultiMarkdown 2.0 without using a
+custom XSLT file.</text:p><text:h1>&#8220;Standard&#8221; Metadata keys</text:h1><text:p>There are a few metadata keys that are standardized in MultiMarkdown. You can
+use any other keys that you desire, but you have to make use of them yourself.</text:p><text:p>My goal is to keep the list of  metadata keys as short as possible.</text:p><text:h1>Author</text:h1><text:p>This value represents the author of the document and is used in LaTeX
+documents to generate the title information.</text:p><text:h1>Affiliation</text:h1><text:p>This is used to enter further information about the author  a link to a
+website, an employer, academic affiliation, etc.</text:p><text:h1>Base Header Level</text:h1><text:p>This is used to change the top level of organization of the document. For example:</text:p><text:p>Normally, the Introduction would be output as  in XHTML, or  in
+LaTeX. If youre writing a shorter document, you may wish for the largest
+division in the document to be  or . The 
+metadata tells MultiMarkdown to change the largest division level to the
+specified value.</text:p><text:p>This can also be useful when combining multiple documents.</text:p><text:p> does not trigger a complete document.</text:p><text:h1>Copyright</text:h1><text:p>This can be used to provide a copyright string.</text:p><text:h1>CSS</text:h1><text:p>This metadata specifies a URL to be used as a CSS file for the produced
+document. Obviously, this is only useful when outputting to XHTML.</text:p><text:h1>Date</text:h1><text:p>Specify a date to be associated with the document.</text:p><text:h1>Quotes Language</text:h1><text:p>This is used to specify which style of  quotes to use in the output document. The available options are:</text:p><text:p>The default is  if not specified. This affects XHTML output. To
+change the language of a document in LaTeX is up to the individual.</text:p><text:p> does not trigger a complete document.</text:p><text:h1>LaTeX Footer</text:h1><text:p>A special case of the  metadata below. This file will be linked
+to at the very end of the document.</text:p><text:h1>LaTeX Input</text:h1><text:p>When outputting a LaTeX document it is necessary to include various directions
+that specify how the document should be formatted. These are not included in
+the MultiMarkdown document itself  instead they should be stored separately
+and linked to with  commands.</text:p><text:p>These links can be included in the metadata section. The metadata is processed
+in order, so I generally break my directives into a group that need to go
+before my metadata, a group that goes after the metadata but before the
+document itself, and a separate group that goes at the end of the document,
+for example:</text:p><text:p>You can download the  files if you want to output documents
+using the default MultiMarkdown styles. You can then use these as examples to
+create your own customized LaTeX output.</text:p><text:p>TODO: include more details about this</text:p><text:h1>LaTeX Mode</text:h1><text:p>When outputting a document to LaTeX, there are two special options that change
+the output slightly   and . These options are designed to
+be compatible with the LaTeX classes of the same names.</text:p><text:h1>Title</text:h1><text:p>Self-explanatory.</text:p><text:h1>XHTML Header</text:h1><text:p>You can include raw XHTML information to be included in the header.
+MultiMarkdown doesnt perform any validation on this data  it just copies
+it as is.</text:p><text:p>As an example, this can be useful to link your document to a working MathJax installation (not provided by me):</text:p><text:h1>Cross-References</text:h1><text:h1>Image and Link Attributes</text:h1><text:h1>Tables</text:h1><text:h1>Footnotes</text:h1><text:h1>Citations</text:h1><text:h1>Math</text:h1><text:p>MultiMarkdown 2.0 used  to typeset mathematical equations. There
+were benefits to using ASCIIMathML, but also some disadvantages.</text:p><text:p>When rewriting for MultiMarkdown 3.0, there was no straightforward way to
+implement ASCIIMathML which lead me to look for alternatives. I settled on
+using . The advantage here is that the same syntax is supported by
+MathJax in browsers, and in LaTeX. </text:p><text:p>This does mean that math will need to be entered into MultiMarkdown documents
+using the LaTeX syntax, rather than ASCIIMathML.</text:p><text:p>To enable MathJax support in web pages, you have to include a link to an
+active MathJax installation  setting this up is beyond the scope of this
+document, but its not too hard.</text:p><text:p>Heres an example of the metadata setup, and some math:</text:p><text:p>Heres what it looks like in action:</text:p><text:p>TODO: This doesnt quite work properly in github wiki</text:p><text:h1>Glossary</text:h1><text:h1>FAQ</text:h1><text:p>Answers to common questions about MultiMarkdown. Contributions welcome!</text:p><text:h1>How do I install MMD?</text:h1><text:h1>Mac</text:h1><text:h1>Windows</text:h1><text:h1>Linux</text:h1><text:h1>How can I better learn the MultiMarkdown Syntax?</text:h1><text:p>The syntax of MultiMarkdown can be a challenge for beginners especially when it comes to using Table and Link syntax. The challenge comes in understanding how it looks  the conversion. </text:p><text:p>For MAC users, you can download a free program NValt  that contains a preview mode. Thus, you can enter your markdown with a dynamic preview window to show how the formatting appears. Ive found this useful until I was comfortable with the syntax. </text:p><text:p>Note also that MultiMarkdown can also be installed to MarsEdit  which also has a preview mode. This is even more effective for for bloggers as it will handle inline image upload to most popular blog software and display the interpreted output of your MMD syntax. </text:p><text:p>I dont know of any Windows software that does the same</text:p><text:h1>Web Based Learning</text:h1><text:p>For absolute beginners to Markdown, you may want to try  which provides a web site for writing in Markdown syntax and display. You can also save the pages for forwarding to other people. </text:p><text:p>For the reverse requirement, you can visit  which will attempt to take a given HTML Page and convert it into Markdown, usually with good accuracy.</text:p><text:h1>Can I use MultiMarkdown on an iPhone/iPad?</text:h1><text:p>There are a number of programs available for use on the iPhone and iPad that
+support regular Markdown, but not MultiMarkdown.</text:p><text:p> is a iPhone / iPad app
+that also has a markdown preview mode. Second Gear has also made
+ which is
+simpler, but also very usable for learning Markdown.</text:p><text:p> is a syntax highlighting text editor
+for the iPad that includes a preview mode for Markdown. It will even preview
+MathJax equations if you include the proper metadata!</text:p><text:p>Now that MultiMarkdown is available in C (as of version 3.0), I would like to
+work on modifying it to work with iOS.</text:p><text:h1>How do I troubleshoot an error?</text:h1><text:p>divide and conquer</text:p><text:p>latest version?</text:p><text:h1>How do I get more help</text:h1><text:p>search box on my web site</text:p><text:p>mmd discussion group</text:p><text:h1>How do I customize MultiMarkdown?</text:h1><text:p>XSLT</text:p><text:p>Latex Input files</text:p><text:p>flow chart?</text:p><text:p>github</text:p><text:p>RTF</text:p><text:p>google docs</text:p><text:p>mac - textutil</text:p><text:p>xslt</text:p><text:p>OPML</text:p><text:p>linking to images</text:p><text:p>(figure1 and figure1 incompatibility)</text:p><text:p>Difference in footnotes</text:p><text:p>What is a PEG</text:p><text:p>mmd_merge</text:p><text:h1>How can I contribute to MultiMarkdown?</text:h1><text:h1>Bug reports</text:h1><text:h1>Editing the documentation</text:h1><text:h1>Code submissions</text:h1><text:p>Ideas for development:</text:p><text:h1>Paypal contributions</text:h1><text:h1>Acknowledgments</text:h1><text:p>Thanks to the individuals and groups below for their contributions to
+improving Markdown and MultiMarkdown:</text:p><text:p>and others I have surely forgotten.</text:p><text:h1>Introduction</text:h1><text:p>This document is a guide to understanding and using MultiMarkdown. It was
+created as a , and thus was written by various contributors. Feel free
+to contribute your own improvements!</text:p><text:h1>What is Markdown?</text:h1><text:p>To understand what MultiMarkdown is, you first should be familiar with
+. The best description of what Markdown is comes from John Grubers
+Markdown web site:</text:p><text:h1>What is MultiMarkdown?</text:h1><text:p>Markdown is great, but it lacked a few features that would allow it to work
+with documents, rather than just pieces of a web page.</text:p><text:p>I wrote MultiMarkdown in order to leverage Markdowns syntax, but to extend it
+to work with complete documents that could ultimately be converted from text
+into other formats, including complete XHTML documents, LaTeX, PDF, RTF, or
+even (shudder) Microsoft Word documents. These various formats are supported
+to varying degrees by various versions of MultiMarkdown and work differently
+on different operating systems. The two  output formats are XHTML and
+LaTeX (for now at least).</text:p><text:p>In addition to the ability to work with complete documents and conversion to
+other formats, the Markdown syntax was lacking a few things. Michel Fortin
+added a few additional syntax tools when writing . Some
+of his ideas were implemented and expanded on in MultiMarkdown, in addition to
+more features not available in other Markdown implementations. These features
+include tables, footnotes, citation support, image and link attributes,
+cross-references, math support, and more.</text:p><text:p>John Gruber may disagree with me, but I really did try to stick with his
+proclaimed vision whenever I added a new syntax format to MultiMarkdown. The
+quality that attracted me to Markdown the most was its clean format. Reading a
+plain text document written in Markdown is . It makes sense, and it
+looks like it was designed for people, not computers. To the extent possible,
+I tried to keep this same concept in mind when working on MultiMarkdown.</text:p><text:p>I may or may not have succeeded in this.</text:p><text:p>In the vein of Markdowns multiple definitions, you can think of MultiMarkdown
+as:</text:p><text:h1>Where is this Guide Kept?</text:h1><text:p>This Users Guide is designed to be viewed as a single XHTML document, or as a
+PDF after being processed by LaTeX. When processed by MultiMarkdown and
+combined as a single document, it will demonstrate many of the features that
+MultiMarkdown offers, and should be fairly easy to navigate.</text:p><text:p>The source text documents are actually stored in a wiki on Github so that the
+document can easily be worked on by anyone with a Github account:</text:p><text:p></text:p><text:p>: Currently, the Github wiki software supports Markdown, but not
+MultiMarkdown. This means that certain MultiMarkdown specific features will
+not work on the wiki, but will work when the source is processed by
+MultiMarkdown separately from the wiki.</text:p><text:p>You can download a copy of the source files using the instructions contained
+at the wiki itself. Additionally, the source is linked to from within the
+source project for MultiMarkdown in the  directory. If you
+download the source, you can can compile a copy of the documentation
+automatically with:</text:p><text:p>(This command requires perl to be installed  Ill work on an alternative
+for Windows users without perl).</text:p><text:h1>How do I install MultiMarkdown?</text:h1><text:h1>Mac OS X</text:h1><text:p>The easiest way to install MultiMarkdown on the Mac is to use the installer
+from the  page. Simply choose the latest version of the
+MultiMarkdown-Mac zipfile and download it. Double-click the file to unzip it,
+and then double click the installer that appears.</text:p><text:p>If you primarily intend to use MultiMarkdown from within , or
+, you may wish to also download and install the Support files. This
+places additional convenience scripts in  which is where Scrivener and TextMate will generally
+look for it. This installer is also available from the  page.</text:p><text:p>For more advanced users, the installer puts the  binary and two
+convenience scripts,  and  in the  directory. As
+long as  is included in your PATH environment variable, you
+can use these binaries from the command line or from other programs.</text:p><text:p>If you wish to compile MultiMarkdown from source for yourself:</text:p><text:p>Then you can compile:</text:p><text:p>Then simply move the binary and convenience scripts to your desired location.</text:p><text:h1>Linux</text:h1><text:p>There is no installer for *nix systems, but you can compile from source fairly
+easily. For example, on :</text:p><text:p>Other flavors of linux will require variations of the first command.</text:p><text:p>Then just put the binaries wherever you like.</text:p><text:h1>Windows</text:h1><text:p>The easiest way to install MultiMarkdown on Windows is to download the
+ package from the  page. It contains a zipfile that
+includes the  batch file. This batch file will
+install multimarkdown, the required libraries, and two convenience scripts to
+. Ive had some trouble when installing as a user that is
+not an Administrator, and Ive had trouble on occasion trying to run the
+program when not an Administrator. I welcome ideas on a better way to install
+the program on Windows. I also have only tested this on Windows XP.</text:p><text:p>If you want to compile for yourself, check out the instructions on the
+.</text:p><text:h1>How do I use MultiMarkdown?</text:h1><text:p>There are several ways to use MultiMarkdown, depending on your needs. You can
+use the  command line tool, you can use MultiMarkdown with
+several applications that support it directly, or you can use a drag and drop
+approach.</text:p><text:h1>Command Line Usage</text:h1><text:p>First, verify that you have properly installed MultiMarkdown:</text:p><text:p>If you dont see a message telling you which version of MultiMarkdown is
+installed, check out Troubleshooting.</text:p><text:p>To learn more about the command line options to multimarkdown:</text:p><text:p>Once you have properly installed MultiMarkdown:</text:p><text:p>will convert the plain text file  into XHTML output. To save the
+results to a file:</text:p><text:p>A shortcut to this is to use MultiMarkdowns batch mode, which will save the
+output to the same base filename that is input, with the extension  (or
+ for LaTeX output):</text:p><text:p>A benefit of batch mode is that you can process multiple files at once:</text:p><text:p>If you want to create LaTeX output instead of XHTML:</text:p><text:p>There are also two convenience scripts included with MultiMarkdown:</text:p><text:p>These scripts run MultiMarkdown in batch mode to generate XHTML or LaTeX files
+respectively. These scripts are included with the Mac or Windows installers,
+and are available for *nix in the  directory in the source project.
+They are intended to be used as shortcuts for the most common command line
+options.</text:p><text:h1>Command Line Options</text:h1><text:p>There are several options when running MultiMarkdown from the command line.</text:p><text:p>Compatibility mode causes MultiMarkdown to output XHTML that is compatible
+with that output from the original Markdown. This allows it to pass the
+original Markdown test suite. Syntax features that dont exist in regular
+Markdown will still be output using the regular MultiMarkdown output
+formatting.</text:p><text:p>The extract feature outputs the value of the specified metadata key. This is
+used in my convenience scripts to help choose the proper LaTeX output mode,
+and could be used in other circumstances as well.</text:p><text:p>This options specified the format that MultiMarkdown outputs. The default is
+html. If you use the  metadata, then MultiMarkdown will
+automatically choose  or  as directed without using these
+command line options. Using that metadata will also allow the various
+convenience scripts to choose the correct output format as well.</text:p><text:p>This option tells MultiMarkdown to process the text included within HTML tags
+in the source document.</text:p><text:p>Other options are available by checking out , but
+the ones listed above are the primary options.</text:p><text:p>TODO: need to describe more options</text:p><text:h1>Advanced Mode</text:h1><text:p>MultiMarkdown version 2.0 had to first convert the source file to XHTML, and
+then applied XSLT files to convert to the final LaTeX format. Since
+MultiMarkdown 3.0 can create LaTeX directly, this approach is no longer
+necessary.</text:p><text:p>The one benefit of that approach, however, was that it became possible to
+perform a wide range of customizations on exactly how the LaTeX output was
+created by customizing the XSLT files.</text:p><text:p>If you install the Support files on Mac or Linux, you can still use the
+advanced XSLT method to generate LaTeX output. For the time being, this
+approach doesnt work with Windows, but it would be fairly easy to create a
+batch script or perl script to implement this feature on Windows.</text:p><text:p>Keep in mind, however, that because of the more advanced mechanism of handling
+LaTeX in MultiMarkdown 3.0, you can do a great deal of customization without
+needing to use an XSLT file.</text:p><text:p>The  script will convert a plain text file into LaTeX that is
+virtually identical with that created by the regular LaTeX approach.</text:p><text:p>There are a few differences in the two approaches, however:</text:p><text:h1>Recommendations</text:h1><text:p>I recommend that you become familiar with the  approach to using
+MultiMarkdown before trying to experiment with XSLT. The basic approach is
+faster, and easier, and the results can still be customized quite a bit.</text:p><text:p>Then you can experiment with modifying XSLT to further customize your output
+as needed.</text:p><text:p>If you have XSLT files that you used in MultiMarkdown 2.0, you will likely
+need to modify them to recognize the XHTML output generated by MultiMarkdown
+3.0. You can use the default XSLT files as a guide to what is different.</text:p><text:h1>Mac OS X Applications</text:h1><text:p>There are several applications that have built-in support for MultiMarkdown,
+or that can easily use it with a plug-in.</text:p><text:h1>Using MultiMarkdown with TextMate</text:h1><text:p>If you want to run MultiMarkdown from directly within , you should
+install my MultiMarkdown . This is a modified version of the original
+Markdown bundle for TextMate that includes better support for MultiMarkdown.</text:p><text:p>This bundle will work with MultiMarkdown 2.0, or with MultiMarkdown 3.0 if you
+install the MultiMarkdown-Support files (available from the downloads
+).</text:p><text:h1>Using MultiMarkdown with Scrivener</text:h1><text:p> is a great program for writers using Mac OS X. It includes built
+in support for MultiMarkdown. If you want to use MultiMarkdown 3.0 with
+Scrivener, you need to install the Support files in . The MultiMarkdown-Support installer is available from
+the downloads  and will install these files for you.</text:p><text:h1>Drag and Drop</text:h1><text:p>There is a set of applications forthcoming that easily allow you to use drag
+and drop to process MultiMarkdown files.</text:p><text:p>TODO: link to these, describe how to use them</text:p><text:h1>Using MultiMarkdown in Windows</text:h1><text:p>You can use the same command line approach with Windows as described
+previously. While there arent drag and drop applications per se for the
+Windows system, there are two shortcuts included in the installer that will
+allow you to drop text files on them in the same manner.</text:p><text:h1>MultiMarkdown and LaTeX</text:h1><text:p>Of note  is a complex set of programs. MultiMarkdown doesnt include
+LaTeX in the installer  its up to the user to install a working LaTeX
+setup on their machine if you want to use it.</text:p><text:p>What MultiMarkdown does is make it easier to generate documents using the
+LaTeX syntax. It should handle 80% of the documents that 80% of MultiMarkdown
+need. It doesnt handle all circumstances, and sometimes you will need to hand
+code your LaTeX yourself.</text:p><text:p>In those cases you have a few options. MultiMarkdown will pass text included
+in XHTML comments along to the LaTeX as raw output. For example:</text:p><text:p>You can also include your desired LaTeX code in a separate file and link to it:</text:p><text:p>If you have questions about LaTeX itself, I cant help. Youre welcome to send
+your question to the , and perhaps someone will
+be able to offer some assistance. But you would be better off asking a group
+dedicated to LaTeX instead.</text:p><text:p>If the problem is that MultiMarkdown itself is generating invalid LaTeX, then
+of course I want to know about it so I can fix it.</text:p><text:h1>How do I create a MultiMarkdown document?</text:h1><text:p>The general concept in MultiMarkdown is that it should be easy for someone to
+type a plain text file that is human-readable, and then use the MultiMarkdown
+program to convert that text file into a more complicated computer language
+such as XHTML or LaTeX. This allows you to create high quality output without
+having to spend hours and hours fiddling with font sizes, margins, etc.</text:p><text:p>The first step in learning to use MultiMarkdown is to learn how to use
+. MultiMarkdown is an
+extension to Markdown, and builds off of the basic fundamentals used in
+Markdown.</text:p><text:p>I recommend starting by familiarizing yourself with the Markdown  and
+ pages.</text:p><text:p>Once youre familiar with the basics of Markdown, it will be relatively easy
+to pick up the advanced features included in MultiMarkdown.</text:p><text:h1>Metadata</text:h1><text:p>It is possible to include special metadata at the top of a MultiMarkdown
+document, such as title, author, etc. This information can then be used to
+control how MultiMarkdown processes the document, or can be used in certain
+output formats in special ways.</text:p><text:p>The syntax for including metadata is simple.</text:p><text:h1>Complete documents vs &#8220;snippets&#8221;</text:h1><text:p>In order to include metadata information such as a title, the XHTML document
+created by MultiMarkdown must be  This means that it starts with
+something that looks like:</text:p><text:p>If you include metadata in your document (with two exceptions), then you will
+generate a complete document. If you dont include metadata, then you will
+instead generate a  The snippet will just include the relevant
+portion of XHTML, but will not include the  or  elements.</text:p><text:p>Metadata that is only intended to affect the way MultiMarkdown process the
+output will not trigger a complete document. Currently, this means you can use
+ or  and still output a snippet if you
+dont include any other metadata.</text:p><text:p>When generating LaTeX output the same rules apply. Of note, it was not
+possible to generate LaTeX snippets with MultiMarkdown 2.0 without using a
+custom XSLT file.</text:p><text:h1>&#8220;Standard&#8221; Metadata keys</text:h1><text:p>There are a few metadata keys that are standardized in MultiMarkdown. You can
+use any other keys that you desire, but you have to make use of them yourself.</text:p><text:p>My goal is to keep the list of  metadata keys as short as possible.</text:p><text:h1>Author</text:h1><text:p>This value represents the author of the document and is used in LaTeX
+documents to generate the title information.</text:p><text:h1>Affiliation</text:h1><text:p>This is used to enter further information about the author  a link to a
+website, an employer, academic affiliation, etc.</text:p><text:h1>Base Header Level</text:h1><text:p>This is used to change the top level of organization of the document. For example:</text:p><text:p>Normally, the Introduction would be output as  in XHTML, or  in
+LaTeX. If youre writing a shorter document, you may wish for the largest
+division in the document to be  or . The 
+metadata tells MultiMarkdown to change the largest division level to the
+specified value.</text:p><text:p>This can also be useful when combining multiple documents.</text:p><text:p> does not trigger a complete document.</text:p><text:h1>Copyright</text:h1><text:p>This can be used to provide a copyright string.</text:p><text:h1>CSS</text:h1><text:p>This metadata specifies a URL to be used as a CSS file for the produced
+document. Obviously, this is only useful when outputting to XHTML.</text:p><text:h1>Date</text:h1><text:p>Specify a date to be associated with the document.</text:p><text:h1>Quotes Language</text:h1><text:p>This is used to specify which style of  quotes to use in the output document. The available options are:</text:p><text:p>The default is  if not specified. This affects XHTML output. To
+change the language of a document in LaTeX is up to the individual.</text:p><text:p> does not trigger a complete document.</text:p><text:h1>LaTeX Footer</text:h1><text:p>A special case of the  metadata below. This file will be linked
+to at the very end of the document.</text:p><text:h1>LaTeX Input</text:h1><text:p>When outputting a LaTeX document it is necessary to include various directions
+that specify how the document should be formatted. These are not included in
+the MultiMarkdown document itself  instead they should be stored separately
+and linked to with  commands.</text:p><text:p>These links can be included in the metadata section. The metadata is processed
+in order, so I generally break my directives into a group that need to go
+before my metadata, a group that goes after the metadata but before the
+document itself, and a separate group that goes at the end of the document,
+for example:</text:p><text:p>You can download the  files if you want to output documents
+using the default MultiMarkdown styles. You can then use these as examples to
+create your own customized LaTeX output.</text:p><text:p>TODO: include more details about this</text:p><text:h1>LaTeX Mode</text:h1><text:p>When outputting a document to LaTeX, there are two special options that change
+the output slightly   and . These options are designed to
+be compatible with the LaTeX classes of the same names.</text:p><text:h1>Title</text:h1><text:p>Self-explanatory.</text:p><text:h1>XHTML Header</text:h1><text:p>You can include raw XHTML information to be included in the header.
+MultiMarkdown doesnt perform any validation on this data  it just copies
+it as is.</text:p><text:p>As an example, this can be useful to link your document to a working MathJax installation (not provided by me):</text:p><text:h1>Cross-References</text:h1><text:h1>Image and Link Attributes</text:h1><text:h1>Tables</text:h1><text:h1>Footnotes</text:h1><text:h1>Citations</text:h1><text:h1>Math</text:h1><text:p>MultiMarkdown 2.0 used  to typeset mathematical equations. There
+were benefits to using ASCIIMathML, but also some disadvantages.</text:p><text:p>When rewriting for MultiMarkdown 3.0, there was no straightforward way to
+implement ASCIIMathML which lead me to look for alternatives. I settled on
+using . The advantage here is that the same syntax is supported by
+MathJax in browsers, and in LaTeX. </text:p><text:p>This does mean that math will need to be entered into MultiMarkdown documents
+using the LaTeX syntax, rather than ASCIIMathML.</text:p><text:p>To enable MathJax support in web pages, you have to include a link to an
+active MathJax installation  setting this up is beyond the scope of this
+document, but its not too hard.</text:p><text:p>Heres an example of the metadata setup, and some math:</text:p><text:p>Heres what it looks like in action:</text:p><text:p>TODO: This doesnt quite work properly in github wiki</text:p><text:h1>Glossary</text:h1><text:h1>FAQ</text:h1><text:p>Answers to common questions about MultiMarkdown. Contributions welcome!</text:p><text:h1>How do I install MMD?</text:h1><text:h1>Mac</text:h1><text:h1>Windows</text:h1><text:h1>Linux</text:h1><text:h1>How can I better learn the MultiMarkdown Syntax?</text:h1><text:p>The syntax of MultiMarkdown can be a challenge for beginners especially when it comes to using Table and Link syntax. The challenge comes in understanding how it looks  the conversion. </text:p><text:p>For MAC users, you can download a free program NValt  that contains a preview mode. Thus, you can enter your markdown with a dynamic preview window to show how the formatting appears. Ive found this useful until I was comfortable with the syntax. </text:p><text:p>Note also that MultiMarkdown can also be installed to MarsEdit  which also has a preview mode. This is even more effective for for bloggers as it will handle inline image upload to most popular blog software and display the interpreted output of your MMD syntax. </text:p><text:p>I dont know of any Windows software that does the same</text:p><text:h1>Web Based Learning</text:h1><text:p>For absolute beginners to Markdown, you may want to try  which provides a web site for writing in Markdown syntax and display. You can also save the pages for forwarding to other people. </text:p><text:p>For the reverse requirement, you can visit  which will attempt to take a given HTML Page and convert it into Markdown, usually with good accuracy.</text:p><text:h1>Can I use MultiMarkdown on an iPhone/iPad?</text:h1><text:p>There are a number of programs available for use on the iPhone and iPad that
+support regular Markdown, but not MultiMarkdown.</text:p><text:p> is a iPhone / iPad app
+that also has a markdown preview mode. Second Gear has also made
+ which is
+simpler, but also very usable for learning Markdown.</text:p><text:p> is a syntax highlighting text editor
+for the iPad that includes a preview mode for Markdown. It will even preview
+MathJax equations if you include the proper metadata!</text:p><text:p>Now that MultiMarkdown is available in C (as of version 3.0), I would like to
+work on modifying it to work with iOS.</text:p><text:h1>How do I troubleshoot an error?</text:h1><text:p>divide and conquer</text:p><text:p>latest version?</text:p><text:h1>How do I get more help</text:h1><text:p>search box on my web site</text:p><text:p>mmd discussion group</text:p><text:h1>How do I customize MultiMarkdown?</text:h1><text:p>XSLT</text:p><text:p>Latex Input files</text:p><text:p>flow chart?</text:p><text:p>github</text:p><text:p>RTF</text:p><text:p>google docs</text:p><text:p>mac - textutil</text:p><text:p>xslt</text:p><text:p>OPML</text:p><text:p>linking to images</text:p><text:p>(figure1 and figure1 incompatibility)</text:p><text:p>Difference in footnotes</text:p><text:p>What is a PEG</text:p><text:p>mmd_merge</text:p><text:h1>How can I contribute to MultiMarkdown?</text:h1><text:h1>Bug reports</text:h1><text:h1>Editing the documentation</text:h1><text:h1>Code submissions</text:h1><text:p>Ideas for development:</text:p><text:h1>Paypal contributions</text:h1><text:h1>Acknowledgments</text:h1><text:p>Thanks to the individuals and groups below for their contributions to
+improving Markdown and MultiMarkdown:</text:p><text:p>and others I have surely forgotten.</text:p><text:h1>Introduction</text:h1><text:p>This document is a guide to understanding and using MultiMarkdown. It was
+created as a , and thus was written by various contributors. Feel free
+to contribute your own improvements!</text:p><text:h1>What is Markdown?</text:h1><text:p>To understand what MultiMarkdown is, you first should be familiar with
+. The best description of what Markdown is comes from John Grubers
+Markdown web site:</text:p><text:h1>What is MultiMarkdown?</text:h1><text:p>Markdown is great, but it lacked a few features that would allow it to work
+with documents, rather than just pieces of a web page.</text:p><text:p>I wrote MultiMarkdown in order to leverage Markdowns syntax, but to extend it
+to work with complete documents that could ultimately be converted from text
+into other formats, including complete XHTML documents, LaTeX, PDF, RTF, or
+even (shudder) Microsoft Word documents. These various formats are supported
+to varying degrees by various versions of MultiMarkdown and work differently
+on different operating systems. The two  output formats are XHTML and
+LaTeX (for now at least).</text:p><text:p>In addition to the ability to work with complete documents and conversion to
+other formats, the Markdown syntax was lacking a few things. Michel Fortin
+added a few additional syntax tools when writing . Some
+of his ideas were implemented and expanded on in MultiMarkdown, in addition to
+more features not available in other Markdown implementations. These features
+include tables, footnotes, citation support, image and link attributes,
+cross-references, math support, and more.</text:p><text:p>John Gruber may disagree with me, but I really did try to stick with his
+proclaimed vision whenever I added a new syntax format to MultiMarkdown. The
+quality that attracted me to Markdown the most was its clean format. Reading a
+plain text document written in Markdown is . It makes sense, and it
+looks like it was designed for people, not computers. To the extent possible,
+I tried to keep this same concept in mind when working on MultiMarkdown.</text:p><text:p>I may or may not have succeeded in this.</text:p><text:p>In the vein of Markdowns multiple definitions, you can think of MultiMarkdown
+as:</text:p><text:h1>Where is this Guide Kept?</text:h1><text:p>This Users Guide is designed to be viewed as a single XHTML document, or as a
+PDF after being processed by LaTeX. When processed by MultiMarkdown and
+combined as a single document, it will demonstrate many of the features that
+MultiMarkdown offers, and should be fairly easy to navigate.</text:p><text:p>The source text documents are actually stored in a wiki on Github so that the
+document can easily be worked on by anyone with a Github account:</text:p><text:p></text:p><text:p>: Currently, the Github wiki software supports Markdown, but not
+MultiMarkdown. This means that certain MultiMarkdown specific features will
+not work on the wiki, but will work when the source is processed by
+MultiMarkdown separately from the wiki.</text:p><text:p>You can download a copy of the source files using the instructions contained
+at the wiki itself. Additionally, the source is linked to from within the
+source project for MultiMarkdown in the  directory. If you
+download the source, you can can compile a copy of the documentation
+automatically with:</text:p><text:p>(This command requires perl to be installed  Ill work on an alternative
+for Windows users without perl).</text:p><text:h1>How do I install MultiMarkdown?</text:h1><text:h1>Mac OS X</text:h1><text:p>The easiest way to install MultiMarkdown on the Mac is to use the installer
+from the  page. Simply choose the latest version of the
+MultiMarkdown-Mac zipfile and download it. Double-click the file to unzip it,
+and then double click the installer that appears.</text:p><text:p>If you primarily intend to use MultiMarkdown from within , or
+, you may wish to also download and install the Support files. This
+places additional convenience scripts in  which is where Scrivener and TextMate will generally
+look for it. This installer is also available from the  page.</text:p><text:p>For more advanced users, the installer puts the  binary and two
+convenience scripts,  and  in the  directory. As
+long as  is included in your PATH environment variable, you
+can use these binaries from the command line or from other programs.</text:p><text:p>If you wish to compile MultiMarkdown from source for yourself:</text:p><text:p>Then you can compile:</text:p><text:p>Then simply move the binary and convenience scripts to your desired location.</text:p><text:h1>Linux</text:h1><text:p>There is no installer for *nix systems, but you can compile from source fairly
+easily. For example, on :</text:p><text:p>Other flavors of linux will require variations of the first command.</text:p><text:p>Then just put the binaries wherever you like.</text:p><text:h1>Windows</text:h1><text:p>The easiest way to install MultiMarkdown on Windows is to download the
+ package from the  page. It contains a zipfile that
+includes the  batch file. This batch file will
+install multimarkdown, the required libraries, and two convenience scripts to
+. Ive had some trouble when installing as a user that is
+not an Administrator, and Ive had trouble on occasion trying to run the
+program when not an Administrator. I welcome ideas on a better way to install
+the program on Windows. I also have only tested this on Windows XP.</text:p><text:p>If you want to compile for yourself, check out the instructions on the
+.</text:p><text:h1>How do I use MultiMarkdown?</text:h1><text:p>There are several ways to use MultiMarkdown, depending on your needs. You can
+use the  command line tool, you can use MultiMarkdown with
+several applications that support it directly, or you can use a drag and drop
+approach.</text:p><text:h1>Command Line Usage</text:h1><text:p>First, verify that you have properly installed MultiMarkdown:</text:p><text:p>If you dont see a message telling you which version of MultiMarkdown is
+installed, check out Troubleshooting.</text:p><text:p>To learn more about the command line options to multimarkdown:</text:p><text:p>Once you have properly installed MultiMarkdown:</text:p><text:p>will convert the plain text file  into XHTML output. To save the
+results to a file:</text:p><text:p>A shortcut to this is to use MultiMarkdowns batch mode, which will save the
+output to the same base filename that is input, with the extension  (or
+ for LaTeX output):</text:p><text:p>A benefit of batch mode is that you can process multiple files at once:</text:p><text:p>If you want to create LaTeX output instead of XHTML:</text:p><text:p>There are also two convenience scripts included with MultiMarkdown:</text:p><text:p>These scripts run MultiMarkdown in batch mode to generate XHTML or LaTeX files
+respectively. These scripts are included with the Mac or Windows installers,
+and are available for *nix in the  directory in the source project.
+They are intended to be used as shortcuts for the most common command line
+options.</text:p><text:h1>Command Line Options</text:h1><text:p>There are several options when running MultiMarkdown from the command line.</text:p><text:p>Compatibility mode causes MultiMarkdown to output XHTML that is compatible
+with that output from the original Markdown. This allows it to pass the
+original Markdown test suite. Syntax features that dont exist in regular
+Markdown will still be output using the regular MultiMarkdown output
+formatting.</text:p><text:p>The extract feature outputs the value of the specified metadata key. This is
+used in my convenience scripts to help choose the proper LaTeX output mode,
+and could be used in other circumstances as well.</text:p><text:p>This options specified the format that MultiMarkdown outputs. The default is
+html. If you use the  metadata, then MultiMarkdown will
+automatically choose  or  as directed without using these
+command line options. Using that metadata will also allow the various
+convenience scripts to choose the correct output format as well.</text:p><text:p>This option tells MultiMarkdown to process the text included within HTML tags
+in the source document.</text:p><text:p>Other options are available by checking out , but
+the ones listed above are the primary options.</text:p><text:p>TODO: need to describe more options</text:p><text:h1>Advanced Mode</text:h1><text:p>MultiMarkdown version 2.0 had to first convert the source file to XHTML, and
+then applied XSLT files to convert to the final LaTeX format. Since
+MultiMarkdown 3.0 can create LaTeX directly, this approach is no longer
+necessary.</text:p><text:p>The one benefit of that approach, however, was that it became possible to
+perform a wide range of customizations on exactly how the LaTeX output was
+created by customizing the XSLT files.</text:p><text:p>If you install the Support files on Mac or Linux, you can still use the
+advanced XSLT method to generate LaTeX output. For the time being, this
+approach doesnt work with Windows, but it would be fairly easy to create a
+batch script or perl script to implement this feature on Windows.</text:p><text:p>Keep in mind, however, that because of the more advanced mechanism of handling
+LaTeX in MultiMarkdown 3.0, you can do a great deal of customization without
+needing to use an XSLT file.</text:p><text:p>The  script will convert a plain text file into LaTeX that is
+virtually identical with that created by the regular LaTeX approach.</text:p><text:p>There are a few differences in the two approaches, however:</text:p><text:h1>Recommendations</text:h1><text:p>I recommend that you become familiar with the  approach to using
+MultiMarkdown before trying to experiment with XSLT. The basic approach is
+faster, and easier, and the results can still be customized quite a bit.</text:p><text:p>Then you can experiment with modifying XSLT to further customize your output
+as needed.</text:p><text:p>If you have XSLT files that you used in MultiMarkdown 2.0, you will likely
+need to modify them to recognize the XHTML output generated by MultiMarkdown
+3.0. You can use the default XSLT files as a guide to what is different.</text:p><text:h1>Mac OS X Applications</text:h1><text:p>There are several applications that have built-in support for MultiMarkdown,
+or that can easily use it with a plug-in.</text:p><text:h1>Using MultiMarkdown with TextMate</text:h1><text:p>If you want to run MultiMarkdown from directly within , you should
+install my MultiMarkdown . This is a modified version of the original
+Markdown bundle for TextMate that includes better support for MultiMarkdown.</text:p><text:p>This bundle will work with MultiMarkdown 2.0, or with MultiMarkdown 3.0 if you
+install the MultiMarkdown-Support files (available from the downloads
+).</text:p><text:h1>Using MultiMarkdown with Scrivener</text:h1><text:p> is a great program for writers using Mac OS X. It includes built
+in support for MultiMarkdown. If you want to use MultiMarkdown 3.0 with
+Scrivener, you need to install the Support files in . The MultiMarkdown-Support installer is available from
+the downloads  and will install these files for you.</text:p><text:h1>Drag and Drop</text:h1><text:p>There is a set of applications forthcoming that easily allow you to use drag
+and drop to process MultiMarkdown files.</text:p><text:p>TODO: link to these, describe how to use them</text:p><text:h1>Using MultiMarkdown in Windows</text:h1><text:p>You can use the same command line approach with Windows as described
+previously. While there arent drag and drop applications per se for the
+Windows system, there are two shortcuts included in the installer that will
+allow you to drop text files on them in the same manner.</text:p><text:h1>MultiMarkdown and LaTeX</text:h1><text:p>Of note  is a complex set of programs. MultiMarkdown doesnt include
+LaTeX in the installer  its up to the user to install a working LaTeX
+setup on their machine if you want to use it.</text:p><text:p>What MultiMarkdown does is make it easier to generate documents using the
+LaTeX syntax. It should handle 80% of the documents that 80% of MultiMarkdown
+need. It doesnt handle all circumstances, and sometimes you will need to hand
+code your LaTeX yourself.</text:p><text:p>In those cases you have a few options. MultiMarkdown will pass text included
+in XHTML comments along to the LaTeX as raw output. For example:</text:p><text:p>You can also include your desired LaTeX code in a separate file and link to it:</text:p><text:p>If you have questions about LaTeX itself, I cant help. Youre welcome to send
+your question to the , and perhaps someone will
+be able to offer some assistance. But you would be better off asking a group
+dedicated to LaTeX instead.</text:p><text:p>If the problem is that MultiMarkdown itself is generating invalid LaTeX, then
+of course I want to know about it so I can fix it.</text:p><text:h1>How do I create a MultiMarkdown document?</text:h1><text:p>The general concept in MultiMarkdown is that it should be easy for someone to
+type a plain text file that is human-readable, and then use the MultiMarkdown
+program to convert that text file into a more complicated computer language
+such as XHTML or LaTeX. This allows you to create high quality output without
+having to spend hours and hours fiddling with font sizes, margins, etc.</text:p><text:p>The first step in learning to use MultiMarkdown is to learn how to use
+. MultiMarkdown is an
+extension to Markdown, and builds off of the basic fundamentals used in
+Markdown.</text:p><text:p>I recommend starting by familiarizing yourself with the Markdown  and
+ pages.</text:p><text:p>Once youre familiar with the basics of Markdown, it will be relatively easy
+to pick up the advanced features included in MultiMarkdown.</text:p><text:h1>Metadata</text:h1><text:p>It is possible to include special metadata at the top of a MultiMarkdown
+document, such as title, author, etc. This information can then be used to
+control how MultiMarkdown processes the document, or can be used in certain
+output formats in special ways.</text:p><text:p>The syntax for including metadata is simple.</text:p><text:h1>Complete documents vs &#8220;snippets&#8221;</text:h1><text:p>In order to include metadata information such as a title, the XHTML document
+created by MultiMarkdown must be  This means that it starts with
+something that looks like:</text:p><text:p>If you include metadata in your document (with two exceptions), then you will
+generate a complete document. If you dont include metadata, then you will
+instead generate a  The snippet will just include the relevant
+portion of XHTML, but will not include the  or  elements.</text:p><text:p>Metadata that is only intended to affect the way MultiMarkdown process the
+output will not trigger a complete document. Currently, this means you can use
+ or  and still output a snippet if you
+dont include any other metadata.</text:p><text:p>When generating LaTeX output the same rules apply. Of note, it was not
+possible to generate LaTeX snippets with MultiMarkdown 2.0 without using a
+custom XSLT file.</text:p><text:h1>&#8220;Standard&#8221; Metadata keys</text:h1><text:p>There are a few metadata keys that are standardized in MultiMarkdown. You can
+use any other keys that you desire, but you have to make use of them yourself.</text:p><text:p>My goal is to keep the list of  metadata keys as short as possible.</text:p><text:h1>Author</text:h1><text:p>This value represents the author of the document and is used in LaTeX
+documents to generate the title information.</text:p><text:h1>Affiliation</text:h1><text:p>This is used to enter further information about the author  a link to a
+website, an employer, academic affiliation, etc.</text:p><text:h1>Base Header Level</text:h1><text:p>This is used to change the top level of organization of the document. For example:</text:p><text:p>Normally, the Introduction would be output as  in XHTML, or  in
+LaTeX. If youre writing a shorter document, you may wish for the largest
+division in the document to be  or . The 
+metadata tells MultiMarkdown to change the largest division level to the
+specified value.</text:p><text:p>This can also be useful when combining multiple documents.</text:p><text:p> does not trigger a complete document.</text:p><text:h1>Copyright</text:h1><text:p>This can be used to provide a copyright string.</text:p><text:h1>CSS</text:h1><text:p>This metadata specifies a URL to be used as a CSS file for the produced
+document. Obviously, this is only useful when outputting to XHTML.</text:p><text:h1>Date</text:h1><text:p>Specify a date to be associated with the document.</text:p><text:h1>Quotes Language</text:h1><text:p>This is used to specify which style of  quotes to use in the output document. The available options are:</text:p><text:p>The default is  if not specified. This affects XHTML output. To
+change the language of a document in LaTeX is up to the individual.</text:p><text:p> does not trigger a complete document.</text:p><text:h1>LaTeX Footer</text:h1><text:p>A special case of the  metadata below. This file will be linked
+to at the very end of the document.</text:p><text:h1>LaTeX Input</text:h1><text:p>When outputting a LaTeX document it is necessary to include various directions
+that specify how the document should be formatted. These are not included in
+the MultiMarkdown document itself  instead they should be stored separately
+and linked to with  commands.</text:p><text:p>These links can be included in the metadata section. The metadata is processed
+in order, so I generally break my directives into a group that need to go
+before my metadata, a group that goes after the metadata but before the
+document itself, and a separate group that goes at the end of the document,
+for example:</text:p><text:p>You can download the  files if you want to output documents
+using the default MultiMarkdown styles. You can then use these as examples to
+create your own customized LaTeX output.</text:p><text:p>TODO: include more details about this</text:p><text:h1>LaTeX Mode</text:h1><text:p>When outputting a document to LaTeX, there are two special options that change
+the output slightly   and . These options are designed to
+be compatible with the LaTeX classes of the same names.</text:p><text:h1>Title</text:h1><text:p>Self-explanatory.</text:p><text:h1>XHTML Header</text:h1><text:p>You can include raw XHTML information to be included in the header.
+MultiMarkdown doesnt perform any validation on this data  it just copies
+it as is.</text:p><text:p>As an example, this can be useful to link your document to a working MathJax installation (not provided by me):</text:p><text:h1>Cross-References</text:h1><text:h1>Image and Link Attributes</text:h1><text:h1>Tables</text:h1><text:h1>Footnotes</text:h1><text:h1>Citations</text:h1><text:h1>Math</text:h1><text:p>MultiMarkdown 2.0 used  to typeset mathematical equations. There
+were benefits to using ASCIIMathML, but also some disadvantages.</text:p><text:p>When rewriting for MultiMarkdown 3.0, there was no straightforward way to
+implement ASCIIMathML which lead me to look for alternatives. I settled on
+using . The advantage here is that the same syntax is supported by
+MathJax in browsers, and in LaTeX. </text:p><text:p>This does mean that math will need to be entered into MultiMarkdown documents
+using the LaTeX syntax, rather than ASCIIMathML.</text:p><text:p>To enable MathJax support in web pages, you have to include a link to an
+active MathJax installation  setting this up is beyond the scope of this
+document, but its not too hard.</text:p><text:p>Heres an example of the metadata setup, and some math:</text:p><text:p>Heres what it looks like in action:</text:p><text:p>TODO: This doesnt quite work properly in github wiki</text:p><text:h1>Glossary</text:h1><text:h1>FAQ</text:h1><text:p>Answers to common questions about MultiMarkdown. Contributions welcome!</text:p><text:h1>How do I install MMD?</text:h1><text:h1>Mac</text:h1><text:h1>Windows</text:h1><text:h1>Linux</text:h1><text:h1>How can I better learn the MultiMarkdown Syntax?</text:h1><text:p>The syntax of MultiMarkdown can be a challenge for beginners especially when it comes to using Table and Link syntax. The challenge comes in understanding how it looks  the conversion. </text:p><text:p>For MAC users, you can download a free program NValt  that contains a preview mode. Thus, you can enter your markdown with a dynamic preview window to show how the formatting appears. Ive found this useful until I was comfortable with the syntax. </text:p><text:p>Note also that MultiMarkdown can also be installed to MarsEdit  which also has a preview mode. This is even more effective for for bloggers as it will handle inline image upload to most popular blog software and display the interpreted output of your MMD syntax. </text:p><text:p>I dont know of any Windows software that does the same</text:p><text:h1>Web Based Learning</text:h1><text:p>For absolute beginners to Markdown, you may want to try  which provides a web site for writing in Markdown syntax and display. You can also save the pages for forwarding to other people. </text:p><text:p>For the reverse requirement, you can visit  which will attempt to take a given HTML Page and convert it into Markdown, usually with good accuracy.</text:p><text:h1>Can I use MultiMarkdown on an iPhone/iPad?</text:h1><text:p>There are a number of programs available for use on the iPhone and iPad that
+support regular Markdown, but not MultiMarkdown.</text:p><text:p> is a iPhone / iPad app
+that also has a markdown preview mode. Second Gear has also made
+ which is
+simpler, but also very usable for learning Markdown.</text:p><text:p> is a syntax highlighting text editor
+for the iPad that includes a preview mode for Markdown. It will even preview
+MathJax equations if you include the proper metadata!</text:p><text:p>Now that MultiMarkdown is available in C (as of version 3.0), I would like to
+work on modifying it to work with iOS.</text:p><text:h1>How do I troubleshoot an error?</text:h1><text:p>divide and conquer</text:p><text:p>latest version?</text:p><text:h1>How do I get more help</text:h1><text:p>search box on my web site</text:p><text:p>mmd discussion group</text:p><text:h1>How do I customize MultiMarkdown?</text:h1><text:p>XSLT</text:p><text:p>Latex Input files</text:p><text:p>flow chart?</text:p><text:p>github</text:p><text:p>RTF</text:p><text:p>google docs</text:p><text:p>mac - textutil</text:p><text:p>xslt</text:p><text:p>OPML</text:p><text:p>linking to images</text:p><text:p>(figure1 and figure1 incompatibility)</text:p><text:p>Difference in footnotes</text:p><text:p>What is a PEG</text:p><text:p>mmd_merge</text:p><text:h1>How can I contribute to MultiMarkdown?</text:h1><text:h1>Bug reports</text:h1><text:h1>Editing the documentation</text:h1><text:h1>Code submissions</text:h1><text:p>Ideas for development:</text:p><text:h1>Paypal contributions</text:h1><text:h1>Acknowledgments</text:h1><text:p>Thanks to the individuals and groups below for their contributions to
+improving Markdown and MultiMarkdown:</text:p><text:p>and others I have surely forgotten.</text:p><text:h1>Introduction</text:h1><text:p>This document is a guide to understanding and using MultiMarkdown. It was
+created as a , and thus was written by various contributors. Feel free
+to contribute your own improvements!</text:p><text:h1>What is Markdown?</text:h1><text:p>To understand what MultiMarkdown is, you first should be familiar with
+. The best description of what Markdown is comes from John Grubers
+Markdown web site:</text:p><text:h1>What is MultiMarkdown?</text:h1><text:p>Markdown is great, but it lacked a few features that would allow it to work
+with documents, rather than just pieces of a web page.</text:p><text:p>I wrote MultiMarkdown in order to leverage Markdowns syntax, but to extend it
+to work with complete documents that could ultimately be converted from text
+into other formats, including complete XHTML documents, LaTeX, PDF, RTF, or
+even (shudder) Microsoft Word documents. These various formats are supported
+to varying degrees by various versions of MultiMarkdown and work differently
+on different operating systems. The two  output formats are XHTML and
+LaTeX (for now at least).</text:p><text:p>In addition to the ability to work with complete documents and conversion to
+other formats, the Markdown syntax was lacking a few things. Michel Fortin
+added a few additional syntax tools when writing . Some
+of his ideas were implemented and expanded on in MultiMarkdown, in addition to
+more features not available in other Markdown implementations. These features
+include tables, footnotes, citation support, image and link attributes,
+cross-references, math support, and more.</text:p><text:p>John Gruber may disagree with me, but I really did try to stick with his
+proclaimed vision whenever I added a new syntax format to MultiMarkdown. The
+quality that attracted me to Markdown the most was its clean format. Reading a
+plain text document written in Markdown is . It makes sense, and it
+looks like it was designed for people, not computers. To the extent possible,
+I tried to keep this same concept in mind when working on MultiMarkdown.</text:p><text:p>I may or may not have succeeded in this.</text:p><text:p>In the vein of Markdowns multiple definitions, you can think of MultiMarkdown
+as:</text:p><text:h1>Where is this Guide Kept?</text:h1><text:p>This Users Guide is designed to be viewed as a single XHTML document, or as a
+PDF after being processed by LaTeX. When processed by MultiMarkdown and
+combined as a single document, it will demonstrate many of the features that
+MultiMarkdown offers, and should be fairly easy to navigate.</text:p><text:p>The source text documents are actually stored in a wiki on Github so that the
+document can easily be worked on by anyone with a Github account:</text:p><text:p></text:p><text:p>: Currently, the Github wiki software supports Markdown, but not
+MultiMarkdown. This means that certain MultiMarkdown specific features will
+not work on the wiki, but will work when the source is processed by
+MultiMarkdown separately from the wiki.</text:p><text:p>You can download a copy of the source files using the instructions contained
+at the wiki itself. Additionally, the source is linked to from within the
+source project for MultiMarkdown in the  directory. If you
+download the source, you can can compile a copy of the documentation
+automatically with:</text:p><text:p>(This command requires perl to be installed  Ill work on an alternative
+for Windows users without perl).</text:p><text:h1>How do I install MultiMarkdown?</text:h1><text:h1>Mac OS X</text:h1><text:p>The easiest way to install MultiMarkdown on the Mac is to use the installer
+from the  page. Simply choose the latest version of the
+MultiMarkdown-Mac zipfile and download it. Double-click the file to unzip it,
+and then double click the installer that appears.</text:p><text:p>If you primarily intend to use MultiMarkdown from within , or
+, you may wish to also download and install the Support files. This
+places additional convenience scripts in  which is where Scrivener and TextMate will generally
+look for it. This installer is also available from the  page.</text:p><text:p>For more advanced users, the installer puts the  binary and two
+convenience scripts,  and  in the  directory. As
+long as  is included in your PATH environment variable, you
+can use these binaries from the command line or from other programs.</text:p><text:p>If you wish to compile MultiMarkdown from source for yourself:</text:p><text:p>Then you can compile:</text:p><text:p>Then simply move the binary and convenience scripts to your desired location.</text:p><text:h1>Linux</text:h1><text:p>There is no installer for *nix systems, but you can compile from source fairly
+easily. For example, on :</text:p><text:p>Other flavors of linux will require variations of the first command.</text:p><text:p>Then just put the binaries wherever you like.</text:p><text:h1>Windows</text:h1><text:p>The easiest way to install MultiMarkdown on Windows is to download the
+ package from the  page. It contains a zipfile that
+includes the  batch file. This batch file will
+install multimarkdown, the required libraries, and two convenience scripts to
+. Ive had some trouble when installing as a user that is
+not an Administrator, and Ive had trouble on occasion trying to run the
+program when not an Administrator. I welcome ideas on a better way to install
+the program on Windows. I also have only tested this on Windows XP.</text:p><text:p>If you want to compile for yourself, check out the instructions on the
+.</text:p><text:h1>How do I use MultiMarkdown?</text:h1><text:p>There are several ways to use MultiMarkdown, depending on your needs. You can
+use the  command line tool, you can use MultiMarkdown with
+several applications that support it directly, or you can use a drag and drop
+approach.</text:p><text:h1>Command Line Usage</text:h1><text:p>First, verify that you have properly installed MultiMarkdown:</text:p><text:p>If you dont see a message telling you which version of MultiMarkdown is
+installed, check out Troubleshooting.</text:p><text:p>To learn more about the command line options to multimarkdown:</text:p><text:p>Once you have properly installed MultiMarkdown:</text:p><text:p>will convert the plain text file  into XHTML output. To save the
+results to a file:</text:p><text:p>A shortcut to this is to use MultiMarkdowns batch mode, which will save the
+output to the same base filename that is input, with the extension  (or
+ for LaTeX output):</text:p><text:p>A benefit of batch mode is that you can process multiple files at once:</text:p><text:p>If you want to create LaTeX output instead of XHTML:</text:p><text:p>There are also two convenience scripts included with MultiMarkdown:</text:p><text:p>These scripts run MultiMarkdown in batch mode to generate XHTML or LaTeX files
+respectively. These scripts are included with the Mac or Windows installers,
+and are available for *nix in the  directory in the source project.
+They are intended to be used as shortcuts for the most common command line
+options.</text:p><text:h1>Command Line Options</text:h1><text:p>There are several options when running MultiMarkdown from the command line.</text:p><text:p>Compatibility mode causes MultiMarkdown to output XHTML that is compatible
+with that output from the original Markdown. This allows it to pass the
+original Markdown test suite. Syntax features that dont exist in regular
+Markdown will still be output using the regular MultiMarkdown output
+formatting.</text:p><text:p>The extract feature outputs the value of the specified metadata key. This is
+used in my convenience scripts to help choose the proper LaTeX output mode,
+and could be used in other circumstances as well.</text:p><text:p>This options specified the format that MultiMarkdown outputs. The default is
+html. If you use the  metadata, then MultiMarkdown will
+automatically choose  or  as directed without using these
+command line options. Using that metadata will also allow the various
+convenience scripts to choose the correct output format as well.</text:p><text:p>This option tells MultiMarkdown to process the text included within HTML tags
+in the source document.</text:p><text:p>Other options are available by checking out , but
+the ones listed above are the primary options.</text:p><text:p>TODO: need to describe more options</text:p><text:h1>Advanced Mode</text:h1><text:p>MultiMarkdown version 2.0 had to first convert the source file to XHTML, and
+then applied XSLT files to convert to the final LaTeX format. Since
+MultiMarkdown 3.0 can create LaTeX directly, this approach is no longer
+necessary.</text:p><text:p>The one benefit of that approach, however, was that it became possible to
+perform a wide range of customizations on exactly how the LaTeX output was
+created by customizing the XSLT files.</text:p><text:p>If you install the Support files on Mac or Linux, you can still use the
+advanced XSLT method to generate LaTeX output. For the time being, this
+approach doesnt work with Windows, but it would be fairly easy to create a
+batch script or perl script to implement this feature on Windows.</text:p><text:p>Keep in mind, however, that because of the more advanced mechanism of handling
+LaTeX in MultiMarkdown 3.0, you can do a great deal of customization without
+needing to use an XSLT file.</text:p><text:p>The  script will convert a plain text file into LaTeX that is
+virtually identical with that created by the regular LaTeX approach.</text:p><text:p>There are a few differences in the two approaches, however:</text:p><text:h1>Recommendations</text:h1><text:p>I recommend that you become familiar with the  approach to using
+MultiMarkdown before trying to experiment with XSLT. The basic approach is
+faster, and easier, and the results can still be customized quite a bit.</text:p><text:p>Then you can experiment with modifying XSLT to further customize your output
+as needed.</text:p><text:p>If you have XSLT files that you used in MultiMarkdown 2.0, you will likely
+need to modify them to recognize the XHTML output generated by MultiMarkdown
+3.0. You can use the default XSLT files as a guide to what is different.</text:p><text:h1>Mac OS X Applications</text:h1><text:p>There are several applications that have built-in support for MultiMarkdown,
+or that can easily use it with a plug-in.</text:p><text:h1>Using MultiMarkdown with TextMate</text:h1><text:p>If you want to run MultiMarkdown from directly within , you should
+install my MultiMarkdown . This is a modified version of the original
+Markdown bundle for TextMate that includes better support for MultiMarkdown.</text:p><text:p>This bundle will work with MultiMarkdown 2.0, or with MultiMarkdown 3.0 if you
+install the MultiMarkdown-Support files (available from the downloads
+).</text:p><text:h1>Using MultiMarkdown with Scrivener</text:h1><text:p> is a great program for writers using Mac OS X. It includes built
+in support for MultiMarkdown. If you want to use MultiMarkdown 3.0 with
+Scrivener, you need to install the Support files in . The MultiMarkdown-Support installer is available from
+the downloads  and will install these files for you.</text:p><text:h1>Drag and Drop</text:h1><text:p>There is a set of applications forthcoming that easily allow you to use drag
+and drop to process MultiMarkdown files.</text:p><text:p>TODO: link to these, describe how to use them</text:p><text:h1>Using MultiMarkdown in Windows</text:h1><text:p>You can use the same command line approach with Windows as described
+previously. While there arent drag and drop applications per se for the
+Windows system, there are two shortcuts included in the installer that will
+allow you to drop text files on them in the same manner.</text:p><text:h1>MultiMarkdown and LaTeX</text:h1><text:p>Of note  is a complex set of programs. MultiMarkdown doesnt include
+LaTeX in the installer  its up to the user to install a working LaTeX
+setup on their machine if you want to use it.</text:p><text:p>What MultiMarkdown does is make it easier to generate documents using the
+LaTeX syntax. It should handle 80% of the documents that 80% of MultiMarkdown
+need. It doesnt handle all circumstances, and sometimes you will need to hand
+code your LaTeX yourself.</text:p><text:p>In those cases you have a few options. MultiMarkdown will pass text included
+in XHTML comments along to the LaTeX as raw output. For example:</text:p><text:p>You can also include your desired LaTeX code in a separate file and link to it:</text:p><text:p>If you have questions about LaTeX itself, I cant help. Youre welcome to send
+your question to the , and perhaps someone will
+be able to offer some assistance. But you would be better off asking a group
+dedicated to LaTeX instead.</text:p><text:p>If the problem is that MultiMarkdown itself is generating invalid LaTeX, then
+of course I want to know about it so I can fix it.</text:p><text:h1>How do I create a MultiMarkdown document?</text:h1><text:p>The general concept in MultiMarkdown is that it should be easy for someone to
+type a plain text file that is human-readable, and then use the MultiMarkdown
+program to convert that text file into a more complicated computer language
+such as XHTML or LaTeX. This allows you to create high quality output without
+having to spend hours and hours fiddling with font sizes, margins, etc.</text:p><text:p>The first step in learning to use MultiMarkdown is to learn how to use
+. MultiMarkdown is an
+extension to Markdown, and builds off of the basic fundamentals used in
+Markdown.</text:p><text:p>I recommend starting by familiarizing yourself with the Markdown  and
+ pages.</text:p><text:p>Once youre familiar with the basics of Markdown, it will be relatively easy
+to pick up the advanced features included in MultiMarkdown.</text:p><text:h1>Metadata</text:h1><text:p>It is possible to include special metadata at the top of a MultiMarkdown
+document, such as title, author, etc. This information can then be used to
+control how MultiMarkdown processes the document, or can be used in certain
+output formats in special ways.</text:p><text:p>The syntax for including metadata is simple.</text:p><text:h1>Complete documents vs &#8220;snippets&#8221;</text:h1><text:p>In order to include metadata information such as a title, the XHTML document
+created by MultiMarkdown must be  This means that it starts with
+something that looks like:</text:p><text:p>If you include metadata in your document (with two exceptions), then you will
+generate a complete document. If you dont include metadata, then you will
+instead generate a  The snippet will just include the relevant
+portion of XHTML, but will not include the  or  elements.</text:p><text:p>Metadata that is only intended to affect the way MultiMarkdown process the
+output will not trigger a complete document. Currently, this means you can use
+ or  and still output a snippet if you
+dont include any other metadata.</text:p><text:p>When generating LaTeX output the same rules apply. Of note, it was not
+possible to generate LaTeX snippets with MultiMarkdown 2.0 without using a
+custom XSLT file.</text:p><text:h1>&#8220;Standard&#8221; Metadata keys</text:h1><text:p>There are a few metadata keys that are standardized in MultiMarkdown. You can
+use any other keys that you desire, but you have to make use of them yourself.</text:p><text:p>My goal is to keep the list of  metadata keys as short as possible.</text:p><text:h1>Author</text:h1><text:p>This value represents the author of the document and is used in LaTeX
+documents to generate the title information.</text:p><text:h1>Affiliation</text:h1><text:p>This is used to enter further information about the author  a link to a
+website, an employer, academic affiliation, etc.</text:p><text:h1>Base Header Level</text:h1><text:p>This is used to change the top level of organization of the document. For example:</text:p><text:p>Normally, the Introduction would be output as  in XHTML, or  in
+LaTeX. If youre writing a shorter document, you may wish for the largest
+division in the document to be  or . The 
+metadata tells MultiMarkdown to change the largest division level to the
+specified value.</text:p><text:p>This can also be useful when combining multiple documents.</text:p><text:p> does not trigger a complete document.</text:p><text:h1>Copyright</text:h1><text:p>This can be used to provide a copyright string.</text:p><text:h1>CSS</text:h1><text:p>This metadata specifies a URL to be used as a CSS file for the produced
+document. Obviously, this is only useful when outputting to XHTML.</text:p><text:h1>Date</text:h1><text:p>Specify a date to be associated with the document.</text:p><text:h1>Quotes Language</text:h1><text:p>This is used to specify which style of  quotes to use in the output document. The available options are:</text:p><text:p>The default is  if not specified. This affects XHTML output. To
+change the language of a document in LaTeX is up to the individual.</text:p><text:p> does not trigger a complete document.</text:p><text:h1>LaTeX Footer</text:h1><text:p>A special case of the  metadata below. This file will be linked
+to at the very end of the document.</text:p><text:h1>LaTeX Input</text:h1><text:p>When outputting a LaTeX document it is necessary to include various directions
+that specify how the document should be formatted. These are not included in
+the MultiMarkdown document itself  instead they should be stored separately
+and linked to with  commands.</text:p><text:p>These links can be included in the metadata section. The metadata is processed
+in order, so I generally break my directives into a group that need to go
+before my metadata, a group that goes after the metadata but before the
+document itself, and a separate group that goes at the end of the document,
+for example:</text:p><text:p>You can download the  files if you want to output documents
+using the default MultiMarkdown styles. You can then use these as examples to
+create your own customized LaTeX output.</text:p><text:p>TODO: include more details about this</text:p><text:h1>LaTeX Mode</text:h1><text:p>When outputting a document to LaTeX, there are two special options that change
+the output slightly   and . These options are designed to
+be compatible with the LaTeX classes of the same names.</text:p><text:h1>Title</text:h1><text:p>Self-explanatory.</text:p><text:h1>XHTML Header</text:h1><text:p>You can include raw XHTML information to be included in the header.
+MultiMarkdown doesnt perform any validation on this data  it just copies
+it as is.</text:p><text:p>As an example, this can be useful to link your document to a working MathJax installation (not provided by me):</text:p><text:h1>Cross-References</text:h1><text:h1>Image and Link Attributes</text:h1><text:h1>Tables</text:h1><text:h1>Footnotes</text:h1><text:h1>Citations</text:h1><text:h1>Math</text:h1><text:p>MultiMarkdown 2.0 used  to typeset mathematical equations. There
+were benefits to using ASCIIMathML, but also some disadvantages.</text:p><text:p>When rewriting for MultiMarkdown 3.0, there was no straightforward way to
+implement ASCIIMathML which lead me to look for alternatives. I settled on
+using . The advantage here is that the same syntax is supported by
+MathJax in browsers, and in LaTeX. </text:p><text:p>This does mean that math will need to be entered into MultiMarkdown documents
+using the LaTeX syntax, rather than ASCIIMathML.</text:p><text:p>To enable MathJax support in web pages, you have to include a link to an
+active MathJax installation  setting this up is beyond the scope of this
+document, but its not too hard.</text:p><text:p>Heres an example of the metadata setup, and some math:</text:p><text:p>Heres what it looks like in action:</text:p><text:p>TODO: This doesnt quite work properly in github wiki</text:p><text:h1>Glossary</text:h1><text:h1>FAQ</text:h1><text:p>Answers to common questions about MultiMarkdown. Contributions welcome!</text:p><text:h1>How do I install MMD?</text:h1><text:h1>Mac</text:h1><text:h1>Windows</text:h1><text:h1>Linux</text:h1><text:h1>How can I better learn the MultiMarkdown Syntax?</text:h1><text:p>The syntax of MultiMarkdown can be a challenge for beginners especially when it comes to using Table and Link syntax. The challenge comes in understanding how it looks  the conversion. </text:p><text:p>For MAC users, you can download a free program NValt  that contains a preview mode. Thus, you can enter your markdown with a dynamic preview window to show how the formatting appears. Ive found this useful until I was comfortable with the syntax. </text:p><text:p>Note also that MultiMarkdown can also be installed to MarsEdit  which also has a preview mode. This is even more effective for for bloggers as it will handle inline image upload to most popular blog software and display the interpreted output of your MMD syntax. </text:p><text:p>I dont know of any Windows software that does the same</text:p><text:h1>Web Based Learning</text:h1><text:p>For absolute beginners to Markdown, you may want to try  which provides a web site for writing in Markdown syntax and display. You can also save the pages for forwarding to other people. </text:p><text:p>For the reverse requirement, you can visit  which will attempt to take a given HTML Page and convert it into Markdown, usually with good accuracy.</text:p><text:h1>Can I use MultiMarkdown on an iPhone/iPad?</text:h1><text:p>There are a number of programs available for use on the iPhone and iPad that
+support regular Markdown, but not MultiMarkdown.</text:p><text:p> is a iPhone / iPad app
+that also has a markdown preview mode. Second Gear has also made
+ which is
+simpler, but also very usable for learning Markdown.</text:p><text:p> is a syntax highlighting text editor
+for the iPad that includes a preview mode for Markdown. It will even preview
+MathJax equations if you include the proper metadata!</text:p><text:p>Now that MultiMarkdown is available in C (as of version 3.0), I would like to
+work on modifying it to work with iOS.</text:p><text:h1>How do I troubleshoot an error?</text:h1><text:p>divide and conquer</text:p><text:p>latest version?</text:p><text:h1>How do I get more help</text:h1><text:p>search box on my web site</text:p><text:p>mmd discussion group</text:p><text:h1>How do I customize MultiMarkdown?</text:h1><text:p>XSLT</text:p><text:p>Latex Input files</text:p><text:p>flow chart?</text:p><text:p>github</text:p><text:p>RTF</text:p><text:p>google docs</text:p><text:p>mac - textutil</text:p><text:p>xslt</text:p><text:p>OPML</text:p><text:p>linking to images</text:p><text:p>(figure1 and figure1 incompatibility)</text:p><text:p>Difference in footnotes</text:p><text:p>What is a PEG</text:p><text:p>mmd_merge</text:p><text:h1>How can I contribute to MultiMarkdown?</text:h1><text:h1>Bug reports</text:h1><text:h1>Editing the documentation</text:h1><text:h1>Code submissions</text:h1><text:p>Ideas for development:</text:p><text:h1>Paypal contributions</text:h1><text:h1>Acknowledgments</text:h1><text:p>Thanks to the individuals and groups below for their contributions to
+improving Markdown and MultiMarkdown:</text:p><text:p>and others I have surely forgotten.</text:p><text:h1>Introduction</text:h1><text:p>This document is a guide to understanding and using MultiMarkdown. It was
+created as a , and thus was written by various contributors. Feel free
+to contribute your own improvements!</text:p><text:h1>What is Markdown?</text:h1><text:p>To understand what MultiMarkdown is, you first should be familiar with
+. The best description of what Markdown is comes from John Grubers
+Markdown web site:</text:p><text:h1>What is MultiMarkdown?</text:h1><text:p>Markdown is great, but it lacked a few features that would allow it to work
+with documents, rather than just pieces of a web page.</text:p><text:p>I wrote MultiMarkdown in order to leverage Markdowns syntax, but to extend it
+to work with complete documents that could ultimately be converted from text
+into other formats, including complete XHTML documents, LaTeX, PDF, RTF, or
+even (shudder) Microsoft Word documents. These various formats are supported
+to varying degrees by various versions of MultiMarkdown and work differently
+on different operating systems. The two  output formats are XHTML and
+LaTeX (for now at least).</text:p><text:p>In addition to the ability to work with complete documents and conversion to
+other formats, the Markdown syntax was lacking a few things. Michel Fortin
+added a few additional syntax tools when writing . Some
+of his ideas were implemented and expanded on in MultiMarkdown, in addition to
+more features not available in other Markdown implementations. These features
+include tables, footnotes, citation support, image and link attributes,
+cross-references, math support, and more.</text:p><text:p>John Gruber may disagree with me, but I really did try to stick with his
+proclaimed vision whenever I added a new syntax format to MultiMarkdown. The
+quality that attracted me to Markdown the most was its clean format. Reading a
+plain text document written in Markdown is . It makes sense, and it
+looks like it was designed for people, not computers. To the extent possible,
+I tried to keep this same concept in mind when working on MultiMarkdown.</text:p><text:p>I may or may not have succeeded in this.</text:p><text:p>In the vein of Markdowns multiple definitions, you can think of MultiMarkdown
+as:</text:p><text:h1>Where is this Guide Kept?</text:h1><text:p>This Users Guide is designed to be viewed as a single XHTML document, or as a
+PDF after being processed by LaTeX. When processed by MultiMarkdown and
+combined as a single document, it will demonstrate many of the features that
+MultiMarkdown offers, and should be fairly easy to navigate.</text:p><text:p>The source text documents are actually stored in a wiki on Github so that the
+document can easily be worked on by anyone with a Github account:</text:p><text:p></text:p><text:p>: Currently, the Github wiki software supports Markdown, but not
+MultiMarkdown. This means that certain MultiMarkdown specific features will
+not work on the wiki, but will work when the source is processed by
+MultiMarkdown separately from the wiki.</text:p><text:p>You can download a copy of the source files using the instructions contained
+at the wiki itself. Additionally, the source is linked to from within the
+source project for MultiMarkdown in the  directory. If you
+download the source, you can can compile a copy of the documentation
+automatically with:</text:p><text:p>(This command requires perl to be installed  Ill work on an alternative
+for Windows users without perl).</text:p><text:h1>How do I install MultiMarkdown?</text:h1><text:h1>Mac OS X</text:h1><text:p>The easiest way to install MultiMarkdown on the Mac is to use the installer
+from the  page. Simply choose the latest version of the
+MultiMarkdown-Mac zipfile and download it. Double-click the file to unzip it,
+and then double click the installer that appears.</text:p><text:p>If you primarily intend to use MultiMarkdown from within , or
+, you may wish to also download and install the Support files. This
+places additional convenience scripts in  which is where Scrivener and TextMate will generally
+look for it. This installer is also available from the  page.</text:p><text:p>For more advanced users, the installer puts the  binary and two
+convenience scripts,  and  in the  directory. As
+long as  is included in your PATH environment variable, you
+can use these binaries from the command line or from other programs.</text:p><text:p>If you wish to compile MultiMarkdown from source for yourself:</text:p><text:p>Then you can compile:</text:p><text:p>Then simply move the binary and convenience scripts to your desired location.</text:p><text:h1>Linux</text:h1><text:p>There is no installer for *nix systems, but you can compile from source fairly
+easily. For example, on :</text:p><text:p>Other flavors of linux will require variations of the first command.</text:p><text:p>Then just put the binaries wherever you like.</text:p><text:h1>Windows</text:h1><text:p>The easiest way to install MultiMarkdown on Windows is to download the
+ package from the  page. It contains a zipfile that
+includes the  batch file. This batch file will
+install multimarkdown, the required libraries, and two convenience scripts to
+. Ive had some trouble when installing as a user that is
+not an Administrator, and Ive had trouble on occasion trying to run the
+program when not an Administrator. I welcome ideas on a better way to install
+the program on Windows. I also have only tested this on Windows XP.</text:p><text:p>If you want to compile for yourself, check out the instructions on the
+.</text:p><text:h1>How do I use MultiMarkdown?</text:h1><text:p>There are several ways to use MultiMarkdown, depending on your needs. You can
+use the  command line tool, you can use MultiMarkdown with
+several applications that support it directly, or you can use a drag and drop
+approach.</text:p><text:h1>Command Line Usage</text:h1><text:p>First, verify that you have properly installed MultiMarkdown:</text:p><text:p>If you dont see a message telling you which version of MultiMarkdown is
+installed, check out Troubleshooting.</text:p><text:p>To learn more about the command line options to multimarkdown:</text:p><text:p>Once you have properly installed MultiMarkdown:</text:p><text:p>will convert the plain text file  into XHTML output. To save the
+results to a file:</text:p><text:p>A shortcut to this is to use MultiMarkdowns batch mode, which will save the
+output to the same base filename that is input, with the extension  (or
+ for LaTeX output):</text:p><text:p>A benefit of batch mode is that you can process multiple files at once:</text:p><text:p>If you want to create LaTeX output instead of XHTML:</text:p><text:p>There are also two convenience scripts included with MultiMarkdown:</text:p><text:p>These scripts run MultiMarkdown in batch mode to generate XHTML or LaTeX files
+respectively. These scripts are included with the Mac or Windows installers,
+and are available for *nix in the  directory in the source project.
+They are intended to be used as shortcuts for the most common command line
+options.</text:p><text:h1>Command Line Options</text:h1><text:p>There are several options when running MultiMarkdown from the command line.</text:p><text:p>Compatibility mode causes MultiMarkdown to output XHTML that is compatible
+with that output from the original Markdown. This allows it to pass the
+original Markdown test suite. Syntax features that dont exist in regular
+Markdown will still be output using the regular MultiMarkdown output
+formatting.</text:p><text:p>The extract feature outputs the value of the specified metadata key. This is
+used in my convenience scripts to help choose the proper LaTeX output mode,
+and could be used in other circumstances as well.</text:p><text:p>This options specified the format that MultiMarkdown outputs. The default is
+html. If you use the  metadata, then MultiMarkdown will
+automatically choose  or  as directed without using these
+command line options. Using that metadata will also allow the various
+convenience scripts to choose the correct output format as well.</text:p><text:p>This option tells MultiMarkdown to process the text included within HTML tags
+in the source document.</text:p><text:p>Other options are available by checking out , but
+the ones listed above are the primary options.</text:p><text:p>TODO: need to describe more options</text:p><text:h1>Advanced Mode</text:h1><text:p>MultiMarkdown version 2.0 had to first convert the source file to XHTML, and
+then applied XSLT files to convert to the final LaTeX format. Since
+MultiMarkdown 3.0 can create LaTeX directly, this approach is no longer
+necessary.</text:p><text:p>The one benefit of that approach, however, was that it became possible to
+perform a wide range of customizations on exactly how the LaTeX output was
+created by customizing the XSLT files.</text:p><text:p>If you install the Support files on Mac or Linux, you can still use the
+advanced XSLT method to generate LaTeX output. For the time being, this
+approach doesnt work with Windows, but it would be fairly easy to create a
+batch script or perl script to implement this feature on Windows.</text:p><text:p>Keep in mind, however, that because of the more advanced mechanism of handling
+LaTeX in MultiMarkdown 3.0, you can do a great deal of customization without
+needing to use an XSLT file.</text:p><text:p>The  script will convert a plain text file into LaTeX that is
+virtually identical with that created by the regular LaTeX approach.</text:p><text:p>There are a few differences in the two approaches, however:</text:p><text:h1>Recommendations</text:h1><text:p>I recommend that you become familiar with the  approach to using
+MultiMarkdown before trying to experiment with XSLT. The basic approach is
+faster, and easier, and the results can still be customized quite a bit.</text:p><text:p>Then you can experiment with modifying XSLT to further customize your output
+as needed.</text:p><text:p>If you have XSLT files that you used in MultiMarkdown 2.0, you will likely
+need to modify them to recognize the XHTML output generated by MultiMarkdown
+3.0. You can use the default XSLT files as a guide to what is different.</text:p><text:h1>Mac OS X Applications</text:h1><text:p>There are several applications that have built-in support for MultiMarkdown,
+or that can easily use it with a plug-in.</text:p><text:h1>Using MultiMarkdown with TextMate</text:h1><text:p>If you want to run MultiMarkdown from directly within , you should
+install my MultiMarkdown . This is a modified version of the original
+Markdown bundle for TextMate that includes better support for MultiMarkdown.</text:p><text:p>This bundle will work with MultiMarkdown 2.0, or with MultiMarkdown 3.0 if you
+install the MultiMarkdown-Support files (available from the downloads
+).</text:p><text:h1>Using MultiMarkdown with Scrivener</text:h1><text:p> is a great program for writers using Mac OS X. It includes built
+in support for MultiMarkdown. If you want to use MultiMarkdown 3.0 with
+Scrivener, you need to install the Support files in . The MultiMarkdown-Support installer is available from
+the downloads  and will install these files for you.</text:p><text:h1>Drag and Drop</text:h1><text:p>There is a set of applications forthcoming that easily allow you to use drag
+and drop to process MultiMarkdown files.</text:p><text:p>TODO: link to these, describe how to use them</text:p><text:h1>Using MultiMarkdown in Windows</text:h1><text:p>You can use the same command line approach with Windows as described
+previously. While there arent drag and drop applications per se for the
+Windows system, there are two shortcuts included in the installer that will
+allow you to drop text files on them in the same manner.</text:p><text:h1>MultiMarkdown and LaTeX</text:h1><text:p>Of note  is a complex set of programs. MultiMarkdown doesnt include
+LaTeX in the installer  its up to the user to install a working LaTeX
+setup on their machine if you want to use it.</text:p><text:p>What MultiMarkdown does is make it easier to generate documents using the
+LaTeX syntax. It should handle 80% of the documents that 80% of MultiMarkdown
+need. It doesnt handle all circumstances, and sometimes you will need to hand
+code your LaTeX yourself.</text:p><text:p>In those cases you have a few options. MultiMarkdown will pass text included
+in XHTML comments along to the LaTeX as raw output. For example:</text:p><text:p>You can also include your desired LaTeX code in a separate file and link to it:</text:p><text:p>If you have questions about LaTeX itself, I cant help. Youre welcome to send
+your question to the , and perhaps someone will
+be able to offer some assistance. But you would be better off asking a group
+dedicated to LaTeX instead.</text:p><text:p>If the problem is that MultiMarkdown itself is generating invalid LaTeX, then
+of course I want to know about it so I can fix it.</text:p><text:h1>How do I create a MultiMarkdown document?</text:h1><text:p>The general concept in MultiMarkdown is that it should be easy for someone to
+type a plain text file that is human-readable, and then use the MultiMarkdown
+program to convert that text file into a more complicated computer language
+such as XHTML or LaTeX. This allows you to create high quality output without
+having to spend hours and hours fiddling with font sizes, margins, etc.</text:p><text:p>The first step in learning to use MultiMarkdown is to learn how to use
+. MultiMarkdown is an
+extension to Markdown, and builds off of the basic fundamentals used in
+Markdown.</text:p><text:p>I recommend starting by familiarizing yourself with the Markdown  and
+ pages.</text:p><text:p>Once youre familiar with the basics of Markdown, it will be relatively easy
+to pick up the advanced features included in MultiMarkdown.</text:p><text:h1>Metadata</text:h1><text:p>It is possible to include special metadata at the top of a MultiMarkdown
+document, such as title, author, etc. This information can then be used to
+control how MultiMarkdown processes the document, or can be used in certain
+output formats in special ways.</text:p><text:p>The syntax for including metadata is simple.</text:p><text:h1>Complete documents vs &#8220;snippets&#8221;</text:h1><text:p>In order to include metadata information such as a title, the XHTML document
+created by MultiMarkdown must be  This means that it starts with
+something that looks like:</text:p><text:p>If you include metadata in your document (with two exceptions), then you will
+generate a complete document. If you dont include metadata, then you will
+instead generate a  The snippet will just include the relevant
+portion of XHTML, but will not include the  or  elements.</text:p><text:p>Metadata that is only intended to affect the way MultiMarkdown process the
+output will not trigger a complete document. Currently, this means you can use
+ or  and still output a snippet if you
+dont include any other metadata.</text:p><text:p>When generating LaTeX output the same rules apply. Of note, it was not
+possible to generate LaTeX snippets with MultiMarkdown 2.0 without using a
+custom XSLT file.</text:p><text:h1>&#8220;Standard&#8221; Metadata keys</text:h1><text:p>There are a few metadata keys that are standardized in MultiMarkdown. You can
+use any other keys that you desire, but you have to make use of them yourself.</text:p><text:p>My goal is to keep the list of  metadata keys as short as possible.</text:p><text:h1>Author</text:h1><text:p>This value represents the author of the document and is used in LaTeX
+documents to generate the title information.</text:p><text:h1>Affiliation</text:h1><text:p>This is used to enter further information about the author  a link to a
+website, an employer, academic affiliation, etc.</text:p><text:h1>Base Header Level</text:h1><text:p>This is used to change the top level of organization of the document. For example:</text:p><text:p>Normally, the Introduction would be output as  in XHTML, or  in
+LaTeX. If youre writing a shorter document, you may wish for the largest
+division in the document to be  or . The 
+metadata tells MultiMarkdown to change the largest division level to the
+specified value.</text:p><text:p>This can also be useful when combining multiple documents.</text:p><text:p> does not trigger a complete document.</text:p><text:h1>Copyright</text:h1><text:p>This can be used to provide a copyright string.</text:p><text:h1>CSS</text:h1><text:p>This metadata specifies a URL to be used as a CSS file for the produced
+document. Obviously, this is only useful when outputting to XHTML.</text:p><text:h1>Date</text:h1><text:p>Specify a date to be associated with the document.</text:p><text:h1>Quotes Language</text:h1><text:p>This is used to specify which style of  quotes to use in the output document. The available options are:</text:p><text:p>The default is  if not specified. This affects XHTML output. To
+change the language of a document in LaTeX is up to the individual.</text:p><text:p> does not trigger a complete document.</text:p><text:h1>LaTeX Footer</text:h1><text:p>A special case of the  metadata below. This file will be linked
+to at the very end of the document.</text:p><text:h1>LaTeX Input</text:h1><text:p>When outputting a LaTeX document it is necessary to include various directions
+that specify how the document should be formatted. These are not included in
+the MultiMarkdown document itself  instead they should be stored separately
+and linked to with  commands.</text:p><text:p>These links can be included in the metadata section. The metadata is processed
+in order, so I generally break my directives into a group that need to go
+before my metadata, a group that goes after the metadata but before the
+document itself, and a separate group that goes at the end of the document,
+for example:</text:p><text:p>You can download the  files if you want to output documents
+using the default MultiMarkdown styles. You can then use these as examples to
+create your own customized LaTeX output.</text:p><text:p>TODO: include more details about this</text:p><text:h1>LaTeX Mode</text:h1><text:p>When outputting a document to LaTeX, there are two special options that change
+the output slightly   and . These options are designed to
+be compatible with the LaTeX classes of the same names.</text:p><text:h1>Title</text:h1><text:p>Self-explanatory.</text:p><text:h1>XHTML Header</text:h1><text:p>You can include raw XHTML information to be included in the header.
+MultiMarkdown doesnt perform any validation on this data  it just copies
+it as is.</text:p><text:p>As an example, this can be useful to link your document to a working MathJax installation (not provided by me):</text:p><text:h1>Cross-References</text:h1><text:h1>Image and Link Attributes</text:h1><text:h1>Tables</text:h1><text:h1>Footnotes</text:h1><text:h1>Citations</text:h1><text:h1>Math</text:h1><text:p>MultiMarkdown 2.0 used  to typeset mathematical equations. There
+were benefits to using ASCIIMathML, but also some disadvantages.</text:p><text:p>When rewriting for MultiMarkdown 3.0, there was no straightforward way to
+implement ASCIIMathML which lead me to look for alternatives. I settled on
+using . The advantage here is that the same syntax is supported by
+MathJax in browsers, and in LaTeX. </text:p><text:p>This does mean that math will need to be entered into MultiMarkdown documents
+using the LaTeX syntax, rather than ASCIIMathML.</text:p><text:p>To enable MathJax support in web pages, you have to include a link to an
+active MathJax installation  setting this up is beyond the scope of this
+document, but its not too hard.</text:p><text:p>Heres an example of the metadata setup, and some math:</text:p><text:p>Heres what it looks like in action:</text:p><text:p>TODO: This doesnt quite work properly in github wiki</text:p><text:h1>Glossary</text:h1><text:h1>FAQ</text:h1><text:p>Answers to common questions about MultiMarkdown. Contributions welcome!</text:p><text:h1>How do I install MMD?</text:h1><text:h1>Mac</text:h1><text:h1>Windows</text:h1><text:h1>Linux</text:h1><text:h1>How can I better learn the MultiMarkdown Syntax?</text:h1><text:p>The syntax of MultiMarkdown can be a challenge for beginners especially when it comes to using Table and Link syntax. The challenge comes in understanding how it looks  the conversion. </text:p><text:p>For MAC users, you can download a free program NValt  that contains a preview mode. Thus, you can enter your markdown with a dynamic preview window to show how the formatting appears. Ive found this useful until I was comfortable with the syntax. </text:p><text:p>Note also that MultiMarkdown can also be installed to MarsEdit  which also has a preview mode. This is even more effective for for bloggers as it will handle inline image upload to most popular blog software and display the interpreted output of your MMD syntax. </text:p><text:p>I dont know of any Windows software that does the same</text:p><text:h1>Web Based Learning</text:h1><text:p>For absolute beginners to Markdown, you may want to try  which provides a web site for writing in Markdown syntax and display. You can also save the pages for forwarding to other people. </text:p><text:p>For the reverse requirement, you can visit  which will attempt to take a given HTML Page and convert it into Markdown, usually with good accuracy.</text:p><text:h1>Can I use MultiMarkdown on an iPhone/iPad?</text:h1><text:p>There are a number of programs available for use on the iPhone and iPad that
+support regular Markdown, but not MultiMarkdown.</text:p><text:p> is a iPhone / iPad app
+that also has a markdown preview mode. Second Gear has also made
+ which is
+simpler, but also very usable for learning Markdown.</text:p><text:p> is a syntax highlighting text editor
+for the iPad that includes a preview mode for Markdown. It will even preview
+MathJax equations if you include the proper metadata!</text:p><text:p>Now that MultiMarkdown is available in C (as of version 3.0), I would like to
+work on modifying it to work with iOS.</text:p><text:h1>How do I troubleshoot an error?</text:h1><text:p>divide and conquer</text:p><text:p>latest version?</text:p><text:h1>How do I get more help</text:h1><text:p>search box on my web site</text:p><text:p>mmd discussion group</text:p><text:h1>How do I customize MultiMarkdown?</text:h1><text:p>XSLT</text:p><text:p>Latex Input files</text:p><text:p>flow chart?</text:p><text:p>github</text:p><text:p>RTF</text:p><text:p>google docs</text:p><text:p>mac - textutil</text:p><text:p>xslt</text:p><text:p>OPML</text:p><text:p>linking to images</text:p><text:p>(figure1 and figure1 incompatibility)</text:p><text:p>Difference in footnotes</text:p><text:p>What is a PEG</text:p><text:p>mmd_merge</text:p><text:h1>How can I contribute to MultiMarkdown?</text:h1><text:h1>Bug reports</text:h1><text:h1>Editing the documentation</text:h1><text:h1>Code submissions</text:h1><text:p>Ideas for development:</text:p><text:h1>Paypal contributions</text:h1><text:h1>Acknowledgments</text:h1><text:p>Thanks to the individuals and groups below for their contributions to
+improving Markdown and MultiMarkdown:</text:p><text:p>and others I have surely forgotten.</text:p><text:h1>Introduction</text:h1><text:p>This document is a guide to understanding and using MultiMarkdown. It was
+created as a , and thus was written by various contributors. Feel free
+to contribute your own improvements!</text:p><text:h1>What is Markdown?</text:h1><text:p>To understand what MultiMarkdown is, you first should be familiar with
+. The best description of what Markdown is comes from John Grubers
+Markdown web site:</text:p><text:h1>What is MultiMarkdown?</text:h1><text:p>Markdown is great, but it lacked a few features that would allow it to work
+with documents, rather than just pieces of a web page.</text:p><text:p>I wrote MultiMarkdown in order to leverage Markdowns syntax, but to extend it
+to work with complete documents that could ultimately be converted from text
+into other formats, including complete XHTML documents, LaTeX, PDF, RTF, or
+even (shudder) Microsoft Word documents. These various formats are supported
+to varying degrees by various versions of MultiMarkdown and work differently
+on different operating systems. The two  output formats are XHTML and
+LaTeX (for now at least).</text:p><text:p>In addition to the ability to work with complete documents and conversion to
+other formats, the Markdown syntax was lacking a few things. Michel Fortin
+added a few additional syntax tools when writing . Some
+of his ideas were implemented and expanded on in MultiMarkdown, in addition to
+more features not available in other Markdown implementations. These features
+include tables, footnotes, citation support, image and link attributes,
+cross-references, math support, and more.</text:p><text:p>John Gruber may disagree with me, but I really did try to stick with his
+proclaimed vision whenever I added a new syntax format to MultiMarkdown. The
+quality that attracted me to Markdown the most was its clean format. Reading a
+plain text document written in Markdown is . It makes sense, and it
+looks like it was designed for people, not computers. To the extent possible,
+I tried to keep this same concept in mind when working on MultiMarkdown.</text:p><text:p>I may or may not have succeeded in this.</text:p><text:p>In the vein of Markdowns multiple definitions, you can think of MultiMarkdown
+as:</text:p><text:h1>Where is this Guide Kept?</text:h1><text:p>This Users Guide is designed to be viewed as a single XHTML document, or as a
+PDF after being processed by LaTeX. When processed by MultiMarkdown and
+combined as a single document, it will demonstrate many of the features that
+MultiMarkdown offers, and should be fairly easy to navigate.</text:p><text:p>The source text documents are actually stored in a wiki on Github so that the
+document can easily be worked on by anyone with a Github account:</text:p><text:p></text:p><text:p>: Currently, the Github wiki software supports Markdown, but not
+MultiMarkdown. This means that certain MultiMarkdown specific features will
+not work on the wiki, but will work when the source is processed by
+MultiMarkdown separately from the wiki.</text:p><text:p>You can download a copy of the source files using the instructions contained
+at the wiki itself. Additionally, the source is linked to from within the
+source project for MultiMarkdown in the  directory. If you
+download the source, you can can compile a copy of the documentation
+automatically with:</text:p><text:p>(This command requires perl to be installed  Ill work on an alternative
+for Windows users without perl).</text:p><text:h1>How do I install MultiMarkdown?</text:h1><text:h1>Mac OS X</text:h1><text:p>The easiest way to install MultiMarkdown on the Mac is to use the installer
+from the  page. Simply choose the latest version of the
+MultiMarkdown-Mac zipfile and download it. Double-click the file to unzip it,
+and then double click the installer that appears.</text:p><text:p>If you primarily intend to use MultiMarkdown from within , or
+, you may wish to also download and install the Support files. This
+places additional convenience scripts in  which is where Scrivener and TextMate will generally
+look for it. This installer is also available from the  page.</text:p><text:p>For more advanced users, the installer puts the  binary and two
+convenience scripts,  and  in the  directory. As
+long as  is included in your PATH environment variable, you
+can use these binaries from the command line or from other programs.</text:p><text:p>If you wish to compile MultiMarkdown from source for yourself:</text:p><text:p>Then you can compile:</text:p><text:p>Then simply move the binary and convenience scripts to your desired location.</text:p><text:h1>Linux</text:h1><text:p>There is no installer for *nix systems, but you can compile from source fairly
+easily. For example, on :</text:p><text:p>Other flavors of linux will require variations of the first command.</text:p><text:p>Then just put the binaries wherever you like.</text:p><text:h1>Windows</text:h1><text:p>The easiest way to install MultiMarkdown on Windows is to download the
+ package from the  page. It contains a zipfile that
+includes the  batch file. This batch file will
+install multimarkdown, the required libraries, and two convenience scripts to
+. Ive had some trouble when installing as a user that is
+not an Administrator, and Ive had trouble on occasion trying to run the
+program when not an Administrator. I welcome ideas on a better way to install
+the program on Windows. I also have only tested this on Windows XP.</text:p><text:p>If you want to compile for yourself, check out the instructions on the
+.</text:p><text:h1>How do I use MultiMarkdown?</text:h1><text:p>There are several ways to use MultiMarkdown, depending on your needs. You can
+use the  command line tool, you can use MultiMarkdown with
+several applications that support it directly, or you can use a drag and drop
+approach.</text:p><text:h1>Command Line Usage</text:h1><text:p>First, verify that you have properly installed MultiMarkdown:</text:p><text:p>If you dont see a message telling you which version of MultiMarkdown is
+installed, check out Troubleshooting.</text:p><text:p>To learn more about the command line options to multimarkdown:</text:p><text:p>Once you have properly installed MultiMarkdown:</text:p><text:p>will convert the plain text file  into XHTML output. To save the
+results to a file:</text:p><text:p>A shortcut to this is to use MultiMarkdowns batch mode, which will save the
+output to the same base filename that is input, with the extension  (or
+ for LaTeX output):</text:p><text:p>A benefit of batch mode is that you can process multiple files at once:</text:p><text:p>If you want to create LaTeX output instead of XHTML:</text:p><text:p>There are also two convenience scripts included with MultiMarkdown:</text:p><text:p>These scripts run MultiMarkdown in batch mode to generate XHTML or LaTeX files
+respectively. These scripts are included with the Mac or Windows installers,
+and are available for *nix in the  directory in the source project.
+They are intended to be used as shortcuts for the most common command line
+options.</text:p><text:h1>Command Line Options</text:h1><text:p>There are several options when running MultiMarkdown from the command line.</text:p><text:p>Compatibility mode causes MultiMarkdown to output XHTML that is compatible
+with that output from the original Markdown. This allows it to pass the
+original Markdown test suite. Syntax features that dont exist in regular
+Markdown will still be output using the regular MultiMarkdown output
+formatting.</text:p><text:p>The extract feature outputs the value of the specified metadata key. This is
+used in my convenience scripts to help choose the proper LaTeX output mode,
+and could be used in other circumstances as well.</text:p><text:p>This options specified the format that MultiMarkdown outputs. The default is
+html. If you use the  metadata, then MultiMarkdown will
+automatically choose  or  as directed without using these
+command line options. Using that metadata will also allow the various
+convenience scripts to choose the correct output format as well.</text:p><text:p>This option tells MultiMarkdown to process the text included within HTML tags
+in the source document.</text:p><text:p>Other options are available by checking out , but
+the ones listed above are the primary options.</text:p><text:p>TODO: need to describe more options</text:p><text:h1>Advanced Mode</text:h1><text:p>MultiMarkdown version 2.0 had to first convert the source file to XHTML, and
+then applied XSLT files to convert to the final LaTeX format. Since
+MultiMarkdown 3.0 can create LaTeX directly, this approach is no longer
+necessary.</text:p><text:p>The one benefit of that approach, however, was that it became possible to
+perform a wide range of customizations on exactly how the LaTeX output was
+created by customizing the XSLT files.</text:p><text:p>If you install the Support files on Mac or Linux, you can still use the
+advanced XSLT method to generate LaTeX output. For the time being, this
+approach doesnt work with Windows, but it would be fairly easy to create a
+batch script or perl script to implement this feature on Windows.</text:p><text:p>Keep in mind, however, that because of the more advanced mechanism of handling
+LaTeX in MultiMarkdown 3.0, you can do a great deal of customization without
+needing to use an XSLT file.</text:p><text:p>The  script will convert a plain text file into LaTeX that is
+virtually identical with that created by the regular LaTeX approach.</text:p><text:p>There are a few differences in the two approaches, however:</text:p><text:h1>Recommendations</text:h1><text:p>I recommend that you become familiar with the  approach to using
+MultiMarkdown before trying to experiment with XSLT. The basic approach is
+faster, and easier, and the results can still be customized quite a bit.</text:p><text:p>Then you can experiment with modifying XSLT to further customize your output
+as needed.</text:p><text:p>If you have XSLT files that you used in MultiMarkdown 2.0, you will likely
+need to modify them to recognize the XHTML output generated by MultiMarkdown
+3.0. You can use the default XSLT files as a guide to what is different.</text:p><text:h1>Mac OS X Applications</text:h1><text:p>There are several applications that have built-in support for MultiMarkdown,
+or that can easily use it with a plug-in.</text:p><text:h1>Using MultiMarkdown with TextMate</text:h1><text:p>If you want to run MultiMarkdown from directly within , you should
+install my MultiMarkdown . This is a modified version of the original
+Markdown bundle for TextMate that includes better support for MultiMarkdown.</text:p><text:p>This bundle will work with MultiMarkdown 2.0, or with MultiMarkdown 3.0 if you
+install the MultiMarkdown-Support files (available from the downloads
+).</text:p><text:h1>Using MultiMarkdown with Scrivener</text:h1><text:p> is a great program for writers using Mac OS X. It includes built
+in support for MultiMarkdown. If you want to use MultiMarkdown 3.0 with
+Scrivener, you need to install the Support files in . The MultiMarkdown-Support installer is available from
+the downloads  and will install these files for you.</text:p><text:h1>Drag and Drop</text:h1><text:p>There is a set of applications forthcoming that easily allow you to use drag
+and drop to process MultiMarkdown files.</text:p><text:p>TODO: link to these, describe how to use them</text:p><text:h1>Using MultiMarkdown in Windows</text:h1><text:p>You can use the same command line approach with Windows as described
+previously. While there arent drag and drop applications per se for the
+Windows system, there are two shortcuts included in the installer that will
+allow you to drop text files on them in the same manner.</text:p><text:h1>MultiMarkdown and LaTeX</text:h1><text:p>Of note  is a complex set of programs. MultiMarkdown doesnt include
+LaTeX in the installer  its up to the user to install a working LaTeX
+setup on their machine if you want to use it.</text:p><text:p>What MultiMarkdown does is make it easier to generate documents using the
+LaTeX syntax. It should handle 80% of the documents that 80% of MultiMarkdown
+need. It doesnt handle all circumstances, and sometimes you will need to hand
+code your LaTeX yourself.</text:p><text:p>In those cases you have a few options. MultiMarkdown will pass text included
+in XHTML comments along to the LaTeX as raw output. For example:</text:p><text:p>You can also include your desired LaTeX code in a separate file and link to it:</text:p><text:p>If you have questions about LaTeX itself, I cant help. Youre welcome to send
+your question to the , and perhaps someone will
+be able to offer some assistance. But you would be better off asking a group
+dedicated to LaTeX instead.</text:p><text:p>If the problem is that MultiMarkdown itself is generating invalid LaTeX, then
+of course I want to know about it so I can fix it.</text:p><text:h1>How do I create a MultiMarkdown document?</text:h1><text:p>The general concept in MultiMarkdown is that it should be easy for someone to
+type a plain text file that is human-readable, and then use the MultiMarkdown
+program to convert that text file into a more complicated computer language
+such as XHTML or LaTeX. This allows you to create high quality output without
+having to spend hours and hours fiddling with font sizes, margins, etc.</text:p><text:p>The first step in learning to use MultiMarkdown is to learn how to use
+. MultiMarkdown is an
+extension to Markdown, and builds off of the basic fundamentals used in
+Markdown.</text:p><text:p>I recommend starting by familiarizing yourself with the Markdown  and
+ pages.</text:p><text:p>Once youre familiar with the basics of Markdown, it will be relatively easy
+to pick up the advanced features included in MultiMarkdown.</text:p><text:h1>Metadata</text:h1><text:p>It is possible to include special metadata at the top of a MultiMarkdown
+document, such as title, author, etc. This information can then be used to
+control how MultiMarkdown processes the document, or can be used in certain
+output formats in special ways.</text:p><text:p>The syntax for including metadata is simple.</text:p><text:h1>Complete documents vs &#8220;snippets&#8221;</text:h1><text:p>In order to include metadata information such as a title, the XHTML document
+created by MultiMarkdown must be  This means that it starts with
+something that looks like:</text:p><text:p>If you include metadata in your document (with two exceptions), then you will
+generate a complete document. If you dont include metadata, then you will
+instead generate a  The snippet will just include the relevant
+portion of XHTML, but will not include the  or  elements.</text:p><text:p>Metadata that is only intended to affect the way MultiMarkdown process the
+output will not trigger a complete document. Currently, this means you can use
+ or  and still output a snippet if you
+dont include any other metadata.</text:p><text:p>When generating LaTeX output the same rules apply. Of note, it was not
+possible to generate LaTeX snippets with MultiMarkdown 2.0 without using a
+custom XSLT file.</text:p><text:h1>&#8220;Standard&#8221; Metadata keys</text:h1><text:p>There are a few metadata keys that are standardized in MultiMarkdown. You can
+use any other keys that you desire, but you have to make use of them yourself.</text:p><text:p>My goal is to keep the list of  metadata keys as short as possible.</text:p><text:h1>Author</text:h1><text:p>This value represents the author of the document and is used in LaTeX
+documents to generate the title information.</text:p><text:h1>Affiliation</text:h1><text:p>This is used to enter further information about the author  a link to a
+website, an employer, academic affiliation, etc.</text:p><text:h1>Base Header Level</text:h1><text:p>This is used to change the top level of organization of the document. For example:</text:p><text:p>Normally, the Introduction would be output as  in XHTML, or  in
+LaTeX. If youre writing a shorter document, you may wish for the largest
+division in the document to be  or . The 
+metadata tells MultiMarkdown to change the largest division level to the
+specified value.</text:p><text:p>This can also be useful when combining multiple documents.</text:p><text:p> does not trigger a complete document.</text:p><text:h1>Copyright</text:h1><text:p>This can be used to provide a copyright string.</text:p><text:h1>CSS</text:h1><text:p>This metadata specifies a URL to be used as a CSS file for the produced
+document. Obviously, this is only useful when outputting to XHTML.</text:p><text:h1>Date</text:h1><text:p>Specify a date to be associated with the document.</text:p><text:h1>Quotes Language</text:h1><text:p>This is used to specify which style of  quotes to use in the output document. The available options are:</text:p><text:p>The default is  if not specified. This affects XHTML output. To
+change the language of a document in LaTeX is up to the individual.</text:p><text:p> does not trigger a complete document.</text:p><text:h1>LaTeX Footer</text:h1><text:p>A special case of the  metadata below. This file will be linked
+to at the very end of the document.</text:p><text:h1>LaTeX Input</text:h1><text:p>When outputting a LaTeX document it is necessary to include various directions
+that specify how the document should be formatted. These are not included in
+the MultiMarkdown document itself  instead they should be stored separately
+and linked to with  commands.</text:p><text:p>These links can be included in the metadata section. The metadata is processed
+in order, so I generally break my directives into a group that need to go
+before my metadata, a group that goes after the metadata but before the
+document itself, and a separate group that goes at the end of the document,
+for example:</text:p><text:p>You can download the  files if you want to output documents
+using the default MultiMarkdown styles. You can then use these as examples to
+create your own customized LaTeX output.</text:p><text:p>TODO: include more details about this</text:p><text:h1>LaTeX Mode</text:h1><text:p>When outputting a document to LaTeX, there are two special options that change
+the output slightly   and . These options are designed to
+be compatible with the LaTeX classes of the same names.</text:p><text:h1>Title</text:h1><text:p>Self-explanatory.</text:p><text:h1>XHTML Header</text:h1><text:p>You can include raw XHTML information to be included in the header.
+MultiMarkdown doesnt perform any validation on this data  it just copies
+it as is.</text:p><text:p>As an example, this can be useful to link your document to a working MathJax installation (not provided by me):</text:p><text:h1>Cross-References</text:h1><text:h1>Image and Link Attributes</text:h1><text:h1>Tables</text:h1><text:h1>Footnotes</text:h1><text:h1>Citations</text:h1><text:h1>Math</text:h1><text:p>MultiMarkdown 2.0 used  to typeset mathematical equations. There
+were benefits to using ASCIIMathML, but also some disadvantages.</text:p><text:p>When rewriting for MultiMarkdown 3.0, there was no straightforward way to
+implement ASCIIMathML which lead me to look for alternatives. I settled on
+using . The advantage here is that the same syntax is supported by
+MathJax in browsers, and in LaTeX. </text:p><text:p>This does mean that math will need to be entered into MultiMarkdown documents
+using the LaTeX syntax, rather than ASCIIMathML.</text:p><text:p>To enable MathJax support in web pages, you have to include a link to an
+active MathJax installation  setting this up is beyond the scope of this
+document, but its not too hard.</text:p><text:p>Heres an example of the metadata setup, and some math:</text:p><text:p>Heres what it looks like in action:</text:p><text:p>TODO: This doesnt quite work properly in github wiki</text:p><text:h1>Glossary</text:h1><text:h1>FAQ</text:h1><text:p>Answers to common questions about MultiMarkdown. Contributions welcome!</text:p><text:h1>How do I install MMD?</text:h1><text:h1>Mac</text:h1><text:h1>Windows</text:h1><text:h1>Linux</text:h1><text:h1>How can I better learn the MultiMarkdown Syntax?</text:h1><text:p>The syntax of MultiMarkdown can be a challenge for beginners especially when it comes to using Table and Link syntax. The challenge comes in understanding how it looks  the conversion. </text:p><text:p>For MAC users, you can download a free program NValt  that contains a preview mode. Thus, you can enter your markdown with a dynamic preview window to show how the formatting appears. Ive found this useful until I was comfortable with the syntax. </text:p><text:p>Note also that MultiMarkdown can also be installed to MarsEdit  which also has a preview mode. This is even more effective for for bloggers as it will handle inline image upload to most popular blog software and display the interpreted output of your MMD syntax. </text:p><text:p>I dont know of any Windows software that does the same</text:p><text:h1>Web Based Learning</text:h1><text:p>For absolute beginners to Markdown, you may want to try  which provides a web site for writing in Markdown syntax and display. You can also save the pages for forwarding to other people. </text:p><text:p>For the reverse requirement, you can visit  which will attempt to take a given HTML Page and convert it into Markdown, usually with good accuracy.</text:p><text:h1>Can I use MultiMarkdown on an iPhone/iPad?</text:h1><text:p>There are a number of programs available for use on the iPhone and iPad that
+support regular Markdown, but not MultiMarkdown.</text:p><text:p> is a iPhone / iPad app
+that also has a markdown preview mode. Second Gear has also made
+ which is
+simpler, but also very usable for learning Markdown.</text:p><text:p> is a syntax highlighting text editor
+for the iPad that includes a preview mode for Markdown. It will even preview
+MathJax equations if you include the proper metadata!</text:p><text:p>Now that MultiMarkdown is available in C (as of version 3.0), I would like to
+work on modifying it to work with iOS.</text:p><text:h1>How do I troubleshoot an error?</text:h1><text:p>divide and conquer</text:p><text:p>latest version?</text:p><text:h1>How do I get more help</text:h1><text:p>search box on my web site</text:p><text:p>mmd discussion group</text:p><text:h1>How do I customize MultiMarkdown?</text:h1><text:p>XSLT</text:p><text:p>Latex Input files</text:p><text:p>flow chart?</text:p><text:p>github</text:p><text:p>RTF</text:p><text:p>google docs</text:p><text:p>mac - textutil</text:p><text:p>xslt</text:p><text:p>OPML</text:p><text:p>linking to images</text:p><text:p>(figure1 and figure1 incompatibility)</text:p><text:p>Difference in footnotes</text:p><text:p>What is a PEG</text:p><text:p>mmd_merge</text:p><text:h1>How can I contribute to MultiMarkdown?</text:h1><text:h1>Bug reports</text:h1><text:h1>Editing the documentation</text:h1><text:h1>Code submissions</text:h1><text:p>Ideas for development:</text:p><text:h1>Paypal contributions</text:h1><text:h1>Acknowledgments</text:h1><text:p>Thanks to the individuals and groups below for their contributions to
+improving Markdown and MultiMarkdown:</text:p><text:p>and others I have surely forgotten.</text:p></office:text>
+</office:body>
+</office:document-content>

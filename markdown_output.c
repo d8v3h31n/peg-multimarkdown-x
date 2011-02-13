@@ -25,6 +25,7 @@
 #include <glib.h>
 #include "markdown_peg.h"
 #include "utility_functions.c"
+#include "odf.c"
 
 static int extensions;
 static int base_header_level = 1;
@@ -1445,6 +1446,11 @@ void print_element_list(GString *out, element *elt, int format, int exts) {
     case BEAMER_FORMAT:
         print_beamer_element_list(out, elt);
         break;
+	case ODF_FORMAT:
+		print_odf_header(out);
+		print_odf_element_list(out,elt);
+		print_odf_footer(out);
+		break;
     case GROFF_MM_FORMAT:
         print_groff_mm_element_list(out, elt);
         break;
@@ -1841,3 +1847,43 @@ static bool is_html_complete_doc(element *meta) {
     
     return FALSE;
 }
+
+/* print_odf_element - print an element as ODF */
+void print_odf_element(GString *out, element *elt) {
+    switch (elt->key) {
+    case SPACE:
+	    g_string_append_printf(out, "%s", elt->contents.str);
+	    break;
+    case LINEBREAK:
+        g_string_append_printf(out, "<text:line-break/>");
+        break;
+    case STR:
+        print_html_string(out, elt->contents.str, 0);
+        break;
+    case PARA:
+        g_string_append_printf(out, "<text:p>");
+        print_odf_element_list(out, elt->children);
+        g_string_append_printf(out, "</text:p>");
+        break;
+	case H1: case H2: case H3: case H4: case H5: case H6:
+		g_string_append_printf(out, "<text:h1>");
+		print_html_element_list(out, elt->children, 0);
+		g_string_append_printf(out, "</text:h1>");
+		break;
+	case HEADINGSECTION:
+		print_odf_element_list(out, elt->children);
+		break;
+	default:
+    	fprintf(stderr, "print_html_element encountered unknown element key = %d\n", elt->key);
+/*    	exit(EXIT_FAILURE);*/
+	}
+}
+
+/* print_odf_element_list - print an element list as ODF */
+void print_odf_element_list(GString *out, element *list) {
+    while (list != NULL) {
+        print_odf_element(out, list);
+        list = list->next;
+    }
+}
+
