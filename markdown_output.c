@@ -1850,6 +1850,8 @@ static bool is_html_complete_doc(element *meta) {
 
 /* print_odf_element - print an element as ODF */
 void print_odf_element(GString *out, element *elt) {
+    int lev;
+    char *label;
     switch (elt->key) {
     case SPACE:
 	    g_string_append_printf(out, "%s", elt->contents.str);
@@ -1903,16 +1905,65 @@ void print_odf_element(GString *out, element *elt) {
         print_odf_element_list(out, elt->contents.link->label);
         g_string_append_printf(out, "</text:a>");
         break;
+    case EMPH:
+        g_string_append_printf(out,
+			"<text:span text:style-name=\"MMD-Italic\">");
+        print_odf_element_list(out, elt->children);
+        g_string_append_printf(out, "</text:span>");
+        break;
+    case STRONG:
+        g_string_append_printf(out,
+			"<text:span text:style-name=\"MMD-Bold\">");
+        print_odf_element_list(out, elt->children);
+        g_string_append_printf(out, "</text:span>");
+        break;
+	case LIST:
+		print_odf_element_list(out, elt->children);
+		break;
+    case RAW:
+        /* Shouldn't occur - these are handled by process_raw_blocks() */
+        assert(elt->key != RAW);
+        break;
+    case H1: case H2: case H3: case H4: case H5: case H6:
+        lev = elt->key - H1 + base_header_level;  /* assumes H1 ... H6 are in order */
+
+        if (elt->children->key == AUTOLABEL) {
+            /* generate a label for each header (MMD)*/
+            g_string_append_printf(out, "<text:h text:outline-level=\"%d\" >", lev);
+            print_odf_element_list(out, elt->children->next);
+        } else {
+            label = label_from_element_list(elt->children, 0);
+            g_string_append_printf(out, "<text:h text:outline-level=\"%d\" >", lev);
+            print_odf_element_list(out, elt->children);
+            free(label);
+        }
+        g_string_append_printf(out, "</text:h>");
+        padded = 0;
+        break;
+    case PLAIN:
+        print_odf_element_list(out, elt->children);
+        padded = 0;
+        break;
     case PARA:
         g_string_append_printf(out, "<text:p>");
         print_odf_element_list(out, elt->children);
         g_string_append_printf(out, "</text:p>");
         break;
-	case H1: case H2: case H3: case H4: case H5: case H6:
-		g_string_append_printf(out, "<text:h1>");
-		print_html_element_list(out, elt->children, 0);
-		g_string_append_printf(out, "</text:h1>");
-		break;
+    case BULLETLIST:
+        g_string_append_printf(out, "%s", "<text:list>");
+        print_odf_element_list(out, elt->children);
+        g_string_append_printf(out, "%s", "</text:list>");
+        break;
+    case ORDEREDLIST:
+	    g_string_append_printf(out, "%s", "<text:list>");
+	    print_odf_element_list(out, elt->children);
+	    g_string_append_printf(out, "%s", "</text:list>");
+	    break;
+    case LISTITEM:
+        g_string_append_printf(out, "<text:list-item>");
+        print_odf_element_list(out, elt->children);
+        g_string_append_printf(out, "</text:list-item>");
+        break;
 	case HEADINGSECTION:
 		print_odf_element_list(out, elt->children);
 		break;

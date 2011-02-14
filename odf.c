@@ -65,6 +65,18 @@ void print_odf_header(GString *out){
 	"</style:style>\n" \
 	"</office:styles>\n");
 	
+	/* Automatic style information */
+	g_string_append_printf(out, "<office:automatic-styles>" \
+	"   <style:style style:name=\"MMD-Italic\" style:family=\"text\">\n" \
+	"      <style:text-properties fo:font-style=\"italic\" style:font-style-asian=\"italic\"\n" \
+	"                             style:font-style-complex=\"italic\"/>\n" \
+	"   </style:style>\n" \
+	"   <style:style style:name=\"MMD-Bold\" style:family=\"text\">\n" \
+	"      <style:text-properties fo:font-weight=\"bold\" style:font-weight-asian=\"bold\"\n" \
+	"                             style:font-weight-complex=\"bold\"/>\n" \
+	"   </style:style>\n" \
+	"</office:automatic-styles>\n");
+	
 	g_string_append_printf(out, "<office:body>\n<office:text>\n");
 }
 
