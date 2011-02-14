@@ -16,7 +16,8 @@
 
 
 void print_odf_header(GString *out){
-	/* print header to content.xml */
+	
+	/* Insert required XML header */
 	g_string_append_printf(out,
 "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" \
 "<office:document xmlns:office=\"urn:oasis:names:tc:opendocument:xmlns:office:1.0\"\n" \
@@ -55,9 +56,19 @@ void print_odf_header(GString *out){
 "     grddl:transformation=\"http://docs.oasis-open.org/office/1.2/xslt/odf2rdf.xsl\"\n" \
 "     office:mimetype=\"application/vnd.oasis.opendocument.text\">\n");
 	
+	/* Append basic style information */
+	g_string_append_printf(out, "<office:styles>\n" \
+	"<style:style style:name=\"Source_20_Text\" style:display-name=\"Source Text\"\n" \
+	"             style:family=\"text\">\n" \
+	"   <style:text-properties style:font-name=\"Courier New\" style:font-name-asian=\"Courier New\"\n" \
+	"                          style:font-name-complex=\"Courier New\"/>\n" \
+	"</style:style>\n" \
+	"</office:styles>\n");
+	
 	g_string_append_printf(out, "<office:body>\n<office:text>\n");
 }
 
 void print_odf_footer(GString *out) {
 	g_string_append_printf(out, "</office:text>\n</office:body>\n</office:document>");
 }
+

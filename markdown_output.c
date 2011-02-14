@@ -1860,6 +1860,49 @@ void print_odf_element(GString *out, element *elt) {
     case STR:
         print_html_string(out, elt->contents.str, 0);
         break;
+    case ELLIPSIS:
+        localize_typography(out, ELLIP, language, HTMLOUT);
+        break;
+    case EMDASH:
+        localize_typography(out, MDASH, language, HTMLOUT);
+        break;
+    case ENDASH:
+        localize_typography(out, NDASH, language, HTMLOUT);
+        break;
+    case APOSTROPHE:
+        localize_typography(out, APOS, language, HTMLOUT);
+        break;
+    case SINGLEQUOTED:
+        localize_typography(out, LSQUOTE, language, HTMLOUT);
+        print_odf_element_list(out, elt->children);
+        localize_typography(out, RSQUOTE, language, HTMLOUT);
+        break;
+    case DOUBLEQUOTED:
+        localize_typography(out, LDQUOTE, language, HTMLOUT);
+        print_odf_element_list(out, elt->children);
+        localize_typography(out, RDQUOTE, language, HTMLOUT);
+        break;
+    case CODE:
+        g_string_append_printf(out, "<text:span text:style-name=\"Source_20_Text\">");
+        print_html_string(out, elt->contents.str, 0);
+        g_string_append_printf(out, "</text:span>");
+        break;
+	case HTML:
+		break;
+    case LINK:
+        g_string_append_printf(out, "<text:a xlink:type=\"simple\" xlink:href=\"");
+        print_html_string(out, elt->contents.link->url, 0);
+        g_string_append_printf(out, "\"");
+        if (strlen(elt->contents.link->title) > 0) {
+            g_string_append_printf(out, " office:name=\"");
+            print_html_string(out, elt->contents.link->title, 0);
+            g_string_append_printf(out, "\"");
+        }
+/*        print_html_element_list(out, elt->contents.link->attr, obfuscate);*/
+        g_string_append_printf(out, ">");
+        print_odf_element_list(out, elt->contents.link->label);
+        g_string_append_printf(out, "</text:a>");
+        break;
     case PARA:
         g_string_append_printf(out, "<text:p>");
         print_odf_element_list(out, elt->children);
