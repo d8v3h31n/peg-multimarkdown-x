@@ -65,7 +65,7 @@ xslttest: $(PROGRAM)
 leak-check: $(PROGRAM)
 	valgrind --leak-check=full ./multimarkdown TEST.markdown > TEST.html
 
-win-installer: $(PROGRAM)
+win-installer:
 	cp README.markdown windows_installer/README.txt
 	zip -r windows_installer/MultiMarkdown-Windows-$(VERSION).zip windows_installer -x windows_installer/MultiMarkdown*.zip
 
@@ -82,3 +82,8 @@ mac-installer: $(PROGRAM)
 drop: 
 	mkdir drag; rm -rf drag/*.app; /usr/local/bin/platypus -D -a 'MMD to LaTeX' -o 'Text Window' -p '/bin/sh' -V '3.0'  -I 'net.fletcherpenney.MMD2LaTeX' -X '*' -T '****|fold'  -N 'PATH=/usr/local/bin'  -c 'scripts/mmd2tex' 'drag/MMD2LaTeX.app'; \
 	/usr/local/bin/platypus -D -a 'MMD to XHTML' -o 'Text Window' -p '/bin/sh' -V '3.0'  -I 'net.fletcherpenney.MMD2XHTML' -X '*' -T '****|fold'  -N 'PATH=/usr/local/bin'  -c 'scripts/mmd' 'drag/MMD2XHTML.app'; 
+
+docs: $(PROGRAM)
+	cd documentation; \
+	../Support/Utilities/mmd_merge.pl index.txt > ../manual.txt; \
+	cd ../; ./multimarkdown -b manual.txt
