@@ -63,6 +63,14 @@ void print_odf_header(GString *out){
 	"   <style:text-properties style:font-name=\"Courier New\" style:font-name-asian=\"Courier New\"\n" \
 	"                          style:font-name-complex=\"Courier New\"/>\n" \
 	"</style:style>\n" \
+	"<style:style style:name=\"Quotations\" style:family=\"paragraph\"\n" \
+	"             style:parent-style-name=\"Standard\"\n" \
+	"             style:class=\"html\">\n" \
+	"   <style:paragraph-properties fo:margin-left=\"0.3937in\" fo:margin-right=\"0.3937in\" fo:margin-top=\"0in\"\n" \
+	"                               fo:margin-bottom=\"0.1965in\"\n" \
+	"                               fo:text-indent=\"0in\"\n" \
+	"                               style:auto-text-indent=\"false\"/>\n" \
+	"</style:style>\n" \
 	"</office:styles>\n");
 	
 	/* Automatic style information */
@@ -75,7 +83,17 @@ void print_odf_header(GString *out){
 	"      <style:text-properties fo:font-weight=\"bold\" style:font-weight-asian=\"bold\"\n" \
 	"                             style:font-weight-complex=\"bold\"/>\n" \
 	"   </style:style>\n" \
-	"</office:automatic-styles>\n");
+	"</office:automatic-styles>\n" \
+	"<style:style style:name=\"P1\" style:family=\"paragraph\" style:parent-style-name=\"Standard\"\n" \
+	"             style:list-style-name=\"L1\"/>\n" \
+	"<style:style style:name=\"P2\" style:family=\"paragraph\" style:parent-style-name=\"Standard\"\n" \
+	"             style:list-style-name=\"L2\"/>\n" \
+	"<text:list-style style:name=\"L1\">\n" \
+	"	<text:list-level-style-bullet />\n" \
+	"</text:list-style>\n" \
+	"<text:list-style style:name=\"L2\">\n" \
+	"	<text:list-level-style-number />\n" \
+	"</text:list-style>\n");
 	
 	g_string_append_printf(out, "<office:body>\n<office:text>\n");
 }

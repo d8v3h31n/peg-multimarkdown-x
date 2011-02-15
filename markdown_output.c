@@ -35,6 +35,7 @@ static char *table_alignment;
 static char cell_type = 'd';
 static int language = ENGLISH;
 static bool html_footer = FALSE;
+static int odf_type = 0;
 
 static void print_html_string(GString *out, char *str, bool obfuscate);
 static void print_html_element_list(GString *out, element *list, bool obfuscate);
@@ -70,6 +71,9 @@ char * metavalue_for_key(char *key, element *list);
 
 element * element_for_attribute(char *querystring, element *list);
 char * dimension_for_attribute(char *querystring, element *list);
+
+static void print_odf_code_string(GString *out, char *str);
+
 
 /**********************************************************************
 
@@ -1852,6 +1856,7 @@ static bool is_html_complete_doc(element *meta) {
 void print_odf_element(GString *out, element *elt) {
     int lev;
     char *label;
+	int old_type = 0;
     switch (elt->key) {
     case SPACE:
 	    g_string_append_printf(out, "%s", elt->contents.str);
@@ -1937,7 +1942,7 @@ void print_odf_element(GString *out, element *elt) {
             print_odf_element_list(out, elt->children);
             free(label);
         }
-        g_string_append_printf(out, "</text:h>");
+        g_string_append_printf(out, "</text:h>\n");
         padded = 0;
         break;
     case PLAIN:
@@ -1945,24 +1950,59 @@ void print_odf_element(GString *out, element *elt) {
         padded = 0;
         break;
     case PARA:
-        g_string_append_printf(out, "<text:p>");
+		g_string_append_printf(out, "<text:p");
+		switch (odf_type) {
+			case BLOCKQUOTE:
+				g_string_append_printf(out," text:style-name=\"Quotations\"");
+				break;
+			case CODE:
+				g_string_append_printf(out," text:style-name=\"Preformatted Text\"");
+				break;
+			case VERBATIM:
+				g_string_append_printf(out," text:style-name=\"Preformatted Text\"");
+				break;
+			default:
+				g_string_append_printf(out," text:style-name=\"Standard\"");
+				break;
+		}
+		g_string_append_printf(out, ">");
         print_odf_element_list(out, elt->children);
-        g_string_append_printf(out, "</text:p>");
+        g_string_append_printf(out, "</text:p>\n");
+        break;
+    case VERBATIM:
+		old_type = odf_type;
+		odf_type = VERBATIM;
+		g_string_append_printf(out, "<text:p text:style-name=\"Preformatted Text\">");
+        print_odf_code_string(out, elt->contents.str);
+		g_string_append_printf(out, "</text:p>\n");
+		odf_type = old_type;
         break;
     case BULLETLIST:
+		old_type = odf_type;
+		odf_type = BULLETLIST;
         g_string_append_printf(out, "%s", "<text:list>");
         print_odf_element_list(out, elt->children);
         g_string_append_printf(out, "%s", "</text:list>");
+		odf_type = old_type;
         break;
     case ORDEREDLIST:
-	    g_string_append_printf(out, "%s", "<text:list>");
+		old_type = odf_type;
+		odf_type = ORDEREDLIST;
+	    g_string_append_printf(out, "%s", "<text:list>\n");
 	    print_odf_element_list(out, elt->children);
-	    g_string_append_printf(out, "%s", "</text:list>");
+	    g_string_append_printf(out, "%s", "</text:list>\n");
+		odf_type = old_type;
 	    break;
     case LISTITEM:
-        g_string_append_printf(out, "<text:list-item>");
+        g_string_append_printf(out, "<text:list-item>\n<text:p text:style-name=\"P2\">");
         print_odf_element_list(out, elt->children);
-        g_string_append_printf(out, "</text:list-item>");
+        g_string_append_printf(out, "</text:p></text:list-item>\n");
+        break;
+    case BLOCKQUOTE:
+		old_type = odf_type;
+		odf_type = BLOCKQUOTE;
+        print_odf_element_list(out, elt->children);
+		odf_type = old_type;
         break;
 	case HEADINGSECTION:
 		print_odf_element_list(out, elt->children);
@@ -1971,6 +2011,7 @@ void print_odf_element(GString *out, element *elt) {
     	fprintf(stderr, "print_html_element encountered unknown element key = %d\n", elt->key);
 /*    	exit(EXIT_FAILURE);*/
 	}
+	free(old_type);
 }
 
 /* print_odf_element_list - print an element list as ODF */
@@ -1981,3 +2022,49 @@ void print_odf_element_list(GString *out, element *list) {
     }
 }
 
+/* print_odf_code_string - print string, escaping for HTML and saving newlines */
+static void print_odf_code_string(GString *out, char *str) {
+	char *tmp;
+    while (*str != '\0') {
+        switch (*str) {
+        case '&':
+            g_string_append_printf(out, "&amp;");
+            break;
+        case '<':
+            g_string_append_printf(out, "&lt;");
+            break;
+        case '>':
+            g_string_append_printf(out, "&gt;");
+            break;
+        case '"':
+            g_string_append_printf(out, "&quot;");
+            break;
+		case '\n':
+			g_string_append_printf(out, "<text:line-break/>");
+			break;
+		case ' ':
+			tmp = str;
+			tmp++;
+			if (*tmp == ' ') {
+				tmp++;
+				if (*tmp == ' ') {
+					tmp++;
+					if (*tmp == ' ') {
+						g_string_append_printf(out, "<text:tab/>");
+						str = tmp;
+                	} else {
+                    	g_string_append_printf(out, " ");
+					}
+                } else {
+	            	g_string_append_printf(out, " ");
+				}
+            } else {
+                g_string_append_printf(out, " ");
+            }
+			break;
+        default:
+               g_string_append_c(out, *str);
+        }
+    str++;
+    }
+}
