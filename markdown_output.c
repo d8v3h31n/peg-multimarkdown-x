@@ -36,6 +36,7 @@ static char cell_type = 'd';
 static int language = ENGLISH;
 static bool html_footer = FALSE;
 static int odf_type = 0;
+static bool in_list = FALSE;
 
 static void print_html_string(GString *out, char *str, bool obfuscate);
 static void print_html_element_list(GString *out, element *list, bool obfuscate);
@@ -1978,6 +1979,10 @@ void print_odf_element(GString *out, element *elt) {
 		odf_type = old_type;
         break;
     case BULLETLIST:
+		if ((odf_type == BULLETLIST) ||
+			(odf_type == ORDEREDLIST)) {
+			g_string_append_printf(out, "</text:p>");
+		}
 		old_type = odf_type;
 		odf_type = BULLETLIST;
         g_string_append_printf(out, "%s", "<text:list>");
@@ -1986,6 +1991,10 @@ void print_odf_element(GString *out, element *elt) {
 		odf_type = old_type;
         break;
     case ORDEREDLIST:
+		if ((odf_type == BULLETLIST) ||
+			(odf_type == ORDEREDLIST)) {
+			g_string_append_printf(out, "</text:p>");
+		}
 		old_type = odf_type;
 		odf_type = ORDEREDLIST;
 	    g_string_append_printf(out, "%s", "<text:list>\n");
@@ -1996,7 +2005,13 @@ void print_odf_element(GString *out, element *elt) {
     case LISTITEM:
         g_string_append_printf(out, "<text:list-item>\n<text:p text:style-name=\"P2\">");
         print_odf_element_list(out, elt->children);
-        g_string_append_printf(out, "</text:p></text:list-item>\n");
+
+        if ((list_contains_key(elt->children,BULLETLIST) ||
+			(list_contains_key(elt->children,ORDEREDLIST)))) {
+			} else {
+				g_string_append_printf(out, "</text:p>\n");
+			}
+        g_string_append_printf(out, "</text:list-item>\n");
         break;
     case BLOCKQUOTE:
 		old_type = odf_type;
@@ -2011,7 +2026,6 @@ void print_odf_element(GString *out, element *elt) {
     	fprintf(stderr, "print_html_element encountered unknown element key = %d\n", elt->key);
 /*    	exit(EXIT_FAILURE);*/
 	}
-	free(old_type);
 }
 
 /* print_odf_element_list - print an element list as ODF */
