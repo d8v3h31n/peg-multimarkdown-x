@@ -44,7 +44,7 @@ enum keys { LIST,   /* A generic list of values.  For ordered and bullet lists, 
             LISTITEM,
             BULLETLIST,
             ORDEREDLIST,
-            H1, H2, H3, H4, H5, H6,  /* Code assumes that these are in order. */
+            H1, H2, H3, H4, H5, H6, H7, /* Code assumes that these are in order. */
             BLOCKQUOTE,
             VERBATIM,
             HTMLBLOCK,
