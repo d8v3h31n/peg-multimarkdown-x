@@ -936,9 +936,9 @@ static void print_latex_element(GString *out, element *elt) {
         break;
     case VERBATIM:
         pad(out, 1);
-        g_string_append_printf(out, "\n\\begin{verbatim}\n\n");
+        g_string_append_printf(out, "\n\\begin{verbatim}\n");
         print_raw_element(out, elt);
-        g_string_append_printf(out, "\n\\end{verbatim}\n");
+        g_string_append_printf(out, "\\end{verbatim}\n");
         padded = 0;
         break;
     case BULLETLIST:
