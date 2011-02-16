@@ -71,6 +71,16 @@ void print_odf_header(GString *out){
 	"                               fo:text-indent=\"0in\"\n" \
 	"                               style:auto-text-indent=\"false\"/>\n" \
 	"</style:style>\n" \
+	"<style:style style:name=\"Table_20_Heading\" style:display-name=\"Table Heading\"\n" \
+	"             style:family=\"paragraph\"\n" \
+	"             style:parent-style-name=\"Table_20_Contents\"\n" \
+	"             style:class=\"extra\">\n" \
+	"   <style:paragraph-properties fo:text-align=\"center\" style:justify-single-word=\"false\"\n" \
+	"                               text:number-lines=\"false\"\n" \
+	"                               text:line-number=\"0\"/>\n" \
+	"   <style:text-properties fo:font-weight=\"bold\" style:font-weight-asian=\"bold\"\n" \
+	"                          style:font-weight-complex=\"bold\"/>\n" \
+	"</style:style>\n" \
 	"</office:styles>\n");
 	
 	/* Automatic style information */

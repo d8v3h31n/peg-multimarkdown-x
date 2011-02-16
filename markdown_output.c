@@ -2022,6 +2022,50 @@ void print_odf_element(GString *out, element *elt) {
 	case HEADINGSECTION:
 		print_odf_element_list(out, elt->children);
 		break;
+	case TABLE:
+		g_string_append_printf(out,"\n<table:table>\n");
+		print_odf_element_list(out, elt->children);
+		g_string_append_printf(out, "</table:table>");
+		break;
+   case TABLESEPARATOR:
+       table_alignment = elt->contents.str;
+       break;
+	case TABLECAPTION:
+		break;
+	case TABLELABEL:
+		break;
+	case TABLEHEAD:
+		for (table_column=0;table_column<strlen(table_alignment);table_column++) {
+			g_string_append_printf(out, "<table:table-column/>\n");
+		}
+        cell_type = 'h';
+        print_odf_element_list(out, elt->children);
+        cell_type = 'd';
+		break;
+	case TABLEBODY:
+		print_odf_element_list(out,elt->children);
+		break;
+	case TABLEROW:
+		g_string_append_printf(out, "<table:table-row>\n");
+		print_odf_element_list(out,elt->children);
+		g_string_append_printf(out,"</table:table-row>\n");
+		break;
+	case TABLECELL:
+		g_string_append_printf(out, "<table:table-cell");
+		if ((elt->children != NULL) && (elt->children->key == CELLSPAN)) {
+			g_string_append_printf(out, " table:number-columns-spanned=\"%d\"",(int)strlen(elt->children->contents.str)+1);
+		}
+		g_string_append_printf(out,">\n<text:p");
+		if (cell_type == 'h') {
+			g_string_append_printf(out, " text:style-name=\"Table_20_Heading\">");
+		} else {
+			g_string_append_printf(out, ">");
+		}
+		print_odf_element_list(out,elt->children);
+		g_string_append_printf(out, "</text:p>\n</table:table-cell>\n");
+		break;
+	case CELLSPAN:
+		break;	
 	default:
     	fprintf(stderr, "print_html_element encountered unknown element key = %d\n", elt->key);
 /*    	exit(EXIT_FAILURE);*/
