@@ -467,3 +467,13 @@ static void localize_typography(GString *out, int character, int lang, int outpu
         default:;
     }
 }
+
+/* Trim spaces at end of string */
+static void trim_trailing_whitespace(char *str) {    
+    while ( ( str[strlen(str)-1] == ' ' ) ||
+        ( str[strlen(str)-1] == '\n' ) || 
+        ( str[strlen(str)-1] == '\r' ) || 
+        ( str[strlen(str)-1] == '\t' ) ) {
+        str[strlen(str)-1] = '\0';
+    }
+}
