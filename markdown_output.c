@@ -1962,6 +1962,10 @@ void print_odf_element(GString *out, element *elt) {
 			case VERBATIM:
 				g_string_append_printf(out," text:style-name=\"Preformatted Text\"");
 				break;
+			case ORDEREDLIST:
+			case BULLETLIST:
+				g_string_append_printf(out," text:style-name=\"List\"");
+				break;
 			default:
 				g_string_append_printf(out," text:style-name=\"Standard\"");
 				break;
