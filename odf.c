@@ -93,6 +93,12 @@ void print_odf_header(GString *out){
 	"      <style:text-properties fo:font-weight=\"bold\" style:font-weight-asian=\"bold\"\n" \
 	"                             style:font-weight-complex=\"bold\"/>\n" \
 	"   </style:style>\n" \
+	"<style:style style:name=\"MMD-Center\" style:family=\"paragraph\" style:parent-style-name=\"Standard\">\n" \
+	"   <style:paragraph-properties fo:text-align=\"center\" style:justify-single-word=\"false\"/>\n" \
+	"</style:style>\n" \
+	"<style:style style:name=\"MMD-Right\" style:family=\"paragraph\" style:parent-style-name=\"Standard\">\n" \
+	"   <style:paragraph-properties fo:text-align=\"right\" style:justify-single-word=\"false\"/>\n" \
+	"</style:style>\n" \
 	"</office:automatic-styles>\n" \
 	"<style:style style:name=\"P1\" style:family=\"paragraph\" style:parent-style-name=\"Standard\"\n" \
 	"             style:list-style-name=\"L1\"/>\n" \
