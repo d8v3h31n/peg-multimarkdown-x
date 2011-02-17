@@ -2021,13 +2021,18 @@ void print_odf_element(GString *out, element *elt) {
 		odf_type = old_type;
 	    break;
     case LISTITEM:
-        g_string_append_printf(out, "<text:list-item>\n<text:p text:style-name=\"P2\">");
+        g_string_append_printf(out, "<text:list-item>\n");
+		if (elt->children->children->key != PARA) {
+			g_string_append_printf(out, "<text:p text:style-name=\"P2\">");
+		}
         print_odf_element_list(out, elt->children);
 
         if ((list_contains_key(elt->children,BULLETLIST) ||
 			(list_contains_key(elt->children,ORDEREDLIST)))) {
 			} else {
-				g_string_append_printf(out, "</text:p>\n");
+				if (elt->children->children->key != PARA) {
+					g_string_append_printf(out, "</text:p>");
+				}
 			}
         g_string_append_printf(out, "</text:list-item>\n");
         break;
