@@ -1898,18 +1898,30 @@ void print_odf_element(GString *out, element *elt) {
 	case HTML:
 		break;
     case LINK:
-        g_string_append_printf(out, "<text:a xlink:type=\"simple\" xlink:href=\"");
-        print_html_string(out, elt->contents.link->url, 0);
-        g_string_append_printf(out, "\"");
-        if (strlen(elt->contents.link->title) > 0) {
-            g_string_append_printf(out, " office:name=\"");
-            print_html_string(out, elt->contents.link->title, 0);
-            g_string_append_printf(out, "\"");
-        }
-/*        print_html_element_list(out, elt->contents.link->attr, obfuscate);*/
-        g_string_append_printf(out, ">");
-        print_odf_element_list(out, elt->contents.link->label);
-        g_string_append_printf(out, "</text:a>");
+		if (elt->contents.link->url[0] == '#') {
+			/* This is a cross-reference */
+			label = label_from_string(elt->contents.link->url,0);
+			if (elt->contents.link->label != NULL) {
+				g_string_append_printf(out, "<text:bookmark-ref text:reference-format=\"page\" text:ref-name=\"%s\">",label);
+				print_latex_element_list(out, elt->contents.link->label);
+				g_string_append_printf(out,"</text:bookmark-ref>");
+			} else {
+				
+			}
+		} else {
+	        g_string_append_printf(out, "<text:a xlink:type=\"simple\" xlink:href=\"");
+	        print_html_string(out, elt->contents.link->url, 0);
+	        g_string_append_printf(out, "\"");
+	        if (strlen(elt->contents.link->title) > 0) {
+	            g_string_append_printf(out, " office:name=\"");
+	            print_html_string(out, elt->contents.link->title, 0);
+	            g_string_append_printf(out, "\"");
+	        }
+	/*        print_html_element_list(out, elt->contents.link->attr, obfuscate);*/
+	        g_string_append_printf(out, ">");
+	        print_odf_element_list(out, elt->contents.link->label);
+	        g_string_append_printf(out, "</text:a>");
+		}
         break;
     case EMPH:
         g_string_append_printf(out,
@@ -1932,15 +1944,17 @@ void print_odf_element(GString *out, element *elt) {
         break;
     case H1: case H2: case H3: case H4: case H5: case H6:
         lev = elt->key - H1 + base_header_level;  /* assumes H1 ... H6 are in order */
-
+        g_string_append_printf(out, "<text:h text:outline-level=\"%d\">", lev);
         if (elt->children->key == AUTOLABEL) {
             /* generate a label for each header (MMD)*/
-            g_string_append_printf(out, "<text:h text:outline-level=\"%d\" >", lev);
+			g_string_append_printf(out,"<text:bookmark text:name=\"%s\"/>", elt->children->contents.str);
             print_odf_element_list(out, elt->children->next);
+			g_string_append_printf(out,"<text:bookmark-end text:name=\"%s\"/>", elt->children->contents.str);
         } else {
             label = label_from_element_list(elt->children, 0);
-            g_string_append_printf(out, "<text:h text:outline-level=\"%d\" >", lev);
+			g_string_append_printf(out,"<text:bookmark text:name=\"%s\"/>", label);
             print_odf_element_list(out, elt->children);
+			g_string_append_printf(out,"<text:bookmark-end text:name=\"%s\"/>", label);
             free(label);
         }
         g_string_append_printf(out, "</text:h>\n");
@@ -2035,7 +2049,15 @@ void print_odf_element(GString *out, element *elt) {
        table_alignment = elt->contents.str;
        break;
 	case TABLECAPTION:
-		break;
+	    if (elt->children->key == TABLELABEL) {
+	        label = label_from_element_list(elt->children->children,0);
+	    } else {
+	        label = label_from_element_list(elt->children,0);
+	    }
+		g_string_append_printf(out,"<text:bookmark text:name=\"%s\"/>", label);
+		g_string_append_printf(out,"<text:bookmark-end text:name=\"%s\"/>", label);
+        free(label);
+        break;
 	case TABLELABEL:
 		break;
 	case TABLEHEAD:
