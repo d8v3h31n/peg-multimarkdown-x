@@ -51,11 +51,6 @@ MetaDataOnly = a:StartList
              ( b:MetaData { a = cons(b, a); } | SkipBlock )*
              { parse_result = mk_list(LIST,a); }
 
-OldMetaDataOnly =  a:StartList ( &{ !extension(EXT_COMPATIBILITY) }
-		        &( MetaDataKey Sp ':' Sp (!Newline)) MetaData
-		            { a = cons($$, a);} )? SkipBlock*
-				{ parse_result = reverse(a);}
-
 MetaDataKeyValue = a:MetaDataKey
             Sp ':' Sp b:MetaDataValue
             { $$ = a;
@@ -77,6 +72,7 @@ MetaDataValue = a:StartList
                 (!BlankLine !MetaDataKeyValue Sp RawLine
                     { a = cons(mk_str(yytext), a);} )* )
                 { $$ = mk_str_from_list(a,false);
+                    trim_trailing_whitespace($$->contents.str);
                     $$->key = METAVALUE;
                 }
 
