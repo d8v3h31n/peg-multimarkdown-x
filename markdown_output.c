@@ -936,9 +936,9 @@ static void print_latex_element(GString *out, element *elt) {
         break;
     case VERBATIM:
         pad(out, 1);
-        g_string_append_printf(out, "\n\\begin{verbatim}\n\n");
+        g_string_append_printf(out, "\n\\begin{verbatim}\n");
         print_raw_element(out, elt);
-        g_string_append_printf(out, "\n\\end{verbatim}\n");
+        g_string_append_printf(out, "\\end{verbatim}\n");
         padded = 0;
         break;
     case BULLETLIST:
@@ -1109,6 +1109,13 @@ static void print_latex_element(GString *out, element *elt) {
         } else if (strcmp(elt->contents.str, "xhtmlheader") == 0) {
         } else if (strcmp(elt->contents.str, "css") == 0) {
         } else if (strcmp(elt->contents.str, "quoteslanguage") == 0) {
+            label = label_from_element_list(elt->children, 0);
+            if (strcmp(label, "dutch") == 0) { language = DUTCH; } else 
+            if (strcmp(label, "german") == 0) { language = GERMAN; } else 
+            if (strcmp(label, "germanguillemets") == 0) { language = GERMANGUILL; } else 
+            if (strcmp(label, "french") == 0) { language = FRENCH; } else 
+            if (strcmp(label, "swedish") == 0) { language = SWEDISH; }
+            free(label);
         } else {
             g_string_append_printf(out, "\\def\\");
             print_latex_string(out, elt->contents.str);
