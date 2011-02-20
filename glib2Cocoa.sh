@@ -26,8 +26,8 @@ perl -pi -e 's/\+ \(strlen\(yy/+ (int)(strlen(yy/g' markdown_parser.leg
 # Change to imports
 perl -pi -e 's/#include "utility_functions.m"/#import "utility_functions.m"/g' markdown_parser.leg
 perl -pi -e 's/#include "parsing_functions.m"/#import "parsing_functions.m"/g' markdown_parser.leg
-perl -pi -e 's/#include <glib.h>/#import <Foundation\/Foundation.h>/g' *.
-perl -pi -e 's/#include "markdown_peg.h"/#import "markdown_peg.h"/g' *.
+perl -pi -e 's/#include <glib.h>/#import <Foundation\/Foundation.h>/g' *.m *.h
+perl -pi -e 's/#include "markdown_peg.h"/#import "markdown_peg.h"/g' *.m *.h
 
 
 
