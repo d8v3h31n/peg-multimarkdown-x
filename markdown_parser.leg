@@ -400,6 +400,7 @@ HtmlBlockInTags = HtmlBlockAddress
                 | HtmlBlockMenu
                 | HtmlBlockNoframes
                 | HtmlBlockNoscript
+                | HtmlBlockOl
                 | HtmlBlockP
                 | HtmlBlockPre
                 | HtmlBlockTable
