@@ -133,11 +133,11 @@ SetextBottom1 = "===" '='* Newline
 SetextBottom2 = "---" '-'* Newline
 
 SetextHeading1 =  &(RawLine SetextBottom1)
-                  a:StartList ( !Endline !( &{ !extension(EXT_COMPATIBILITY) } Sp ReferenceLinkSingle ) Inline { a = cons($$, a); } )+ ( Sp b:AutoLabel { append_list(b,a);} Sp )? Newline
+                  a:StartList ( !Endline !( &{ !extension(EXT_COMPATIBILITY) } Sp AutoLabel ) Inline { a = cons($$, a); } )+ ( Sp b:AutoLabel { append_list(b,a);} Sp? )? Sp? Newline
                   SetextBottom1 { $$ = mk_list(H1, a); }
 
 SetextHeading2 =  &(RawLine SetextBottom2)
-                  a:StartList ( !Endline !( &{ !extension(EXT_COMPATIBILITY) } Sp ReferenceLinkSingle ) Inline { a = cons($$, a); } )+ ( Sp b:AutoLabel { append_list(b,a);} Sp)? Newline
+a:StartList ( !Endline !( &{ !extension(EXT_COMPATIBILITY) } Sp AutoLabel ) Inline { a = cons($$, a); } )+ ( Sp b:AutoLabel { append_list(b,a)} Sp? )? Sp? Newline
                   SetextBottom2 { $$ = mk_list(H2, a); }
 
 Heading = AtxHeading | SetextHeading
