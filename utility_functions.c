@@ -444,75 +444,75 @@ static void localize_typography(GString *out, int character, int lang, int outpu
         case LATEXOUT:
             switch (character) {
                 case LSQUOTE:
-	                switch (lang) {
-	                    case SWEDISH:
-                    		g_string_append_printf(out,"'");
-	                        break;
-	                    case FRENCH:
-	                        g_string_append_printf(out,"'");
-	                        break;
-	                    case GERMAN:
-	                        g_string_append_printf(out,"‚");
-	                        break;
-	                    case GERMANGUILL:
-	                        g_string_append_printf(out,"›");
-	                        break;
-	                    default:
-	                    	g_string_append_printf(out,"`");
+                    switch (lang) {
+                        case SWEDISH:
+                            g_string_append_printf(out,"'");
+                            break;
+                        case FRENCH:
+                            g_string_append_printf(out,"'");
+                            break;
+                        case GERMAN:
+                            g_string_append_printf(out,"‚");
+                            break;
+                        case GERMANGUILL:
+                            g_string_append_printf(out,"›");
+                            break;
+                        default:
+                            g_string_append_printf(out,"`");
                     }
                     break;
                 case RSQUOTE:
-	                switch (lang) {
-	                    case GERMAN:
-	                        g_string_append_printf(out,"`");
-	                        break;
-	                    case GERMANGUILL:
-	                        g_string_append_printf(out,"‹");
-	                        break;
-	                    default:
-	                    	g_string_append_printf(out,"'");
+                    switch (lang) {
+                        case GERMAN:
+                            g_string_append_printf(out,"`");
+                            break;
+                        case GERMANGUILL:
+                            g_string_append_printf(out,"‹");
+                            break;
+                        default:
+                            g_string_append_printf(out,"'");
                     }
-					break;
+                    break;
                 case APOS:
                     g_string_append_printf(out,"'");
                     break;
                 case LDQUOTE:
-	                switch (lang) {
-	                    case DUTCH:
-	                    case GERMAN:
-	                        g_string_append_printf(out,"„");
-	                        break;
-	                    case GERMANGUILL:
-	                        g_string_append_printf(out,"»");
-	                        break;
-	                    case FRENCH:
-	                        g_string_append_printf(out,"«");
-	                        break;
-	                    case SWEDISH:
-                    		g_string_append_printf(out,"''");
-	                        break;
-	                    default:
-	                    	g_string_append_printf(out,"``");
-	                    }
+                    switch (lang) {
+                        case DUTCH:
+                        case GERMAN:
+                            g_string_append_printf(out,"„");
+                            break;
+                        case GERMANGUILL:
+                            g_string_append_printf(out,"»");
+                            break;
+                        case FRENCH:
+                            g_string_append_printf(out,"«");
+                            break;
+                        case SWEDISH:
+                            g_string_append_printf(out,"''");
+                            break;
+                        default:
+                            g_string_append_printf(out,"``");
+                        }
                     break;
                 case RDQUOTE:
-	                switch (lang) {
-	                    case SWEDISH:
-	                    case DUTCH:
-	                        g_string_append_printf(out,"''");
-	                        break;
-	                    case GERMAN:
-	                        g_string_append_printf(out,"``");
-	                        break;
-	                    case GERMANGUILL:
-	                        g_string_append_printf(out,"«");
-	                        break;
-	                    case FRENCH:
-	                        g_string_append_printf(out,"»");
-	                        break;
-	                    default:
-	                    	g_string_append_printf(out,"''");
-	                    }
+                    switch (lang) {
+                        case SWEDISH:
+                        case DUTCH:
+                            g_string_append_printf(out,"''");
+                            break;
+                        case GERMAN:
+                            g_string_append_printf(out,"``");
+                            break;
+                        case GERMANGUILL:
+                            g_string_append_printf(out,"«");
+                            break;
+                        case FRENCH:
+                            g_string_append_printf(out,"»");
+                            break;
+                        default:
+                            g_string_append_printf(out,"''");
+                        }
                     break;
                 case NDASH:
                     g_string_append_printf(out,"--");
