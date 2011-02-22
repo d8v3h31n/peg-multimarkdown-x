@@ -1109,7 +1109,7 @@ TableCaption = a:Label ( b:Label { b->key = TABLELABEL})? Sp Newline
     }
 }
 
-AutoLabel = '[' < (!']' .)+ > ']' 
+AutoLabel = '[' < (!']' .)+ > ']' &(!'(')
 { 
     char *label = label_from_string(yytext,0);
     $$ = mk_str(label);
