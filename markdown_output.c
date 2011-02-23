@@ -59,6 +59,9 @@ static void print_memoir_element(GString *out, element *elt);
 static void print_beamer_element_list(GString *out, element *list);
 static void print_beamer_element(GString *out, element *elt);
 
+static void print_opml_element_list(GString *out, element *list);
+static void print_opml_element(GString *out, element *elt);
+
 element * print_html_headingsection(GString *out, element *list, bool obfuscate);
 
 static bool list_contains_key(element *list, int key);
@@ -1452,6 +1455,9 @@ void print_element_list(GString *out, element *elt, int format, int exts) {
     case BEAMER_FORMAT:
         print_beamer_element_list(out, elt);
         break;
+	case OPML_FORMAT:
+		print_opml_element_list(out, elt);
+		break;
     case GROFF_MM_FORMAT:
         print_groff_mm_element_list(out, elt);
         break;
@@ -1847,4 +1853,28 @@ static bool is_html_complete_doc(element *meta) {
     }
     
     return FALSE;
+}
+
+
+/* print_opml_element_list - print an element list as OPML */
+void print_opml_element_list(GString *out, element *list) {
+    while (list != NULL) {
+        print_opml_element(out, list);
+        list = list->next;
+    }
+}
+
+/* print_opml_element - print an element as OPML */
+static void print_opml_element(GString *out, element *elt) {
+    switch (elt->key) {
+        case FOOTER:
+            print_beamer_endnotes(out);
+            g_string_append_printf(out, "\\mode<all>\n");
+            print_latex_footer(out);
+            g_string_append_printf(out, "\\mode*\n");
+            break;
+	    default: 
+	        fprintf(stderr, "print_opml_element encountered unknown element key = %d\n", elt->key);
+	        exit(EXIT_FAILURE);
+    }
 }
