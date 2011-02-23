@@ -170,9 +170,6 @@ element * parse_markdown_for_opml(char *string, int extensions) {
 
     char *oldcharbuf;
     syntax_extensions = extensions;
-    references = NULL;
-    notes = NULL;
-    labels = NULL;
 
     oldcharbuf = charbuf;
     charbuf = string;

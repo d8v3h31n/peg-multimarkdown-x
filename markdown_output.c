@@ -1900,7 +1900,7 @@ static void print_opml_element(GString *out, element *elt) {
 		case PLAIN:
 			print_opml_element_list(out,elt->children);
 			if ((elt->next != NULL) && (elt->next->key == PLAIN)) {
-				g_string_append_printf(out, "&#10;&#10;");
+				g_string_append_printf(out, "&#10;");
 			}
 			break;
 	    default: 

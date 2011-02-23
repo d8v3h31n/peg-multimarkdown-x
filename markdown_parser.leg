@@ -1129,32 +1129,35 @@ MathSpan = '\\' < (
 
 
 DocForOPML = a:StartList b:StartList 
-    ( &{ !extension(EXT_COMPATIBILITY) }
-        &( MetaDataKey Sp ':' Sp (!Newline)) MetaData
-            { a = cons($$, a); b = mk_element(FOOTER);})?
+    ( &( MetaDataKey Sp ':' Sp (!Newline)) MetaData
+            { a = cons($$, a); })?
     ( OPMLBlock { a = cons($$, a); } )*
-    { if (b != NULL) a = cons(b, a);
-        parse_result = reverse(a);
-    }
+    { parse_result = reverse(a); }
 
 OPMLBlock =     BlankLine*
             ( OPMLHeadingSection
-            | Plain )
+            | OPMLPlain )
 
-OPMLHeadingSection = a:StartList Heading { a = cons($$, a); }
+OPMLHeadingSection = a:StartList OPMLHeading { a = cons($$, a); }
     (OPMLSectionBlock {a = cons($$, a); })*
     { $$ = mk_list(HEADINGSECTION, a);}
 
-OPMLSectionBlock =
-            BlankLine*
-            !Heading
-			Plain
-
-OPMLPlain = < Plain >
+OPMLHeading = &(Heading) s:AtxStart Sp? 
+	< (!Newline !(Sp? '#'* Sp Newline) .)* > 
+	(Sp? '#'+)? Sp? Newline
 	{
 		$$ = mk_str(yytext);
-		$$->key = PLAIN;
+		$$->key = s->key;
+		free(s);
 	}
+
+OPMLSectionBlock =
+		BlankLine*
+		!OPMLHeading
+		OPMLPlain
+
+OPMLPlain = a:StartList (!BlankLine Line { a = cons($$,a); })+
+	{ $$ = mk_list(PLAIN, a); }
 
 %%
 
