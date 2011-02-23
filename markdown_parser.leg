@@ -1144,21 +1144,21 @@ OPMLHeadingSection = a:StartList OPMLHeading { a = cons($$, a); }
     { $$ = mk_list(HEADINGSECTION, a);}
 
 OPMLHeading = &(Heading) s:AtxStart Sp? 
-	< (!Newline !(Sp? '#'* Sp Newline) .)* > 
-	(Sp? '#'+)? Sp? Newline
-	{
-		$$ = mk_str(yytext);
-		$$->key = s->key;
-		free(s);
-	}
+    < (!Newline !(Sp? '#'* Sp Newline) .)* > 
+    (Sp? '#'+)? Sp? Newline
+    {
+        $$ = mk_str(yytext);
+        $$->key = s->key;
+        free(s);
+    }
 
 OPMLSectionBlock =
-		BlankLine*
-		!OPMLHeading
-		OPMLPlain
+        BlankLine*
+        !OPMLHeading
+        OPMLPlain
 
 OPMLPlain = a:StartList (!BlankLine Line { a = cons($$,a); })+
-	{ $$ = mk_list(PLAIN, a); }
+    { $$ = mk_list(PLAIN, a); }
 
 %%
 

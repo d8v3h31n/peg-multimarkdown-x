@@ -187,7 +187,7 @@ int main(int argc, char * argv[]) {
                 /* Display metadata on request */
                 if (opt_extract_meta) {
                     out = extract_metadata_value(inputbuf->str, extensions, opt_extract_meta);
-            		if (out != NULL) fprintf(stdout, "%s\n", out);
+                    if (out != NULL) fprintf(stdout, "%s\n", out);
                     return(EXIT_SUCCESS);
                 }
                 
@@ -205,7 +205,7 @@ int main(int argc, char * argv[]) {
                     g_string_append(file,".html");
                 } else if (output_format == OPML_FORMAT) {
                     g_string_append(file,".opml");
-	            } else {
+                } else {
                     g_string_append(file,".tex");
                 }
 
