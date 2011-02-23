@@ -166,3 +166,17 @@ element * parse_metadata_only(char *string, int extensions) {
 
 }
 
+element * parse_markdown_for_opml(char *string, int extensions) {
+
+    char *oldcharbuf;
+    syntax_extensions = extensions;
+
+    oldcharbuf = charbuf;
+    charbuf = string;
+
+    yyparsefrom(yy_DocForOPML);
+
+    charbuf = oldcharbuf;          /* restore charbuf to original value */
+    return parse_result;
+
+}

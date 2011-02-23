@@ -16,6 +16,7 @@ enum markdown_formats {
     LATEX_FORMAT,
     MEMOIR_FORMAT,
     BEAMER_FORMAT,
+    OPML_FORMAT,
     GROFF_MM_FORMAT
 };
 
