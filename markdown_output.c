@@ -1870,6 +1870,15 @@ void print_opml_element_list(GString *out, element *list) {
 /* print_opml_element - print an element as OPML */
 static void print_opml_element(GString *out, element *elt) {
     switch (elt->key) {
+        case HEADINGSECTION:
+			/* Need to handle "nesting" properly */
+			g_string_append_printf(out, "<outline ");
+			print_opml_element_list(out,elt->children);
+			g_string_append_printf(out, "</outline>\n");
+			break;
+		case H1: case H2: case H3: case H4: case H5: case H6: 
+			g_string_append_printf(out, "text=\"%s\" ", elt->contents.str);
+			break;
         case FOOTER:
             print_beamer_endnotes(out);
             g_string_append_printf(out, "\\mode<all>\n");
