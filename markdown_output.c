@@ -63,6 +63,7 @@ static void print_opml_string(GString *out, char *str);
 static void print_opml_element_list(GString *out, element *list);
 static void print_opml_element(GString *out, element *elt);
 static void print_opml_metadata(GString *out, element *elt);
+static void print_opml_section_and_children(GString *out, element *list);
 
 element * print_html_headingsection(GString *out, element *list, bool obfuscate);
 
@@ -648,7 +649,7 @@ static void print_html_endnotes(GString *out) {
 
 /* print_latex_string - print string, escaping for LaTeX */
 static void print_latex_string(GString *out, char *str) {
-	char *tmp;
+    char *tmp;
     while (*str != '\0') {
         switch (*str) {
           case '{': case '}': case '$': case '%':
@@ -1457,13 +1458,13 @@ void print_element_list(GString *out, element *elt, int format, int exts) {
     case BEAMER_FORMAT:
         print_beamer_element_list(out, elt);
         break;
-	case OPML_FORMAT:
-		g_string_append_printf(out, "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<opml version=\"1.0\">\n");
-		g_string_append_printf(out, "<body>\n");
-		print_opml_element_list(out, elt);
+    case OPML_FORMAT:
+        g_string_append_printf(out, "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<opml version=\"1.0\">\n");
+        g_string_append_printf(out, "<body>\n");
+        print_opml_element_list(out, elt);
         if (html_footer == TRUE) print_opml_metadata(out, elt);
-		g_string_append_printf(out, "</body>\n</opml>");
-		break;
+        g_string_append_printf(out, "</body>\n</opml>");
+        break;
     case GROFF_MM_FORMAT:
         print_groff_mm_element_list(out, elt);
         break;
@@ -1864,10 +1865,39 @@ static bool is_html_complete_doc(element *meta) {
 
 /* print_opml_element_list - print an element list as OPML */
 void print_opml_element_list(GString *out, element *list) {
+    int lev;
     while (list != NULL) {
-        print_opml_element(out, list);
+        if (list->key == HEADINGSECTION) {
+            lev = list->children->key;
+            
+            print_opml_section_and_children(out, list);
+            
+            while ((list->next != NULL) && (list->next->key == HEADINGSECTION)
+                && (list->next->children->key > lev)) {
+                    list = list->next;
+            }
+        } else {
+            print_opml_element(out, list);
+        }
         list = list->next;
     }
+}
+
+/* print_opml_section_and_children - print section and "children" */
+static void print_opml_section_and_children(GString *out, element *list) {
+    int lev = list->children->key;
+    /* Print current section, aka "parent" */
+    print_opml_element(out, list);
+    
+    /* check for children */
+    while ((list->next != NULL) && (list->next->key == HEADINGSECTION) 
+        && (list->next->children->key > lev)) {
+            /* next item is also HEADINGSECTION and is child */
+            if (list->next->children->key - lev == 1)
+                print_opml_section_and_children(out,list->next);
+            list = list->next;
+        }
+    g_string_append_printf(out, "</outline>\n");
 }
 
 /* print_opml_element - print an element as OPML */
@@ -1895,11 +1925,14 @@ static void print_opml_element(GString *out, element *elt) {
             g_string_append_printf(out, "_note=\"");
             print_opml_element_list(out,elt->children->next);
             g_string_append_printf(out, "\">");
-
-            g_string_append_printf(out, "</outline>\n");
             break;
         case H1: case H2: case H3: case H4: case H5: case H6: 
-            g_string_append_printf(out, "text=\"%s\" ", elt->contents.str);
+            g_string_append_printf(out, "text=\"");
+            print_opml_string(out, elt->contents.str);
+            g_string_append_printf(out,"\"");
+            break;
+        case VERBATIM:
+            print_opml_string(out, elt->contents.str);
             break;
         case SPACE:
             print_opml_string(out, elt->contents.str);
