@@ -1456,7 +1456,10 @@ void print_element_list(GString *out, element *elt, int format, int exts) {
         print_beamer_element_list(out, elt);
         break;
 	case OPML_FORMAT:
+		g_string_append_printf(out, "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<opml version=\"1.0\">\n");
+		g_string_append_printf(out, "<body>\n");
 		print_opml_element_list(out, elt);
+		g_string_append_printf(out, "</body>\n</opml>");
 		break;
     case GROFF_MM_FORMAT:
         print_groff_mm_element_list(out, elt);
@@ -1875,6 +1878,6 @@ static void print_opml_element(GString *out, element *elt) {
             break;
 	    default: 
 	        fprintf(stderr, "print_opml_element encountered unknown element key = %d\n", elt->key);
-	        exit(EXIT_FAILURE);
+	        /*exit(EXIT_FAILURE);*/
     }
 }
