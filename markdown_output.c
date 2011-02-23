@@ -59,6 +59,7 @@ static void print_memoir_element(GString *out, element *elt);
 static void print_beamer_element_list(GString *out, element *list);
 static void print_beamer_element(GString *out, element *elt);
 
+static void print_opml_string(GString *out, char *str);
 static void print_opml_element_list(GString *out, element *list);
 static void print_opml_element(GString *out, element *elt);
 
@@ -1873,20 +1874,63 @@ static void print_opml_element(GString *out, element *elt) {
         case HEADINGSECTION:
 			/* Need to handle "nesting" properly */
 			g_string_append_printf(out, "<outline ");
-			print_opml_element_list(out,elt->children);
+			
+			/* Print header */
+			print_opml_element(out,elt->children);
+			
+			/* print remainder of paragraphs as note */
+			g_string_append_printf(out, "_note=\"");
+			print_opml_element_list(out,elt->children->next);
+			g_string_append_printf(out, "\">");
+
 			g_string_append_printf(out, "</outline>\n");
 			break;
 		case H1: case H2: case H3: case H4: case H5: case H6: 
 			g_string_append_printf(out, "text=\"%s\" ", elt->contents.str);
 			break;
-        case FOOTER:
-            print_beamer_endnotes(out);
-            g_string_append_printf(out, "\\mode<all>\n");
-            print_latex_footer(out);
-            g_string_append_printf(out, "\\mode*\n");
-            break;
+	    case SPACE:
+			print_opml_string(out, elt->contents.str);
+	        break;
+	    case STR:
+	        print_opml_string(out, elt->contents.str);
+	        break;
+	    case LINEBREAK:
+	        g_string_append_printf(out, "  &#10;");
+	        break;
+		case PLAIN:
+			print_opml_element_list(out,elt->children);
+			if ((elt->next != NULL) && (elt->next->key == PLAIN)) {
+				g_string_append_printf(out, "&#10;&#10;");
+			}
+			break;
 	    default: 
 	        fprintf(stderr, "print_opml_element encountered unknown element key = %d\n", elt->key);
 	        /*exit(EXIT_FAILURE);*/
+    }
+}
+
+/* print_opml_string - print string, escaping for OPML */
+static void print_opml_string(GString *out, char *str) {
+    while (*str != '\0') {
+        switch (*str) {
+        case '&':
+            g_string_append_printf(out, "&amp;");
+            break;
+        case '<':
+            g_string_append_printf(out, "&lt;");
+            break;
+        case '>':
+            g_string_append_printf(out, "&gt;");
+            break;
+        case '"':
+            g_string_append_printf(out, "&quot;");
+            break;
+		case '\n': case '\r':
+			g_string_append_printf(out, "&#10;");
+			break;
+        default:
+            g_string_append_c(out, *str);
+        }
+    str++;
     }
 }

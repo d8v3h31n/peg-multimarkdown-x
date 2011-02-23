@@ -137,3 +137,5 @@ element * parse_metadata_only(char *string, int extensions);
 char * extract_metadata_value(char *text, int extensions, char *key);
 
 char * metavalue_for_key(char *key, element *list);
+
+element * parse_markdown_for_opml(char *string, int extensions);

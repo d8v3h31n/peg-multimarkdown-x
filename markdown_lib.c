@@ -153,20 +153,27 @@ GString * markdown_to_g_string(char *text, int extensions, int output_format) {
 
     formatted_text = preformat_text(text);
 
-    references = parse_references(formatted_text->str, extensions);
-    notes = parse_notes(formatted_text->str, extensions, references);
-    labels = parse_labels(formatted_text->str, extensions, references, notes);
-    result = parse_markdown_with_metadata(formatted_text->str, extensions, references, notes, labels);
+	if (output_format == OPML_FORMAT) {
+		result = parse_markdown_for_opml(formatted_text->str, extensions);
+	} else {
+	    references = parse_references(formatted_text->str, extensions);
+	    notes = parse_notes(formatted_text->str, extensions, references);
+	    labels = parse_labels(formatted_text->str, extensions, references, notes);
+	    result = parse_markdown_with_metadata(formatted_text->str, extensions, references, notes, labels);
 
-    result = process_raw_blocks(result, extensions, references, notes, labels);
+	    result = process_raw_blocks(result, extensions, references, notes, labels);
+	}
 
     g_string_free(formatted_text, TRUE);
 
     print_element_list(out, result, output_format, extensions);
 
     free_element_list(result);
-    free_element_list(references);
-    free_element_list(labels);
+
+	if (output_format != OPML_FORMAT) {
+		free_element_list(references);
+	    free_element_list(labels);
+	}
     return out;
 }
 

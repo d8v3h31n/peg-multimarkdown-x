@@ -1127,6 +1127,35 @@ MathSpan = '\\' < (
     $$->key = MATHSPAN;
 }
 
+
+DocForOPML = a:StartList b:StartList 
+    ( &{ !extension(EXT_COMPATIBILITY) }
+        &( MetaDataKey Sp ':' Sp (!Newline)) MetaData
+            { a = cons($$, a); b = mk_element(FOOTER);})?
+    ( OPMLBlock { a = cons($$, a); } )*
+    { if (b != NULL) a = cons(b, a);
+        parse_result = reverse(a);
+    }
+
+OPMLBlock =     BlankLine*
+            ( OPMLHeadingSection
+            | Plain )
+
+OPMLHeadingSection = a:StartList Heading { a = cons($$, a); }
+    (OPMLSectionBlock {a = cons($$, a); })*
+    { $$ = mk_list(HEADINGSECTION, a);}
+
+OPMLSectionBlock =
+            BlankLine*
+            !Heading
+			Plain
+
+OPMLPlain = < Plain >
+	{
+		$$ = mk_str(yytext);
+		$$->key = PLAIN;
+	}
+
 %%
 
 #include "parsing_functions.c"
