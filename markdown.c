@@ -35,7 +35,7 @@ static int extensions;
 
  ***********************************************************************/
 
-#define VERSION "3.0b5"
+#define VERSION "3.0b6"
 #define COPYRIGHT "portions Copyright (c) 2010-2011 Fletcher T. Penney.\n" \
                   "original Copyright (c) 2008-2009 John MacFarlane.  License GPLv2+ or MIT.\n" \
                   "This is free software: you are free to change and redistribute it.\n" \
@@ -114,7 +114,7 @@ int main(int argc, char * argv[]) {
     g_option_group_add_entries (ext_group, ext_entries);
     g_option_context_add_group (context, ext_group);
     g_option_context_set_description (context, "Converts text in specified files (or stdin) from markdown to FORMAT.\n"
-                                               "Available FORMATs:  html, latex, memoir, beamer");
+                                               "Available FORMATs:  html, latex, memoir, beamer, opml");
     if (!g_option_context_parse (context, &argc, &argv, &error)) {
         g_print ("option parsing failed: %s\n", error->message);
         exit (1);
@@ -159,6 +159,8 @@ int main(int argc, char * argv[]) {
         output_format = MEMOIR_FORMAT;
     else if (strcmp(opt_to, "beamer") == 0)
         output_format = BEAMER_FORMAT;
+    else if (strcmp(opt_to, "opml") == 0)
+        output_format = OPML_FORMAT;
     else {
         fprintf(stderr, "%s: Unknown output format '%s'\n", progname, opt_to);
         exit(EXIT_FAILURE);
@@ -185,7 +187,7 @@ int main(int argc, char * argv[]) {
                 /* Display metadata on request */
                 if (opt_extract_meta) {
                     out = extract_metadata_value(inputbuf->str, extensions, opt_extract_meta);
-            		if (out != NULL) fprintf(stdout, "%s\n", out);
+                    if (out != NULL) fprintf(stdout, "%s\n", out);
                     return(EXIT_SUCCESS);
                 }
                 
@@ -201,6 +203,8 @@ int main(int argc, char * argv[]) {
                 file = g_string_new(fake);
                 if (output_format == HTML_FORMAT) {
                     g_string_append(file,".html");
+                } else if (output_format == OPML_FORMAT) {
+                    g_string_append(file,".opml");
                 } else {
                     g_string_append(file,".tex");
                 }

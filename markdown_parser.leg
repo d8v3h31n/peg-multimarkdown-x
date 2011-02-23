@@ -117,7 +117,7 @@ Para =      NonindentSpace a:Inlines BlankLine+
 Plain =     a:Inlines
             { $$ = a; $$->key = PLAIN; }
 
-AtxInline = !Newline !( &{ !extension(EXT_COMPATIBILITY) } Sp AutoLabel ) !(Sp? '#'* Sp Newline) Inline
+AtxInline = !Newline !( &{ !extension(EXT_COMPATIBILITY) } Sp AutoLabel Sp? '#'* Sp Newline) !(Sp? '#'* Sp Newline) Inline
 
 AtxStart =  < ( "######" | "#####" | "####" | "###" | "##" | "#" ) >
             { $$ = mk_element(H1 + (strlen(yytext) - 1)); }
@@ -133,11 +133,11 @@ SetextBottom1 = "===" '='* Newline
 SetextBottom2 = "---" '-'* Newline
 
 SetextHeading1 =  &(RawLine SetextBottom1)
-                  a:StartList ( !Endline !( &{ !extension(EXT_COMPATIBILITY) } Sp ReferenceLinkSingle ) Inline { a = cons($$, a); } )+ ( Sp b:AutoLabel { append_list(b,a);} Sp )? Newline
+                  a:StartList ( !Endline !( &{ !extension(EXT_COMPATIBILITY) } Sp AutoLabel ) Inline { a = cons($$, a); } )+ ( Sp b:AutoLabel { append_list(b,a);} Sp? )? Sp? Newline
                   SetextBottom1 { $$ = mk_list(H1, a); }
 
 SetextHeading2 =  &(RawLine SetextBottom2)
-                  a:StartList ( !Endline !( &{ !extension(EXT_COMPATIBILITY) } Sp ReferenceLinkSingle ) Inline { a = cons($$, a); } )+ ( Sp b:AutoLabel { append_list(b,a);} Sp)? Newline
+a:StartList ( !Endline !( &{ !extension(EXT_COMPATIBILITY) } Sp AutoLabel ) Inline { a = cons($$, a); } )+ ( Sp b:AutoLabel { append_list(b,a)} Sp? )? Sp? Newline
                   SetextBottom2 { $$ = mk_list(H2, a); }
 
 Heading = AtxHeading | SetextHeading
@@ -400,6 +400,7 @@ HtmlBlockInTags = HtmlBlockAddress
                 | HtmlBlockMenu
                 | HtmlBlockNoframes
                 | HtmlBlockNoscript
+                | HtmlBlockOl
                 | HtmlBlockP
                 | HtmlBlockPre
                 | HtmlBlockTable
@@ -1108,7 +1109,7 @@ TableCaption = a:Label ( b:Label { b->key = TABLELABEL})? Sp Newline
     }
 }
 
-AutoLabel = '[' < (!']' .)+ > ']' 
+AutoLabel = '[' < (!']' .)+ > ']' &(!(Sp? '('))
 { 
     char *label = label_from_string(yytext,0);
     $$ = mk_str(label);
@@ -1126,6 +1127,38 @@ MathSpan = '\\' < (
     $$ = mk_str(yytext);
     $$->key = MATHSPAN;
 }
+
+
+DocForOPML = a:StartList b:StartList 
+    ( &( MetaDataKey Sp ':' Sp (!Newline)) MetaData
+            { a = cons($$, a); })?
+    ( OPMLBlock { a = cons($$, a); } )*
+    { parse_result = reverse(a); }
+
+OPMLBlock =     BlankLine*
+            ( OPMLHeadingSection
+            | OPMLPlain )
+
+OPMLHeadingSection = a:StartList OPMLHeading { a = cons($$, a); }
+    (OPMLSectionBlock {a = cons($$, a); })*
+    { $$ = mk_list(HEADINGSECTION, a);}
+
+OPMLHeading = &(Heading) s:AtxStart Sp? 
+    < (!Newline !(Sp? '#'* Sp Newline) .)* > 
+    (Sp? '#'+)? Sp? Newline
+    {
+        $$ = mk_str(yytext);
+        $$->key = s->key;
+        free(s);
+    }
+
+OPMLSectionBlock =
+        BlankLine*
+        !OPMLHeading
+        OPMLPlain
+
+OPMLPlain = a:StartList (!BlankLine Line { a = cons($$,a); })+
+    { $$ = mk_list(PLAIN, a); }
 
 %%
 

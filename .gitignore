@@ -1,7 +1,7 @@
 .DS_Store
 
 test.*
-
+testing/*
 
 *.o
 markdown_parser.c
