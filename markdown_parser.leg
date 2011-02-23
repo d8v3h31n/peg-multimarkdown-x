@@ -117,7 +117,7 @@ Para =      NonindentSpace a:Inlines BlankLine+
 Plain =     a:Inlines
             { $$ = a; $$->key = PLAIN; }
 
-AtxInline = !Newline !( &{ !extension(EXT_COMPATIBILITY) } Sp AutoLabel ) !(Sp? '#'* Sp Newline) Inline
+AtxInline = !Newline !( &{ !extension(EXT_COMPATIBILITY) } Sp AutoLabel Sp? '#'* Sp Newline) !(Sp? '#'* Sp Newline) Inline
 
 AtxStart =  < ( "######" | "#####" | "####" | "###" | "##" | "#" ) >
             { $$ = mk_element(H1 + (strlen(yytext) - 1)); }
@@ -1109,7 +1109,7 @@ TableCaption = a:Label ( b:Label { b->key = TABLELABEL})? Sp Newline
     }
 }
 
-AutoLabel = '[' < (!']' .)+ > ']' &(!'(')
+AutoLabel = '[' < (!']' .)+ > ']' &(!(Sp? '('))
 { 
     char *label = label_from_string(yytext,0);
     $$ = mk_str(label);
