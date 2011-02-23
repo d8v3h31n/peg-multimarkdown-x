@@ -203,7 +203,9 @@ int main(int argc, char * argv[]) {
                 file = g_string_new(fake);
                 if (output_format == HTML_FORMAT) {
                     g_string_append(file,".html");
-                } else {
+                } else if (output_format == OPML_FORMAT) {
+                    g_string_append(file,".opml");
+	            } else {
                     g_string_append(file,".tex");
                 }
 
