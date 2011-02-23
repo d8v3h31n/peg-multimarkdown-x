@@ -62,6 +62,7 @@ static void print_beamer_element(GString *out, element *elt);
 static void print_opml_string(GString *out, char *str);
 static void print_opml_element_list(GString *out, element *list);
 static void print_opml_element(GString *out, element *elt);
+static void print_opml_metadata(GString *out, element *elt);
 
 element * print_html_headingsection(GString *out, element *list, bool obfuscate);
 
@@ -1460,6 +1461,7 @@ void print_element_list(GString *out, element *elt, int format, int exts) {
 		g_string_append_printf(out, "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<opml version=\"1.0\">\n");
 		g_string_append_printf(out, "<body>\n");
 		print_opml_element_list(out, elt);
+        if (html_footer == TRUE) print_opml_metadata(out, elt);
 		g_string_append_printf(out, "</body>\n</opml>");
 		break;
     case GROFF_MM_FORMAT:
@@ -1871,41 +1873,52 @@ void print_opml_element_list(GString *out, element *list) {
 /* print_opml_element - print an element as OPML */
 static void print_opml_element(GString *out, element *elt) {
     switch (elt->key) {
+        case METADATA:
+            /* Metadata is present, so will need to be appended */
+            html_footer = true;
+            break;
+        case METAKEY:
+            g_string_append_printf(out, "<outline text=\"");
+            print_opml_string(out,elt->contents.str);
+            g_string_append_printf(out, "\" _note=\"", elt->contents.str);
+            print_opml_string(out, elt->children->contents.str);
+            g_string_append_printf(out, "\"/>");
+            break;
         case HEADINGSECTION:
-			/* Need to handle "nesting" properly */
-			g_string_append_printf(out, "<outline ");
-			
-			/* Print header */
-			print_opml_element(out,elt->children);
-			
-			/* print remainder of paragraphs as note */
-			g_string_append_printf(out, "_note=\"");
-			print_opml_element_list(out,elt->children->next);
-			g_string_append_printf(out, "\">");
+            /* Need to handle "nesting" properly */
+            g_string_append_printf(out, "<outline ");
+            
+            /* Print header */
+            print_opml_element(out,elt->children);
+            
+            /* print remainder of paragraphs as note */
+            g_string_append_printf(out, "_note=\"");
+            print_opml_element_list(out,elt->children->next);
+            g_string_append_printf(out, "\">");
 
-			g_string_append_printf(out, "</outline>\n");
-			break;
-		case H1: case H2: case H3: case H4: case H5: case H6: 
-			g_string_append_printf(out, "text=\"%s\" ", elt->contents.str);
-			break;
-	    case SPACE:
-			print_opml_string(out, elt->contents.str);
-	        break;
-	    case STR:
-	        print_opml_string(out, elt->contents.str);
-	        break;
-	    case LINEBREAK:
-	        g_string_append_printf(out, "  &#10;");
-	        break;
-		case PLAIN:
-			print_opml_element_list(out,elt->children);
-			if ((elt->next != NULL) && (elt->next->key == PLAIN)) {
-				g_string_append_printf(out, "&#10;");
-			}
-			break;
-	    default: 
-	        fprintf(stderr, "print_opml_element encountered unknown element key = %d\n", elt->key);
-	        /*exit(EXIT_FAILURE);*/
+            g_string_append_printf(out, "</outline>\n");
+            break;
+        case H1: case H2: case H3: case H4: case H5: case H6: 
+            g_string_append_printf(out, "text=\"%s\" ", elt->contents.str);
+            break;
+        case SPACE:
+            print_opml_string(out, elt->contents.str);
+            break;
+        case STR:
+            print_opml_string(out, elt->contents.str);
+            break;
+        case LINEBREAK:
+            g_string_append_printf(out, "  &#10;");
+            break;
+        case PLAIN:
+            print_opml_element_list(out,elt->children);
+            if ((elt->next != NULL) && (elt->next->key == PLAIN)) {
+                g_string_append_printf(out, "&#10;");
+            }
+            break;
+        default: 
+            fprintf(stderr, "print_opml_element encountered unknown element key = %d\n", elt->key);
+            /*exit(EXIT_FAILURE);*/
     }
 }
 
@@ -1925,12 +1938,19 @@ static void print_opml_string(GString *out, char *str) {
         case '"':
             g_string_append_printf(out, "&quot;");
             break;
-		case '\n': case '\r':
-			g_string_append_printf(out, "&#10;");
-			break;
+        case '\n': case '\r':
+            g_string_append_printf(out, "&#10;");
+            break;
         default:
             g_string_append_c(out, *str);
         }
     str++;
     }
+}
+
+/* print_opml_metadata - add metadata as last outline item */
+static void print_opml_metadata(GString *out, element *elt) {
+    g_string_append_printf(out, "<outline text=\"Metadata\">\n");
+    print_opml_element_list(out, elt->children);
+    g_string_append_printf(out, "</outline>");
 }
