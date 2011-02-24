@@ -1922,7 +1922,7 @@ static void print_opml_element(GString *out, element *elt) {
             print_opml_element(out,elt->children);
             
             /* print remainder of paragraphs as note */
-            g_string_append_printf(out, "_note=\"");
+            g_string_append_printf(out, " _note=\"");
             print_opml_element_list(out,elt->children->next);
             g_string_append_printf(out, "\">");
             break;
