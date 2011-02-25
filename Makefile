@@ -74,7 +74,7 @@ win-installer:
 
 mac-installer: $(PROGRAM)
 	mkdir mac_installer/Package_Root/usr/local/bin
-	cp multimarkdown scripts/mmd scripts/mmd2tex mac_installer/Package_Root/usr/local/bin/
+	cp multimarkdown scripts/mmd* mac_installer/Package_Root/usr/local/bin/
 	./multimarkdown README > mac_installer/Resources/README.html
 	./multimarkdown mac_installer/Resources/Welcome.txt > mac_installer/Resources/Welcome.html
 	./multimarkdown LICENSE > mac_installer/Resources/License.html
