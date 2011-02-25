@@ -34,7 +34,9 @@ clean:
 	rm -rf mac_installer/Package_Root/usr/local/bin; \
 	rm mac_installer/Resources/*.html; \
 	rm windows_installer/README.txt; \
-	rm windows_installer/multimarkdown.exe
+	rm windows_installer/multimarkdown.exe; \
+	rm windows_installer/multimarkdown.xml.backup; \
+	rm windows_installer/LICENSE.html
 
 distclean: clean
 	make -C $(PEGDIR) spotless
