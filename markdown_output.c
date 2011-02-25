@@ -1451,17 +1451,17 @@ void print_element_list(GString *out, element *elt, int format, int exts) {
     case BEAMER_FORMAT:
         print_beamer_element_list(out, elt);
         break;
-	case ODF_FORMAT:
-		print_odf_header(out);
-		if (elt->key == METADATA) {
-			/* print metadata */
-			print_odf_element(out,elt);
-			elt = elt->next;
-		}
-		g_string_append_printf(out, "<office:body>\n<office:text>\n");
-		if (elt != NULL) print_odf_element_list(out,elt);
-		print_odf_footer(out);
-		break;
+    case ODF_FORMAT:
+        print_odf_header(out);
+        if (elt->key == METADATA) {
+            /* print metadata */
+            print_odf_element(out,elt);
+            elt = elt->next;
+        }
+        g_string_append_printf(out, "<office:body>\n<office:text>\n");
+        if (elt != NULL) print_odf_element_list(out,elt);
+        print_odf_footer(out);
+        break;
     case GROFF_MM_FORMAT:
         print_groff_mm_element_list(out, elt);
         break;
@@ -1863,11 +1863,11 @@ static bool is_html_complete_doc(element *meta) {
 void print_odf_element(GString *out, element *elt) {
     int lev;
     char *label;
-	int old_type = 0;
+    int old_type = 0;
     switch (elt->key) {
     case SPACE:
-	    g_string_append_printf(out, "%s", elt->contents.str);
-	    break;
+        g_string_append_printf(out, "%s", elt->contents.str);
+        break;
     case LINEBREAK:
         g_string_append_printf(out, "<text:line-break/>");
         break;
@@ -1901,49 +1901,58 @@ void print_odf_element(GString *out, element *elt) {
         print_html_string(out, elt->contents.str, 0);
         g_string_append_printf(out, "</text:span>");
         break;
-	case HTML:
-		break;
+    case HTML:
+        break;
     case LINK:
-		if (elt->contents.link->url[0] == '#') {
-			/* This is a cross-reference */
-			label = label_from_string(elt->contents.link->url,0);
-			if (elt->contents.link->label != NULL) {
-				g_string_append_printf(out, "<text:bookmark-ref text:reference-format=\"page\" text:ref-name=\"%s\">",label);
-				print_latex_element_list(out, elt->contents.link->label);
-				g_string_append_printf(out,"</text:bookmark-ref>");
-			} else {
-				
-			}
-		} else {
-	        g_string_append_printf(out, "<text:a xlink:type=\"simple\" xlink:href=\"");
-	        print_html_string(out, elt->contents.link->url, 0);
-	        g_string_append_printf(out, "\"");
-	        if (strlen(elt->contents.link->title) > 0) {
-	            g_string_append_printf(out, " office:name=\"");
-	            print_html_string(out, elt->contents.link->title, 0);
-	            g_string_append_printf(out, "\"");
-	        }
-	/*        print_html_element_list(out, elt->contents.link->attr, obfuscate);*/
-	        g_string_append_printf(out, ">");
-	        print_odf_element_list(out, elt->contents.link->label);
-	        g_string_append_printf(out, "</text:a>");
-		}
+        if (elt->contents.link->url[0] == '#') {
+            /* This is a cross-reference */
+            label = label_from_string(elt->contents.link->url,0);
+            if (elt->contents.link->label != NULL) {
+                g_string_append_printf(out, "<text:bookmark-ref text:reference-format=\"page\" text:ref-name=\"%s\">",label);
+                print_latex_element_list(out, elt->contents.link->label);
+                g_string_append_printf(out,"</text:bookmark-ref>");
+            } else {
+                
+            }
+        } else {
+            g_string_append_printf(out, "<text:a xlink:type=\"simple\" xlink:href=\"");
+            print_html_string(out, elt->contents.link->url, 0);
+            g_string_append_printf(out, "\"");
+            if (strlen(elt->contents.link->title) > 0) {
+                g_string_append_printf(out, " office:name=\"");
+                print_html_string(out, elt->contents.link->title, 0);
+                g_string_append_printf(out, "\"");
+            }
+    /*        print_html_element_list(out, elt->contents.link->attr, obfuscate);*/
+            g_string_append_printf(out, ">");
+            print_odf_element_list(out, elt->contents.link->label);
+            g_string_append_printf(out, "</text:a>");
+        }
+        break;
+    case IMAGE:
+        /* Images can't (easily and reliably) be put in ODF from MMD, so a
+        placeholder is used instead */
+        g_string_append_printf(out, "[Image \"");
+        print_odf_code_string(out, elt->contents.link->title);
+        g_string_append_printf(out, "\", ");
+        print_odf_code_string(out, elt->contents.link->url);
+        g_string_append_printf(out, "]");
         break;
     case EMPH:
         g_string_append_printf(out,
-			"<text:span text:style-name=\"MMD-Italic\">");
+            "<text:span text:style-name=\"MMD-Italic\">");
         print_odf_element_list(out, elt->children);
         g_string_append_printf(out, "</text:span>");
         break;
     case STRONG:
         g_string_append_printf(out,
-			"<text:span text:style-name=\"MMD-Bold\">");
+            "<text:span text:style-name=\"MMD-Bold\">");
         print_odf_element_list(out, elt->children);
         g_string_append_printf(out, "</text:span>");
         break;
-	case LIST:
-		print_odf_element_list(out, elt->children);
-		break;
+    case LIST:
+        print_odf_element_list(out, elt->children);
+        break;
     case RAW:
         /* Shouldn't occur - these are handled by process_raw_blocks() */
         assert(elt->key != RAW);
@@ -1953,14 +1962,14 @@ void print_odf_element(GString *out, element *elt) {
         g_string_append_printf(out, "<text:h text:outline-level=\"%d\">", lev);
         if (elt->children->key == AUTOLABEL) {
             /* generate a label for each header (MMD)*/
-			g_string_append_printf(out,"<text:bookmark text:name=\"%s\"/>", elt->children->contents.str);
+            g_string_append_printf(out,"<text:bookmark text:name=\"%s\"/>", elt->children->contents.str);
             print_odf_element_list(out, elt->children->next);
-			g_string_append_printf(out,"<text:bookmark-end text:name=\"%s\"/>", elt->children->contents.str);
+            g_string_append_printf(out,"<text:bookmark-end text:name=\"%s\"/>", elt->children->contents.str);
         } else {
             label = label_from_element_list(elt->children, 0);
-			g_string_append_printf(out,"<text:bookmark text:name=\"%s\"/>", label);
+            g_string_append_printf(out,"<text:bookmark text:name=\"%s\"/>", label);
             print_odf_element_list(out, elt->children);
-			g_string_append_printf(out,"<text:bookmark-end text:name=\"%s\"/>", label);
+            g_string_append_printf(out,"<text:bookmark-end text:name=\"%s\"/>", label);
             free(label);
         }
         g_string_append_printf(out, "</text:h>\n");
@@ -1971,216 +1980,220 @@ void print_odf_element(GString *out, element *elt) {
         padded = 0;
         break;
     case PARA:
-		g_string_append_printf(out, "<text:p");
-		switch (odf_type) {
-			case BLOCKQUOTE:
-				g_string_append_printf(out," text:style-name=\"Quotations\"");
-				break;
-			case CODE:
-				g_string_append_printf(out," text:style-name=\"Preformatted Text\"");
-				break;
-			case VERBATIM:
-				g_string_append_printf(out," text:style-name=\"Preformatted Text\"");
-				break;
-			case ORDEREDLIST:
-			case BULLETLIST:
-				g_string_append_printf(out," text:style-name=\"List\"");
-				break;
-			case NOTE:
-				g_string_append_printf(out," text:style-name=\"Footnote\"");
-				break;
-			default:
-				g_string_append_printf(out," text:style-name=\"Standard\"");
-				break;
-		}
-		g_string_append_printf(out, ">");
+        g_string_append_printf(out, "<text:p");
+        switch (odf_type) {
+            case BLOCKQUOTE:
+                g_string_append_printf(out," text:style-name=\"Quotations\"");
+                break;
+            case CODE:
+                g_string_append_printf(out," text:style-name=\"Preformatted Text\"");
+                break;
+            case VERBATIM:
+                g_string_append_printf(out," text:style-name=\"Preformatted Text\"");
+                break;
+            case ORDEREDLIST:
+            case BULLETLIST:
+                g_string_append_printf(out," text:style-name=\"List\"");
+                break;
+            case NOTE:
+                g_string_append_printf(out," text:style-name=\"Footnote\"");
+                break;
+            default:
+                g_string_append_printf(out," text:style-name=\"Standard\"");
+                break;
+        }
+        g_string_append_printf(out, ">");
         print_odf_element_list(out, elt->children);
         g_string_append_printf(out, "</text:p>\n");
         break;
     case VERBATIM:
-		old_type = odf_type;
-		odf_type = VERBATIM;
-		g_string_append_printf(out, "<text:p text:style-name=\"Preformatted Text\">");
+        old_type = odf_type;
+        odf_type = VERBATIM;
+        g_string_append_printf(out, "<text:p text:style-name=\"Preformatted Text\">");
         print_odf_code_string(out, elt->contents.str);
-		g_string_append_printf(out, "</text:p>\n");
-		odf_type = old_type;
+        g_string_append_printf(out, "</text:p>\n");
+        odf_type = old_type;
         break;
     case BULLETLIST:
-		if ((odf_type == BULLETLIST) ||
-			(odf_type == ORDEREDLIST)) {
-			g_string_append_printf(out, "</text:p>");
-		}
-		old_type = odf_type;
-		odf_type = BULLETLIST;
+        if ((odf_type == BULLETLIST) ||
+            (odf_type == ORDEREDLIST)) {
+            g_string_append_printf(out, "</text:p>");
+        }
+        old_type = odf_type;
+        odf_type = BULLETLIST;
         g_string_append_printf(out, "%s", "<text:list>");
         print_odf_element_list(out, elt->children);
         g_string_append_printf(out, "%s", "</text:list>");
-		odf_type = old_type;
+        odf_type = old_type;
         break;
     case ORDEREDLIST:
-		if ((odf_type == BULLETLIST) ||
-			(odf_type == ORDEREDLIST)) {
-			g_string_append_printf(out, "</text:p>");
-		}
-		old_type = odf_type;
-		odf_type = ORDEREDLIST;
-	    g_string_append_printf(out, "%s", "<text:list>\n");
-	    print_odf_element_list(out, elt->children);
-	    g_string_append_printf(out, "%s", "</text:list>\n");
-		odf_type = old_type;
-	    break;
+        if ((odf_type == BULLETLIST) ||
+            (odf_type == ORDEREDLIST)) {
+            g_string_append_printf(out, "</text:p>");
+        }
+        old_type = odf_type;
+        odf_type = ORDEREDLIST;
+        g_string_append_printf(out, "%s", "<text:list>\n");
+        print_odf_element_list(out, elt->children);
+        g_string_append_printf(out, "%s", "</text:list>\n");
+        odf_type = old_type;
+        break;
     case LISTITEM:
         g_string_append_printf(out, "<text:list-item>\n");
-		if (elt->children->children->key != PARA) {
-			g_string_append_printf(out, "<text:p text:style-name=\"P2\">");
-		}
+        if (elt->children->children->key != PARA) {
+            g_string_append_printf(out, "<text:p text:style-name=\"P2\">");
+        }
         print_odf_element_list(out, elt->children);
 
         if ((list_contains_key(elt->children,BULLETLIST) ||
-			(list_contains_key(elt->children,ORDEREDLIST)))) {
-			} else {
-				if (elt->children->children->key != PARA) {
-					g_string_append_printf(out, "</text:p>");
-				}
-			}
+            (list_contains_key(elt->children,ORDEREDLIST)))) {
+            } else {
+                if (elt->children->children->key != PARA) {
+                    g_string_append_printf(out, "</text:p>");
+                }
+            }
         g_string_append_printf(out, "</text:list-item>\n");
         break;
     case BLOCKQUOTE:
-		old_type = odf_type;
-		odf_type = BLOCKQUOTE;
+        old_type = odf_type;
+        odf_type = BLOCKQUOTE;
         print_odf_element_list(out, elt->children);
-		odf_type = old_type;
+        odf_type = old_type;
         break;
-	case REFERENCE:
-		break;
-	case NOTELABEL:
-		break;
-	case NOTE:
-		old_type = odf_type;
-		odf_type = NOTE;
-		/* if contents.str == 0 then print; else ignore - like above */
-		if (elt->contents.str == 0) {
-			if (elt->children->key == GLOSSARYTERM) {
-				g_string_append_printf(out, "<text:note text:id=\"\" text:note-class=\"glossary\"><text:note-body>\n");
-				print_odf_element_list(out, elt->children);
-				g_string_append_printf(out, "</text:note-body>\n</text:note>\n");
-			} else {
-				g_string_append_printf(out, "<text:note text:id=\"\" text:note-class=\"footnote\"><text:note-body>\n");
-				print_odf_element_list(out, elt->children);
-				g_string_append_printf(out, "</text:note-body>\n</text:note>\n");
-			}
-		}
-		odf_type = old_type;
-		break;
-	case GLOSSARY:
-		break;
-	case GLOSSARYTERM:
-		g_string_append_printf(out, "<text:p text:style-name=\"Glossary\">");
-		print_odf_code_string(out, elt->children->contents.str);
-		g_string_append_printf(out, ":");
-		g_string_append_printf(out, "</text:p>");
-		break;
+    case REFERENCE:
+        break;
+    case NOTELABEL:
+        break;
+    case NOTE:
+        old_type = odf_type;
+        odf_type = NOTE;
+        /* if contents.str == 0 then print; else ignore - like above */
+        if (elt->contents.str == 0) {
+            if (elt->children->key == GLOSSARYTERM) {
+                g_string_append_printf(out, "<text:note text:id=\"\" text:note-class=\"glossary\"><text:note-body>\n");
+                print_odf_element_list(out, elt->children);
+                g_string_append_printf(out, "</text:note-body>\n</text:note>\n");
+            } else {
+                g_string_append_printf(out, "<text:note text:id=\"\" text:note-class=\"footnote\"><text:note-body>\n");
+                print_odf_element_list(out, elt->children);
+                g_string_append_printf(out, "</text:note-body>\n</text:note>\n");
+            }
+        }
+        odf_type = old_type;
+        break;
+    case GLOSSARY:
+        break;
+    case GLOSSARYTERM:
+        g_string_append_printf(out, "<text:p text:style-name=\"Glossary\">");
+        print_odf_code_string(out, elt->children->contents.str);
+        g_string_append_printf(out, ":");
+        g_string_append_printf(out, "</text:p>");
+        break;
     case GLOSSARYSORTKEY:
         break;
-	case METADATA:
-		g_string_append_printf(out, "<office:meta>\n");
-		print_odf_element_list(out, elt->children);
-		g_string_append_printf(out, "</office:meta>\n");
-		break;
-	case METAKEY:
-		if (strcmp(elt->contents.str, "title") == 0) {
-			g_string_append_printf(out, "<dc:title>");
-			print_odf_element(out, elt->children);
-			g_string_append_printf(out,"</dc:title>\n");
-		} else if (strcmp(elt->contents.str, "css") == 0) {
-		} else if (strcmp(elt->contents.str, "baseheaderlevel") == 0) {
-		} else if (strcmp(elt->contents.str, "xhtmlheader") == 0) {
-		} else if (strcmp(elt->contents.str, "latexfooter") == 0) {
-		} else if (strcmp(elt->contents.str, "latexinput") == 0) {
-		} else if (strcmp(elt->contents.str, "latexmode") == 0) {
-		} else if (strcmp(elt->contents.str, "quoteslanguage") == 0) {
-		     label = label_from_element_list(elt->children, 0);
-		     if (strcmp(label, "dutch") == 0) { language = DUTCH; } else 
-		     if (strcmp(label, "german") == 0) { language = GERMAN; } else 
-		     if (strcmp(label, "germanguillemets") == 0) { language = GERMANGUILL; } else 
-		     if (strcmp(label, "french") == 0) { language = FRENCH; } else 
-		     if (strcmp(label, "swedish") == 0) { language = SWEDISH; }
-		     free(label);
-		} else {
-			g_string_append_printf(out, "<meta:user-defined meta:name=\"");
-			print_odf_code_string(out,elt->contents.str);
-			g_string_append_printf(out, "\">");
-			print_odf_element(out, elt->children);
-			g_string_append_printf(out,"</meta:user-defined>\n");
-		}
-		break;
-	case METAVALUE:
-		print_odf_code_string(out, elt->contents.str);
-		break;
-	case FOOTER:
-		break;
-	case HEADINGSECTION:
-		print_odf_element_list(out, elt->children);
-		break;
-	case TABLE:
-		g_string_append_printf(out,"\n<table:table>\n");
-		print_odf_element_list(out, elt->children);
-		g_string_append_printf(out, "</table:table>");
-		break;
+    case NOCITATION:
+    case CITATION:
+        g_string_append_printf(out, "[#%s] (Citations Not supported yet)", elt->contents.str);
+        break;
+    case METADATA:
+        g_string_append_printf(out, "<office:meta>\n");
+        print_odf_element_list(out, elt->children);
+        g_string_append_printf(out, "</office:meta>\n");
+        break;
+    case METAKEY:
+        if (strcmp(elt->contents.str, "title") == 0) {
+            g_string_append_printf(out, "<dc:title>");
+            print_odf_element(out, elt->children);
+            g_string_append_printf(out,"</dc:title>\n");
+        } else if (strcmp(elt->contents.str, "css") == 0) {
+        } else if (strcmp(elt->contents.str, "baseheaderlevel") == 0) {
+        } else if (strcmp(elt->contents.str, "xhtmlheader") == 0) {
+        } else if (strcmp(elt->contents.str, "latexfooter") == 0) {
+        } else if (strcmp(elt->contents.str, "latexinput") == 0) {
+        } else if (strcmp(elt->contents.str, "latexmode") == 0) {
+        } else if (strcmp(elt->contents.str, "quoteslanguage") == 0) {
+             label = label_from_element_list(elt->children, 0);
+             if (strcmp(label, "dutch") == 0) { language = DUTCH; } else 
+             if (strcmp(label, "german") == 0) { language = GERMAN; } else 
+             if (strcmp(label, "germanguillemets") == 0) { language = GERMANGUILL; } else 
+             if (strcmp(label, "french") == 0) { language = FRENCH; } else 
+             if (strcmp(label, "swedish") == 0) { language = SWEDISH; }
+             free(label);
+        } else {
+            g_string_append_printf(out, "<meta:user-defined meta:name=\"");
+            print_odf_code_string(out,elt->contents.str);
+            g_string_append_printf(out, "\">");
+            print_odf_element(out, elt->children);
+            g_string_append_printf(out,"</meta:user-defined>\n");
+        }
+        break;
+    case METAVALUE:
+        print_odf_code_string(out, elt->contents.str);
+        break;
+    case FOOTER:
+        break;
+    case HEADINGSECTION:
+        print_odf_element_list(out, elt->children);
+        break;
+    case TABLE:
+        g_string_append_printf(out,"\n<table:table>\n");
+        print_odf_element_list(out, elt->children);
+        g_string_append_printf(out, "</table:table>");
+        break;
    case TABLESEPARATOR:
        table_alignment = elt->contents.str;
        break;
-	case TABLECAPTION:
-	    if (elt->children->key == TABLELABEL) {
-	        label = label_from_element_list(elt->children->children,0);
-	    } else {
-	        label = label_from_element_list(elt->children,0);
-	    }
-		g_string_append_printf(out,"<text:bookmark text:name=\"%s\"/>", label);
-		g_string_append_printf(out,"<text:bookmark-end text:name=\"%s\"/>", label);
+    case TABLECAPTION:
+        if (elt->children->key == TABLELABEL) {
+            label = label_from_element_list(elt->children->children,0);
+        } else {
+            label = label_from_element_list(elt->children,0);
+        }
+        g_string_append_printf(out,"<text:bookmark text:name=\"%s\"/>", label);
+        g_string_append_printf(out,"<text:bookmark-end text:name=\"%s\"/>", label);
         free(label);
         break;
-	case TABLELABEL:
-		break;
-	case TABLEHEAD:
-		for (table_column=0;table_column<strlen(table_alignment);table_column++) {
-			g_string_append_printf(out, "<table:table-column/>\n");
-		}
+    case TABLELABEL:
+        break;
+    case TABLEHEAD:
+        for (table_column=0;table_column<strlen(table_alignment);table_column++) {
+            g_string_append_printf(out, "<table:table-column/>\n");
+        }
         cell_type = 'h';
         print_odf_element_list(out, elt->children);
         cell_type = 'd';
-		break;
-	case TABLEBODY:
-		print_odf_element_list(out,elt->children);
-		break;
-	case TABLEROW:
-		g_string_append_printf(out, "<table:table-row>\n");
+        break;
+    case TABLEBODY:
+        print_odf_element_list(out,elt->children);
+        break;
+    case TABLEROW:
+        g_string_append_printf(out, "<table:table-row>\n");
         table_column = 0;
-		print_odf_element_list(out,elt->children);
-		g_string_append_printf(out,"</table:table-row>\n");
-		break;
-	case TABLECELL:
-		g_string_append_printf(out, "<table:table-cell");
-		if ((elt->children != NULL) && (elt->children->key == CELLSPAN)) {
-			g_string_append_printf(out, " table:number-columns-spanned=\"%d\"",(int)strlen(elt->children->contents.str)+1);
-		}
-		g_string_append_printf(out,">\n<text:p");
-		if (cell_type == 'h') {
-			g_string_append_printf(out, " text:style-name=\"Table_20_Heading\"");
-		} else {
-			if ( strncmp(&table_alignment[table_column],"r",1) == 0) {
-	            g_string_append_printf(out, " text:style-name=\"MMD-Right\"", cell_type);
-	        } else if ( strncmp(&table_alignment[table_column],"c",1) == 0) {
-	            g_string_append_printf(out, " text:style-name=\"MMD-Center\"", cell_type);
-	        }
-		}
-		g_string_append_printf(out, ">");
-		print_odf_element_list(out,elt->children);
-		g_string_append_printf(out, "</text:p>\n</table:table-cell>\n");
+        print_odf_element_list(out,elt->children);
+        g_string_append_printf(out,"</table:table-row>\n");
+        break;
+    case TABLECELL:
+        g_string_append_printf(out, "<table:table-cell");
+        if ((elt->children != NULL) && (elt->children->key == CELLSPAN)) {
+            g_string_append_printf(out, " table:number-columns-spanned=\"%d\"",(int)strlen(elt->children->contents.str)+1);
+        }
+        g_string_append_printf(out,">\n<text:p");
+        if (cell_type == 'h') {
+            g_string_append_printf(out, " text:style-name=\"Table_20_Heading\"");
+        } else {
+            if ( strncmp(&table_alignment[table_column],"r",1) == 0) {
+                g_string_append_printf(out, " text:style-name=\"MMD-Right\"", cell_type);
+            } else if ( strncmp(&table_alignment[table_column],"c",1) == 0) {
+                g_string_append_printf(out, " text:style-name=\"MMD-Center\"", cell_type);
+            }
+        }
+        g_string_append_printf(out, ">");
+        print_odf_element_list(out,elt->children);
+        g_string_append_printf(out, "</text:p>\n</table:table-cell>\n");
         table_column++;
-		break;
-	case CELLSPAN:
-		break;	
+        break;
+    case CELLSPAN:
+        break;  
     case MATHSPAN:
         if ( elt->contents.str[strlen(elt->contents.str)-1] == ']') {
             elt->contents.str[strlen(elt->contents.str)-3] = '\0';
@@ -2189,10 +2202,10 @@ void print_odf_element(GString *out, element *elt) {
             elt->contents.str[strlen(elt->contents.str)-3] = '\0';
             g_string_append_printf(out, "<text:span text:style-name=\"math\">%s\\)</text:span>", elt->contents.str);
         }
-        break;	default:
-    	fprintf(stderr, "print_html_element encountered unknown element key = %d\n", elt->key);
-/*    	exit(EXIT_FAILURE);*/
-	}
+        break;  default:
+        fprintf(stderr, "print_html_element encountered unknown element key = %d\n", elt->key);
+        exit(EXIT_FAILURE);
+    }
 }
 
 /* print_odf_element_list - print an element list as ODF */
@@ -2205,7 +2218,7 @@ void print_odf_element_list(GString *out, element *list) {
 
 /* print_odf_code_string - print string, escaping for HTML and saving newlines */
 static void print_odf_code_string(GString *out, char *str) {
-	char *tmp;
+    char *tmp;
     while (*str != '\0') {
         switch (*str) {
         case '&':
@@ -2220,29 +2233,29 @@ static void print_odf_code_string(GString *out, char *str) {
         case '"':
             g_string_append_printf(out, "&quot;");
             break;
-		case '\n':
-			g_string_append_printf(out, "<text:line-break/>");
-			break;
-		case ' ':
-			tmp = str;
-			tmp++;
-			if (*tmp == ' ') {
-				tmp++;
-				if (*tmp == ' ') {
-					tmp++;
-					if (*tmp == ' ') {
-						g_string_append_printf(out, "<text:tab/>");
-						str = tmp;
-                	} else {
-                    	g_string_append_printf(out, " ");
-					}
+        case '\n':
+            g_string_append_printf(out, "<text:line-break/>");
+            break;
+        case ' ':
+            tmp = str;
+            tmp++;
+            if (*tmp == ' ') {
+                tmp++;
+                if (*tmp == ' ') {
+                    tmp++;
+                    if (*tmp == ' ') {
+                        g_string_append_printf(out, "<text:tab/>");
+                        str = tmp;
+                    } else {
+                        g_string_append_printf(out, " ");
+                    }
                 } else {
-	            	g_string_append_printf(out, " ");
-				}
+                    g_string_append_printf(out, " ");
+                }
             } else {
                 g_string_append_printf(out, " ");
             }
-			break;
+            break;
         default:
                g_string_append_c(out, *str);
         }
