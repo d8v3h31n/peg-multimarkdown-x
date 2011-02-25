@@ -69,7 +69,8 @@ leak-check: $(PROGRAM)
 
 win-installer:
 	cp README.markdown windows_installer/README.txt
-	zip -r windows_installer/MultiMarkdown-Windows-$(VERSION).zip windows_installer -x windows_installer/MultiMarkdown*.zip
+	./multimarkdown LICENSE > windows_installer/LICENSE.html
+	zip -r windows_installer/MultiMarkdown-Windows-(VERSION).zip windows_installer/*.exe -x windows_installer/MultiMarkdown*.zip
 
 mac-installer: $(PROGRAM)
 	mkdir mac_installer/Package_Root/usr/local/bin
