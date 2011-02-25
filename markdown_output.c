@@ -1980,6 +1980,9 @@ void print_odf_element(GString *out, element *elt) {
 			case BULLETLIST:
 				g_string_append_printf(out," text:style-name=\"List\"");
 				break;
+			case NOTE:
+				g_string_append_printf(out," text:style-name=\"Footnote\"");
+				break;
 			default:
 				g_string_append_printf(out," text:style-name=\"Standard\"");
 				break;
@@ -2042,6 +2045,17 @@ void print_odf_element(GString *out, element *elt) {
         print_odf_element_list(out, elt->children);
 		odf_type = old_type;
         break;
+	case NOTE:
+		old_type = odf_type;
+		odf_type = NOTE;
+		/* if contents.str == 0 then print; else ignore - like above */
+		if (elt->contents.str == 0) {
+			g_string_append_printf(out, "<text:note text:id=\"\" text:note-class=\"footnote\"><text:note-body>\n");
+			print_odf_element_list(out, elt->children);
+			g_string_append_printf(out, "</text:note-body>\n</text:note>\n");
+		}
+		odf_type = old_type;
+		break;
 	case HEADINGSECTION:
 		print_odf_element_list(out, elt->children);
 		break;
