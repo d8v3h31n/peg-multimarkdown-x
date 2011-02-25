@@ -90,6 +90,9 @@
                         <distributionFile>
                             <origin>mmd2opml.bat</origin>
                         </distributionFile>
+                        <distributionFile>
+                            <origin>mmd2odf.bat</origin>
+                        </distributionFile>
                     </distributionFileList>
                 </folder>
                 <folder>
