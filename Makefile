@@ -1,6 +1,6 @@
 ALL : multimarkdown
 
-VERSION=3.0b7
+VERSION=3.0b8
 
 PROGRAM=multimarkdown
 
@@ -35,7 +35,9 @@ clean:
 	rm -rf mac_installer/Support_Root; \
 	rm mac_installer/Resources/*.html; \
 	rm windows_installer/README.txt; \
-	rm windows_installer/multimarkdown.exe
+	rm windows_installer/multimarkdown.exe; \
+	rm windows_installer/multimarkdown.xml.backup; \
+	rm windows_installer/LICENSE.html
 
 distclean: clean
 	make -C $(PEGDIR) spotless
@@ -68,7 +70,8 @@ leak-check: $(PROGRAM)
 
 win-installer:
 	cp README.markdown windows_installer/README.txt
-	zip -r windows_installer/MultiMarkdown-Windows-$(VERSION).zip windows_installer -x windows_installer/MultiMarkdown*.zip
+	./multimarkdown LICENSE > windows_installer/LICENSE.html
+	zip -r windows_installer/MultiMarkdown-Windows-$(VERSION).zip windows_installer/MMD-windows*.exe -x windows_installer/MultiMarkdown*.zip
 
 mac-installer: $(PROGRAM)
 	mkdir mac_installer/Package_Root/usr/local/bin
