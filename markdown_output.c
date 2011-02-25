@@ -1453,7 +1453,13 @@ void print_element_list(GString *out, element *elt, int format, int exts) {
         break;
 	case ODF_FORMAT:
 		print_odf_header(out);
-		print_odf_element_list(out,elt);
+		if (elt->key == METADATA) {
+			/* print metadata */
+			print_odf_element(out,elt);
+			elt = elt->next;
+		}
+		g_string_append_printf(out, "<office:body>\n<office:text>\n");
+		if (elt != NULL) print_odf_element_list(out,elt);
 		print_odf_footer(out);
 		break;
     case GROFF_MM_FORMAT:
@@ -2045,16 +2051,73 @@ void print_odf_element(GString *out, element *elt) {
         print_odf_element_list(out, elt->children);
 		odf_type = old_type;
         break;
+	case REFERENCE:
+		break;
+	case NOTELABEL:
+		break;
 	case NOTE:
 		old_type = odf_type;
 		odf_type = NOTE;
 		/* if contents.str == 0 then print; else ignore - like above */
 		if (elt->contents.str == 0) {
-			g_string_append_printf(out, "<text:note text:id=\"\" text:note-class=\"footnote\"><text:note-body>\n");
-			print_odf_element_list(out, elt->children);
-			g_string_append_printf(out, "</text:note-body>\n</text:note>\n");
+			if (elt->children->key == GLOSSARYTERM) {
+				g_string_append_printf(out, "<text:note text:id=\"\" text:note-class=\"glossary\"><text:note-body>\n");
+				print_odf_element_list(out, elt->children);
+				g_string_append_printf(out, "</text:note-body>\n</text:note>\n");
+			} else {
+				g_string_append_printf(out, "<text:note text:id=\"\" text:note-class=\"footnote\"><text:note-body>\n");
+				print_odf_element_list(out, elt->children);
+				g_string_append_printf(out, "</text:note-body>\n</text:note>\n");
+			}
 		}
 		odf_type = old_type;
+		break;
+	case GLOSSARY:
+		break;
+	case GLOSSARYTERM:
+		g_string_append_printf(out, "<text:p text:style-name=\"Glossary\">");
+		print_odf_code_string(out, elt->children->contents.str);
+		g_string_append_printf(out, ":");
+		g_string_append_printf(out, "</text:p>");
+		break;
+    case GLOSSARYSORTKEY:
+        break;
+	case METADATA:
+		g_string_append_printf(out, "<office:meta>\n");
+		print_odf_element_list(out, elt->children);
+		g_string_append_printf(out, "</office:meta>\n");
+		break;
+	case METAKEY:
+		if (strcmp(elt->contents.str, "title") == 0) {
+			g_string_append_printf(out, "<dc:title>");
+			print_odf_element(out, elt->children);
+			g_string_append_printf(out,"</dc:title>\n");
+		} else if (strcmp(elt->contents.str, "css") == 0) {
+		} else if (strcmp(elt->contents.str, "baseheaderlevel") == 0) {
+		} else if (strcmp(elt->contents.str, "xhtmlheader") == 0) {
+		} else if (strcmp(elt->contents.str, "latexfooter") == 0) {
+		} else if (strcmp(elt->contents.str, "latexinput") == 0) {
+		} else if (strcmp(elt->contents.str, "latexmode") == 0) {
+		} else if (strcmp(elt->contents.str, "quoteslanguage") == 0) {
+		     label = label_from_element_list(elt->children, 0);
+		     if (strcmp(label, "dutch") == 0) { language = DUTCH; } else 
+		     if (strcmp(label, "german") == 0) { language = GERMAN; } else 
+		     if (strcmp(label, "germanguillemets") == 0) { language = GERMANGUILL; } else 
+		     if (strcmp(label, "french") == 0) { language = FRENCH; } else 
+		     if (strcmp(label, "swedish") == 0) { language = SWEDISH; }
+		     free(label);
+		} else {
+			g_string_append_printf(out, "<meta:user-defined meta:name=\"");
+			print_odf_code_string(out,elt->contents.str);
+			g_string_append_printf(out, "\">");
+			print_odf_element(out, elt->children);
+			g_string_append_printf(out,"</meta:user-defined>\n");
+		}
+		break;
+	case METAVALUE:
+		print_odf_code_string(out, elt->contents.str);
+		break;
+	case FOOTER:
 		break;
 	case HEADINGSECTION:
 		print_odf_element_list(out, elt->children);
@@ -2118,7 +2181,15 @@ void print_odf_element(GString *out, element *elt) {
 		break;
 	case CELLSPAN:
 		break;	
-	default:
+    case MATHSPAN:
+        if ( elt->contents.str[strlen(elt->contents.str)-1] == ']') {
+            elt->contents.str[strlen(elt->contents.str)-3] = '\0';
+            g_string_append_printf(out, "<text:span text:style-name=\"math\">%s\\]</text:span>", elt->contents.str);
+        } else {
+            elt->contents.str[strlen(elt->contents.str)-3] = '\0';
+            g_string_append_printf(out, "<text:span text:style-name=\"math\">%s\\)</text:span>", elt->contents.str);
+        }
+        break;	default:
     	fprintf(stderr, "print_html_element encountered unknown element key = %d\n", elt->key);
 /*    	exit(EXIT_FAILURE);*/
 	}

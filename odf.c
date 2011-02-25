@@ -110,8 +110,6 @@ void print_odf_header(GString *out){
 	"<text:list-style style:name=\"L2\">\n" \
 	"	<text:list-level-style-number />\n" \
 	"</text:list-style>\n");
-	
-	g_string_append_printf(out, "<office:body>\n<office:text>\n");
 }
 
 void print_odf_footer(GString *out) {
