@@ -2296,6 +2296,12 @@ void print_odf_element(GString *out, element *elt) {
         g_string_append_printf(out,"\n<table:table>\n");
         print_odf_element_list(out, elt->children);
         g_string_append_printf(out, "</table:table>");
+        /* print caption if present */
+        if (elt->children->key == TABLECAPTION) {
+            g_string_append_printf(out,"<text:p text:style-name=\"Table\">Table <text:sequence text:name=\"Table\" text:formula=\"ooow:Table+1\" style:num-format=\"1\"> Update Fields to calculate numbers</text:sequence>:");
+            print_odf_element_list(out,elt->children->children);
+            g_string_append_printf(out, "</text:p>\n");
+        }
         break;
    case TABLESEPARATOR:
        table_alignment = elt->contents.str;
