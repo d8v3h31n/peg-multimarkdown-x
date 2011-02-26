@@ -2056,9 +2056,9 @@ void print_odf_element(GString *out, element *elt) {
             /* This is a cross-reference */
             label = label_from_string(elt->contents.link->url,0);
             if (elt->contents.link->label != NULL) {
-                g_string_append_printf(out, "<text:bookmark-ref text:reference-format=\"page\" text:ref-name=\"%s\">",label);
+                g_string_append_printf(out, "<text:a xlink:type=\"simple\" xlink:href=\"#%s\">",label);
                 print_latex_element_list(out, elt->contents.link->label);
-                g_string_append_printf(out,"</text:bookmark-ref>");
+                g_string_append_printf(out,"</text:a>");
             } else {
                 
             }
@@ -2298,23 +2298,21 @@ void print_odf_element(GString *out, element *elt) {
         g_string_append_printf(out, "</table:table>");
         /* print caption if present */
         if (elt->children->key == TABLECAPTION) {
-            g_string_append_printf(out,"<text:p text:style-name=\"Table\">Table <text:sequence text:name=\"Table\" text:formula=\"ooow:Table+1\" style:num-format=\"1\"> Update Fields to calculate numbers</text:sequence>:");
+            if (elt->children->children->key == TABLELABEL) {
+                label = label_from_element_list(elt->children->children->children,0);
+            } else {
+                label = label_from_element_list(elt->children->children,0);
+            }
+            g_string_append_printf(out,"<text:p text:style-name=\"Table\"><text:bookmark text:name=\"%s\"/>Table <text:sequence text:name=\"Table\" text:formula=\"ooow:Table+1\" style:num-format=\"1\"> Update Fields to calculate numbers</text:sequence>:", label);
             print_odf_element_list(out,elt->children->children);
-            g_string_append_printf(out, "</text:p>\n");
+            g_string_append_printf(out, "<text:bookmark-end text:name=\"%s\"/></text:p>\n",label);
+            free(label);
         }
         break;
    case TABLESEPARATOR:
        table_alignment = elt->contents.str;
        break;
     case TABLECAPTION:
-        if (elt->children->key == TABLELABEL) {
-            label = label_from_element_list(elt->children->children,0);
-        } else {
-            label = label_from_element_list(elt->children,0);
-        }
-        g_string_append_printf(out,"<text:bookmark text:name=\"%s\"/>", label);
-        g_string_append_printf(out,"<text:bookmark-end text:name=\"%s\"/>", label);
-        free(label);
         break;
     case TABLELABEL:
         break;
