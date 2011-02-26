@@ -2330,10 +2330,12 @@ void print_odf_element(GString *out, element *elt) {
             g_string_append_printf(out, " text:style-name=\"Table_20_Heading\"");
         } else {
             if ( strncmp(&table_alignment[table_column],"r",1) == 0) {
-                g_string_append_printf(out, " text:style-name=\"MMD-Right\"", cell_type);
+                g_string_append_printf(out, " text:style-name=\"MMD-Table-Right\"", cell_type);
             } else if ( strncmp(&table_alignment[table_column],"c",1) == 0) {
-                g_string_append_printf(out, " text:style-name=\"MMD-Center\"", cell_type);
-            }
+                g_string_append_printf(out, " text:style-name=\"MMD-Table-Center\"", cell_type);
+            } else {
+                g_string_append_printf(out, " text:style-name=\"MMD-Table\"", cell_type);
+}
         }
         g_string_append_printf(out, ">");
         print_odf_element_list(out,elt->children);
