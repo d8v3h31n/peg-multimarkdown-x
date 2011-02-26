@@ -2250,6 +2250,13 @@ void print_odf_element(GString *out, element *elt) {
         g_string_append_printf(out, "<office:meta>\n");
         print_odf_element_list(out, elt->children);
         g_string_append_printf(out, "</office:meta>\n");
+        element *header;
+        header = metadata_for_key("odfheader",elt);
+        if (header != NULL) {
+            print_raw_element(out,header->children);
+        } else {
+            fprintf(stderr, "no odf\n");
+        }
         break;
     case METAKEY:
         if (strcmp(elt->contents.str, "title") == 0) {
@@ -2259,6 +2266,7 @@ void print_odf_element(GString *out, element *elt) {
         } else if (strcmp(elt->contents.str, "css") == 0) {
         } else if (strcmp(elt->contents.str, "baseheaderlevel") == 0) {
         } else if (strcmp(elt->contents.str, "xhtmlheader") == 0) {
+        } else if (strcmp(elt->contents.str, "odfheader") == 0) {
         } else if (strcmp(elt->contents.str, "latexfooter") == 0) {
         } else if (strcmp(elt->contents.str, "latexinput") == 0) {
         } else if (strcmp(elt->contents.str, "latexmode") == 0) {
