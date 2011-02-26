@@ -85,7 +85,8 @@ void print_odf_header(GString *out){
     "<style:style style:name=\"Source_20_Text\" style:display-name=\"Source Text\"\n" \
     "             style:family=\"text\">\n" \
     "   <style:text-properties style:font-name=\"Courier New\" style:font-name-asian=\"Courier New\"\n" \
-    "                          style:font-name-complex=\"Courier New\"/>\n" \
+    "                          style:font-name-complex=\"Courier New\"\n" \
+    "                          fo:font-size=\"11pt\"/>\n" \
     "</style:style>\n" \
     "<style:style style:name=\"List\" style:family=\"paragraph\"\n" \
     "             style:parent-style-name=\"Standard\"\n" \
