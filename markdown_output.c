@@ -2154,6 +2154,9 @@ void print_odf_element(GString *out, element *elt) {
         print_odf_element_list(out, elt->children);
         g_string_append_printf(out, "</text:p>\n");
         break;
+    case HRULE:
+        g_string_append_printf(out,"<text:p text:style-name=\"Horizontal_20_Line\"/>\n");
+        break;
     case VERBATIM:
         old_type = odf_type;
         odf_type = VERBATIM;

@@ -84,6 +84,22 @@ void print_odf_header(GString *out){
     "   <style:text-properties fo:font-weight=\"bold\" style:font-weight-asian=\"bold\"\n" \
     "                          style:font-weight-complex=\"bold\"/>\n" \
     "</style:style>\n" \
+    "<style:style style:name=\"Horizontal_20_Line\" style:display-name=\"Horizontal Line\"\n" \
+    "             style:family=\"paragraph\"\n" \
+    "             style:parent-style-name=\"Standard\"\n" \
+    "             style:class=\"html\">\n" \
+    "   <style:paragraph-properties fo:margin-top=\"0in\" fo:margin-bottom=\"0.1965in\"\n" \
+    "                               style:border-line-width-bottom=\"0.0008in 0.0138in 0.0008in\"\n" \
+    "                               fo:padding=\"0in\"\n" \
+    "                               fo:border-left=\"none\"\n" \
+    "                               fo:border-right=\"none\"\n" \
+    "                               fo:border-top=\"none\"\n" \
+    "                               fo:border-bottom=\"0.0154in double #808080\"\n" \
+    "                               text:number-lines=\"false\"\n" \
+    "                               text:line-number=\"0\"\n" \
+    "                               style:join-border=\"false\"/>\n" \
+    "   <style:text-properties fo:font-size=\"6pt\" style:font-size-asian=\"6pt\" style:font-size-complex=\"6pt\"/>\n" \
+    "</style:style>\n" \
     "</office:styles>\n");
     
     /* Automatic style information */
