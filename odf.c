@@ -56,21 +56,50 @@ void print_odf_header(GString *out){
 "     grddl:transformation=\"http://docs.oasis-open.org/office/1.2/xslt/odf2rdf.xsl\"\n" \
 "     office:mimetype=\"application/vnd.oasis.opendocument.text\">\n");
     
+    /* Font Declarations */
+    g_string_append_printf(out, "<office:font-face-decls>\n" \
+    "   <style:font-face style:name=\"Courier New\" svg:font-family=\"'Courier New'\"\n" \
+    "                    style:font-adornments=\"Regular\"\n" \
+    "                    style:font-family-generic=\"modern\"\n" \
+    "                    style:font-pitch=\"fixed\"/>\n" \
+    "</office:font-face-decls>\n");
+    
     /* Append basic style information */
     g_string_append_printf(out, "<office:styles>\n" \
     "<style:style style:name=\"Standard\" style:family=\"paragraph\" style:class=\"text\">\n" \
-    "      <style:paragraph-properties fo:margin-top=\"0in\" fo:margin-bottom=\"0.15in\"/>\n" \
+    "      <style:paragraph-properties fo:margin-top=\"0in\" fo:margin-bottom=\"0.15in\"" \
+    "     fo:text-align=\"justify\" style:justify-single-word=\"false\"/>\n" \
     "   </style:style>\n" \
+    "<style:style style:name=\"Preformatted_20_Text\" style:display-name=\"Preformatted Text\"\n" \
+    "             style:family=\"paragraph\"\n" \
+    "             style:parent-style-name=\"Standard\"\n" \
+    "             style:class=\"html\">\n" \
+    "   <style:paragraph-properties fo:margin-top=\"0in\" fo:margin-bottom=\"0in\" fo:text-align=\"start\"\n" \
+    "                               style:justify-single-word=\"false\"/>\n" \
+    "   <style:text-properties style:font-name=\"Courier New\" fo:font-size=\"11pt\"\n" \
+    "                          style:font-name-asian=\"Courier New\"\n" \
+    "                          style:font-size-asian=\"11pt\"\n" \
+    "                          style:font-name-complex=\"Courier New\"\n" \
+    "                          style:font-size-complex=\"11pt\"/>\n" \
+    "</style:style>\n" \
     "<style:style style:name=\"Source_20_Text\" style:display-name=\"Source Text\"\n" \
     "             style:family=\"text\">\n" \
     "   <style:text-properties style:font-name=\"Courier New\" style:font-name-asian=\"Courier New\"\n" \
     "                          style:font-name-complex=\"Courier New\"/>\n" \
+    "</style:style>\n" \
+    "<style:style style:name=\"List\" style:family=\"paragraph\"\n" \
+    "             style:parent-style-name=\"Standard\"\n" \
+    "             style:class=\"list\">\n" \
+    "   <style:paragraph-properties fo:text-align=\"start\" style:justify-single-word=\"false\"/>\n" \
+    "   <style:text-properties style:font-size-asian=\"12pt\"/>\n" \
     "</style:style>\n" \
     "<style:style style:name=\"Quotations\" style:family=\"paragraph\"\n" \
     "             style:parent-style-name=\"Standard\"\n" \
     "             style:class=\"html\">\n" \
     "   <style:paragraph-properties fo:margin-left=\"0.3937in\" fo:margin-right=\"0.3937in\" fo:margin-top=\"0in\"\n" \
     "                               fo:margin-bottom=\"0.1965in\"\n" \
+    "                               fo:text-align=\"justify\"" \ 
+    "                               style:justify-single-word=\"false\"" \
     "                               fo:text-indent=\"0in\"\n" \
     "                               style:auto-text-indent=\"false\"/>\n" \
     "</style:style>\n" \
@@ -101,7 +130,7 @@ void print_odf_header(GString *out){
     "   <style:text-properties fo:font-size=\"6pt\" style:font-size-asian=\"6pt\" style:font-size-complex=\"6pt\"/>\n" \
     "</style:style>\n" \
     "</office:styles>\n");
-    
+
     /* Automatic style information */
     g_string_append_printf(out, "<office:automatic-styles>" \
     "   <style:style style:name=\"MMD-Italic\" style:family=\"text\">\n" \
@@ -121,11 +150,13 @@ void print_odf_header(GString *out){
     "<style:style style:name=\"MMD-Table-Right\" style:family=\"paragraph\" style:parent-style-name=\"MMD-Table\">\n" \
     "   <style:paragraph-properties fo:text-align=\"right\" style:justify-single-word=\"false\"/>\n" \
     "</style:style>\n" \
+    "<style:style style:name=\"P2\" style:family=\"paragraph\" style:parent-style-name=\"Standard\"\n" \
+    "             style:list-style-name=\"L2\">\n" \
+    "<style:paragraph-properties fo:text-align=\"start\" style:justify-single-word=\"false\"/>\n" \
+    "</style:style>\n" \
     "</office:automatic-styles>\n" \
     "<style:style style:name=\"P1\" style:family=\"paragraph\" style:parent-style-name=\"Standard\"\n" \
     "             style:list-style-name=\"L1\"/>\n" \
-    "<style:style style:name=\"P2\" style:family=\"paragraph\" style:parent-style-name=\"Standard\"\n" \
-    "             style:list-style-name=\"L2\"/>\n" \
     "<text:list-style style:name=\"L1\">\n" \
     "   <text:list-level-style-bullet />\n" \
     "</text:list-style>\n" \

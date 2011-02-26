@@ -2141,7 +2141,7 @@ void print_odf_element(GString *out, element *elt) {
                 break;
             case ORDEREDLIST:
             case BULLETLIST:
-                g_string_append_printf(out," text:style-name=\"List\"");
+                g_string_append_printf(out," text:style-name=\"P2\"");
                 break;
             case NOTE:
                 g_string_append_printf(out," text:style-name=\"Footnote\"");
@@ -2254,8 +2254,6 @@ void print_odf_element(GString *out, element *elt) {
         header = metadata_for_key("odfheader",elt);
         if (header != NULL) {
             print_raw_element(out,header->children);
-        } else {
-            fprintf(stderr, "no odf\n");
         }
         break;
     case METAKEY:
