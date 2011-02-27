@@ -80,6 +80,7 @@ element * element_for_attribute(char *querystring, element *list);
 char * dimension_for_attribute(char *querystring, element *list);
 
 static void print_odf_code_string(GString *out, char *str);
+static void print_odf_string(GString *out, char *str);
 
 
 /**********************************************************************
@@ -2081,9 +2082,9 @@ void print_odf_element(GString *out, element *elt) {
         /* Images can't (easily and reliably) be put in ODF from MMD, so a
         placeholder is used instead */
         g_string_append_printf(out, "[Image \"");
-        print_odf_code_string(out, elt->contents.link->title);
+        print_odf_string(out, elt->contents.link->title);
         g_string_append_printf(out, "\", ");
-        print_odf_code_string(out, elt->contents.link->url);
+        print_odf_string(out, elt->contents.link->url);
         g_string_append_printf(out, "]");
         break;
     case EMPH:
@@ -2130,6 +2131,7 @@ void print_odf_element(GString *out, element *elt) {
     case PARA:
         g_string_append_printf(out, "<text:p");
         switch (odf_type) {
+            case DEFINITION:
             case BLOCKQUOTE:
                 g_string_append_printf(out," text:style-name=\"Quotations\"");
                 break;
@@ -2246,7 +2248,7 @@ void print_odf_element(GString *out, element *elt) {
         break;
     case GLOSSARYTERM:
         g_string_append_printf(out, "<text:p text:style-name=\"Glossary\">");
-        print_odf_code_string(out, elt->children->contents.str);
+        print_odf_string(out, elt->children->contents.str);
         g_string_append_printf(out, ":");
         g_string_append_printf(out, "</text:p>");
         break;
@@ -2263,10 +2265,20 @@ void print_odf_element(GString *out, element *elt) {
         elt->children = NULL;
         break;
     case DEFLIST:
+        print_odf_element_list(out, elt->children);
         break;
     case TERM:
+        g_string_append_printf(out, "<text:p><text:span text:style-name=\"MMD-Bold\">");
+        print_odf_string(out, elt->contents.str);
+        g_string_append_printf(out, "</text:span></text:p>");
         break;
     case DEFINITION:
+        old_type = odf_type;
+        odf_type = DEFINITION;
+        g_string_append_printf(out, "<text:p text:style-name=\"Quotations\">");
+        print_odf_element_list(out, elt->children);
+        g_string_append_printf(out, "</text:p>");
+        odf_type = old_type;
         break;
     case METADATA:
         g_string_append_printf(out, "<office:meta>\n");
@@ -2300,14 +2312,14 @@ void print_odf_element(GString *out, element *elt) {
              free(label);
         } else {
             g_string_append_printf(out, "<meta:user-defined meta:name=\"");
-            print_odf_code_string(out,elt->contents.str);
+            print_odf_string(out,elt->contents.str);
             g_string_append_printf(out, "\">");
             print_odf_element(out, elt->children);
             g_string_append_printf(out,"</meta:user-defined>\n");
         }
         break;
     case METAVALUE:
-        print_odf_code_string(out, elt->contents.str);
+        print_odf_string(out, elt->contents.str);
         break;
     case FOOTER:
         break;
@@ -2420,6 +2432,64 @@ static void print_odf_code_string(GString *out, char *str) {
             break;
         case '\n':
             g_string_append_printf(out, "<text:line-break/>");
+            break;
+        case ' ':
+            tmp = str;
+            tmp++;
+            if (*tmp == ' ') {
+                tmp++;
+                if (*tmp == ' ') {
+                    tmp++;
+                    if (*tmp == ' ') {
+                        g_string_append_printf(out, "<text:tab/>");
+                        str = tmp;
+                    } else {
+                        g_string_append_printf(out, " ");
+                    }
+                } else {
+                    g_string_append_printf(out, " ");
+                }
+            } else {
+                g_string_append_printf(out, " ");
+            }
+            break;
+        default:
+               g_string_append_c(out, *str);
+        }
+    str++;
+    }
+}
+
+/* print_odf_string - print string, escaping for HTML and saving newlines */
+static void print_odf_string(GString *out, char *str) {
+    char *tmp;
+    while (*str != '\0') {
+        switch (*str) {
+        case '&':
+            g_string_append_printf(out, "&amp;");
+            break;
+        case '<':
+            g_string_append_printf(out, "&lt;");
+            break;
+        case '>':
+            g_string_append_printf(out, "&gt;");
+            break;
+        case '"':
+            g_string_append_printf(out, "&quot;");
+            break;
+        case '\n':
+            tmp = str;
+            tmp--;
+            if (*tmp == ' ') {
+                tmp--;
+                if (*tmp == ' ') {
+                    g_string_append_printf(out, "<text:line-break/>");
+                } else {
+                    g_string_append_printf(out, "\n");
+                }
+            } else {
+                g_string_append_printf(out, "\n");
+            }
             break;
         case ' ':
             tmp = str;
