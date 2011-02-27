@@ -496,6 +496,10 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
             g_string_append_printf(out, "\n");
         } else if (strcmp(elt->contents.str, "baseheaderlevel") == 0) {
             base_header_level = atoi(elt->children->contents.str);
+        } else if (strcmp(elt->contents.str, "xhtmlheaderlevel") == 0) {
+            base_header_level = atoi(elt->children->contents.str);
+        } else if (strcmp(elt->contents.str, "htmlheaderlevel") == 0) {
+            base_header_level = atoi(elt->children->contents.str);
         } else if (strcmp(elt->contents.str, "quoteslanguage") == 0) {
             label = label_from_element_list(elt->children, 0);
             if (strcmp(label, "dutch") == 0) { language = DUTCH; } else 
@@ -1112,6 +1116,8 @@ static void print_latex_element(GString *out, element *elt) {
             print_latex_element_list(out, elt->children);
             g_string_append_printf(out, "}\n");
         } else if (strcmp(elt->contents.str, "baseheaderlevel") == 0) {
+            base_header_level = atoi(elt->children->contents.str);
+        } else if (strcmp(elt->contents.str, "latexheaderlevel") == 0) {
             base_header_level = atoi(elt->children->contents.str);
         } else if (strcmp(elt->contents.str, "latexinput") == 0) {
             g_string_append_printf(out, "\\input{%s}\n", elt->children->contents.str);
@@ -1869,10 +1875,14 @@ static bool is_html_complete_doc(element *meta) {
     step = meta->children;
     
     while (step != NULL) {
-        if (strcmp(step->contents.str, "baseheaderlevel") != 0) {
-            if (strcmp(step->contents.str, "quoteslanguage") !=0 ){
-                return TRUE;
-            }
+        if ((strcmp(step->contents.str, "baseheaderlevel") != 0) &&
+            (strcmp(step->contents.str, "xhtmlheaderlevel") != 0) &&
+            (strcmp(step->contents.str, "htmlheaderlevel") != 0) &&
+            (strcmp(step->contents.str, "latexheaderlevel") != 0) &&
+            (strcmp(step->contents.str, "odfheaderlevel") != 0) &&
+            (strcmp(step->contents.str, "quoteslanguage") != 0))
+        {
+            return TRUE;
         }
         step = step->next;
     }
@@ -2299,6 +2309,9 @@ void print_odf_element(GString *out, element *elt) {
             g_string_append_printf(out,"</dc:title>\n");
         } else if (strcmp(elt->contents.str, "css") == 0) {
         } else if (strcmp(elt->contents.str, "baseheaderlevel") == 0) {
+            base_header_level = atoi(elt->children->contents.str);
+        } else if (strcmp(elt->contents.str, "odfheaderlevel") == 0) {
+            base_header_level = atoi(elt->children->contents.str);
         } else if (strcmp(elt->contents.str, "xhtmlheader") == 0) {
         } else if (strcmp(elt->contents.str, "odfheader") == 0) {
         } else if (strcmp(elt->contents.str, "latexfooter") == 0) {
