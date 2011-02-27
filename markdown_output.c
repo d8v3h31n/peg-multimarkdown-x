@@ -2179,7 +2179,9 @@ void print_odf_element(GString *out, element *elt) {
     case BULLETLIST:
         if ((odf_type == BULLETLIST) ||
             (odf_type == ORDEREDLIST)) {
-            g_string_append_printf(out, "</text:p>");
+            /* I think this was made unnecessary by another change.
+            Same for ORDEREDLIST below */
+            /*  g_string_append_printf(out, "</text:p>"); */
         }
         old_type = odf_type;
         odf_type = BULLETLIST;
@@ -2191,7 +2193,7 @@ void print_odf_element(GString *out, element *elt) {
     case ORDEREDLIST:
         if ((odf_type == BULLETLIST) ||
             (odf_type == ORDEREDLIST)) {
-            g_string_append_printf(out, "</text:p>");
+            /* g_string_append_printf(out, "</text:p>"); */
         }
         old_type = odf_type;
         odf_type = ORDEREDLIST;
