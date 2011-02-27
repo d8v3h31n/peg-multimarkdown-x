@@ -2260,9 +2260,9 @@ void print_odf_element(GString *out, element *elt) {
     case CITATION:
         if (strncmp(elt->contents.str,"[#",2) == 0) {
             /* bibtex citation key */
-            g_string_append_printf(out, "%s-(Citations Not supported yet)", elt->contents.str);
+            g_string_append_printf(out, "%s", elt->contents.str);
         } else {
-            g_string_append_printf(out, "[#%s]-(Citations Not supported yet)", elt->contents.str);
+            g_string_append_printf(out, "[#%s]", elt->contents.str);
         }
         elt->children = NULL;
         break;
