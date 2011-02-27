@@ -37,6 +37,7 @@ static int language = ENGLISH;
 static bool html_footer = FALSE;
 static int odf_type = 0;
 static bool in_list = FALSE;
+static bool no_latex_footnote = FALSE;
 
 static void print_html_string(GString *out, char *str, bool obfuscate);
 static void print_html_element_list(GString *out, element *list, bool obfuscate);
@@ -819,9 +820,12 @@ static void print_latex_element(GString *out, element *elt) {
             /* This is a [text](link) */
             g_string_append_printf(out, "\\href{%s}{", elt->contents.link->url);
             print_latex_element_list(out, elt->contents.link->label);
-            g_string_append_printf(out, "}\\footnote{\\href{%s}{", elt->contents.link->url);
-            print_latex_string(out, elt->contents.link->url);
-            g_string_append_printf(out, "}}");
+            g_string_append_printf(out, "}");
+            if ( no_latex_footnote == FALSE ) {
+                g_string_append_printf(out, "\\footnote{\\href{%s}{", elt->contents.link->url);
+                print_latex_string(out, elt->contents.link->url);
+                g_string_append_printf(out, "}}");
+            }
         }
         break;
     case IMAGE:
@@ -908,21 +912,21 @@ static void print_latex_element(GString *out, element *elt) {
                 g_string_append_printf(out, "\\noindent\\textbf{");
                 break;
         }
-        /* generate a label for each header (MMD)*/
+        /* generate a label for each header (MMD);
+            don't allow footnotes since invalid here */
+        no_latex_footnote = TRUE;
         if (elt->children->key == AUTOLABEL) {
             label = label_from_string(elt->children->contents.str,0);
             print_latex_element_list(out, elt->children->next);
-            g_string_append_printf(out, "}\n\\label{");
-            g_string_append_printf(out, "%s", label);
-            free(label);
         } else {
             label = label_from_element_list(elt->children,0);
             print_latex_element_list(out, elt->children);
-            g_string_append_printf(out, "}\n\\label{");
-            g_string_append_printf(out, "%s", label);
-            free(label);
         }
+        no_latex_footnote = FALSE;
+        g_string_append_printf(out, "}\n\\label{");
+        g_string_append_printf(out, "%s", label);
         g_string_append_printf(out, "}\n");
+        free(label);
         padded = 1;
         break;
     case PLAIN:
@@ -1448,7 +1452,8 @@ void print_element_list(GString *out, element *elt, int format, int exts) {
     base_header_level = 1;
     language = ENGLISH;
     html_footer = FALSE;
-    
+    no_latex_footnote = FALSE;
+
     extensions = exts;
     padded = 2;  /* set padding to 2, so no extra blank lines at beginning */
 
@@ -1666,21 +1671,21 @@ static void print_beamer_element(GString *out, element *elt) {
                     g_string_append_printf(out, "\\emph{");
                     break;
             }
-            /* generate a label for each header (MMD)*/
+            /* generate a label for each header (MMD);
+                don't allow footnotes since invalid here */
+            no_latex_footnote = TRUE;
             if (elt->children->key == AUTOLABEL) {
                 label = label_from_string(elt->children->contents.str,0);
                 print_latex_element_list(out, elt->children->next);
-                g_string_append_printf(out, "}\n\\label{");
-                g_string_append_printf(out, "%s", label);
-                free(label);
             } else {
                 label = label_from_element_list(elt->children,0);
                 print_latex_element_list(out, elt->children);
-                g_string_append_printf(out, "}\n\\label{");
-                g_string_append_printf(out, "%s", label);
-                free(label);
             }
+            no_latex_footnote = FALSE;
+            g_string_append_printf(out, "}\n\\label{");
+            g_string_append_printf(out, "%s", label);
             g_string_append_printf(out, "}\n");
+            free(label);
             padded = 1;
             break;
         default:
