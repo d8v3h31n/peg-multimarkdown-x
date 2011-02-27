@@ -2157,6 +2157,15 @@ void print_odf_element(GString *out, element *elt) {
     case HRULE:
         g_string_append_printf(out,"<text:p text:style-name=\"Horizontal_20_Line\"/>\n");
         break;
+    case HTMLBLOCK:
+        /* don't print HTML block */
+        /* but do print HTML comments for raw ODF */
+        if (strncmp(elt->contents.str,"<!--",4) == 0) {
+            /* trim "-->" from end */
+            elt->contents.str[strlen(elt->contents.str)-3] = '\0';
+            g_string_append_printf(out, "%s", &elt->contents.str[4]);
+        }
+        break;
     case VERBATIM:
         old_type = odf_type;
         odf_type = VERBATIM;
@@ -2229,7 +2238,8 @@ void print_odf_element(GString *out, element *elt) {
                 print_odf_element_list(out, elt->children);
                 g_string_append_printf(out, "</text:note-body>\n</text:note>\n");
             }
-        }
+       }
+        elt->children = NULL;
         odf_type = old_type;
         break;
     case GLOSSARY:
@@ -2244,7 +2254,19 @@ void print_odf_element(GString *out, element *elt) {
         break;
     case NOCITATION:
     case CITATION:
-        g_string_append_printf(out, "[#%s] (Citations Not supported yet)", elt->contents.str);
+        if (strncmp(elt->contents.str,"[#",2) == 0) {
+            /* bibtex citation key */
+            g_string_append_printf(out, "%s-(Citations Not supported yet)", elt->contents.str);
+        } else {
+            g_string_append_printf(out, "[#%s]-(Citations Not supported yet)", elt->contents.str);
+        }
+        elt->children = NULL;
+        break;
+    case DEFLIST:
+        break;
+    case TERM:
+        break;
+    case DEFINITION:
         break;
     case METADATA:
         g_string_append_printf(out, "<office:meta>\n");
