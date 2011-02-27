@@ -417,13 +417,26 @@ HtmlBlockInTags = HtmlBlockAddress
                 | HtmlBlockTr
                 | HtmlBlockScript
 
-HtmlBlock = < ( HtmlBlockInTags | HtmlComment | HtmlBlockSelfClosing ) >
+HtmlBlock = MarkdownHtmlBlock | OldHtmlBlock
+
+MarkdownHtmlBlock = &( '<' Spnl HtmlBlockType Spnl
+			(!MarkdownHtmlAttribute HtmlAttribute)*
+			MarkdownHtmlAttribute
+			HtmlAttribute*
+ 			'>' )
+			< ( HtmlBlockInTags | HtmlComment | HtmlBlockSelfClosing ) >
+            BlankLine+
+            {  $$ = mk_str(yytext);
+               $$->key = RAW;
+            }
+
+OldHtmlBlock = < ( HtmlBlockInTags | HtmlComment | HtmlBlockSelfClosing ) >
             BlankLine+
             {   if (extension(EXT_FILTER_HTML)) {
                     $$ = mk_list(LIST, NULL);
                 } else {
                     $$ = mk_str(yytext);
-                    if ( extension(EXT_PROCESS_HTML)) $$->key = RAW;
+                    if ( extension(EXT_PROCESS_HTML) ) $$->key = RAW;
                         else $$->key = HTMLBLOCK;
                 }
             }
@@ -1159,6 +1172,9 @@ OPMLSectionBlock =
 
 OPMLPlain = a:StartList (!BlankLine Line { a = cons($$,a); })+
     { $$ = mk_list(PLAIN, a); }
+
+MarkdownHtmlAttribute = "markdown" Spnl '=' Spnl '"' Spnl "1" Spnl '"' Spnl
+
 
 %%
 
