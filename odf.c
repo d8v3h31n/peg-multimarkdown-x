@@ -16,9 +16,9 @@
 
 
 void print_odf_header(GString *out){
-	
-	/* Insert required XML header */
-	g_string_append_printf(out,
+    
+    /* Insert required XML header */
+    g_string_append_printf(out,
 "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" \
 "<office:document xmlns:office=\"urn:oasis:names:tc:opendocument:xmlns:office:1.0\"\n" \
 "     xmlns:style=\"urn:oasis:names:tc:opendocument:xmlns:style:1.0\"\n" \
@@ -55,64 +55,118 @@ void print_odf_header(GString *out){
 "     office:version=\"1.2\"\n" \
 "     grddl:transformation=\"http://docs.oasis-open.org/office/1.2/xslt/odf2rdf.xsl\"\n" \
 "     office:mimetype=\"application/vnd.oasis.opendocument.text\">\n");
-	
-	/* Append basic style information */
-	g_string_append_printf(out, "<office:styles>\n" \
-	"<style:style style:name=\"Source_20_Text\" style:display-name=\"Source Text\"\n" \
-	"             style:family=\"text\">\n" \
-	"   <style:text-properties style:font-name=\"Courier New\" style:font-name-asian=\"Courier New\"\n" \
-	"                          style:font-name-complex=\"Courier New\"/>\n" \
-	"</style:style>\n" \
-	"<style:style style:name=\"Quotations\" style:family=\"paragraph\"\n" \
-	"             style:parent-style-name=\"Standard\"\n" \
-	"             style:class=\"html\">\n" \
-	"   <style:paragraph-properties fo:margin-left=\"0.3937in\" fo:margin-right=\"0.3937in\" fo:margin-top=\"0in\"\n" \
-	"                               fo:margin-bottom=\"0.1965in\"\n" \
-	"                               fo:text-indent=\"0in\"\n" \
-	"                               style:auto-text-indent=\"false\"/>\n" \
-	"</style:style>\n" \
-	"<style:style style:name=\"Table_20_Heading\" style:display-name=\"Table Heading\"\n" \
-	"             style:family=\"paragraph\"\n" \
-	"             style:parent-style-name=\"Table_20_Contents\"\n" \
-	"             style:class=\"extra\">\n" \
-	"   <style:paragraph-properties fo:text-align=\"center\" style:justify-single-word=\"false\"\n" \
-	"                               text:number-lines=\"false\"\n" \
-	"                               text:line-number=\"0\"/>\n" \
-	"   <style:text-properties fo:font-weight=\"bold\" style:font-weight-asian=\"bold\"\n" \
-	"                          style:font-weight-complex=\"bold\"/>\n" \
-	"</style:style>\n" \
-	"</office:styles>\n");
-	
-	/* Automatic style information */
-	g_string_append_printf(out, "<office:automatic-styles>" \
-	"   <style:style style:name=\"MMD-Italic\" style:family=\"text\">\n" \
-	"      <style:text-properties fo:font-style=\"italic\" style:font-style-asian=\"italic\"\n" \
-	"                             style:font-style-complex=\"italic\"/>\n" \
-	"   </style:style>\n" \
-	"   <style:style style:name=\"MMD-Bold\" style:family=\"text\">\n" \
-	"      <style:text-properties fo:font-weight=\"bold\" style:font-weight-asian=\"bold\"\n" \
-	"                             style:font-weight-complex=\"bold\"/>\n" \
-	"   </style:style>\n" \
-	"<style:style style:name=\"MMD-Center\" style:family=\"paragraph\" style:parent-style-name=\"Standard\">\n" \
-	"   <style:paragraph-properties fo:text-align=\"center\" style:justify-single-word=\"false\"/>\n" \
-	"</style:style>\n" \
-	"<style:style style:name=\"MMD-Right\" style:family=\"paragraph\" style:parent-style-name=\"Standard\">\n" \
-	"   <style:paragraph-properties fo:text-align=\"right\" style:justify-single-word=\"false\"/>\n" \
-	"</style:style>\n" \
-	"</office:automatic-styles>\n" \
-	"<style:style style:name=\"P1\" style:family=\"paragraph\" style:parent-style-name=\"Standard\"\n" \
-	"             style:list-style-name=\"L1\"/>\n" \
-	"<style:style style:name=\"P2\" style:family=\"paragraph\" style:parent-style-name=\"Standard\"\n" \
-	"             style:list-style-name=\"L2\"/>\n" \
-	"<text:list-style style:name=\"L1\">\n" \
-	"	<text:list-level-style-bullet />\n" \
-	"</text:list-style>\n" \
-	"<text:list-style style:name=\"L2\">\n" \
-	"	<text:list-level-style-number />\n" \
-	"</text:list-style>\n");
+    
+    /* Font Declarations */
+    g_string_append_printf(out, "<office:font-face-decls>\n" \
+    "   <style:font-face style:name=\"Courier New\" svg:font-family=\"'Courier New'\"\n" \
+    "                    style:font-adornments=\"Regular\"\n" \
+    "                    style:font-family-generic=\"modern\"\n" \
+    "                    style:font-pitch=\"fixed\"/>\n" \
+    "</office:font-face-decls>\n");
+    
+    /* Append basic style information */
+    g_string_append_printf(out, "<office:styles>\n" \
+    "<style:style style:name=\"Standard\" style:family=\"paragraph\" style:class=\"text\">\n" \
+    "      <style:paragraph-properties fo:margin-top=\"0in\" fo:margin-bottom=\"0.15in\"" \
+    "     fo:text-align=\"justify\" style:justify-single-word=\"false\"/>\n" \
+    "   </style:style>\n" \
+    "<style:style style:name=\"Preformatted_20_Text\" style:display-name=\"Preformatted Text\"\n" \
+    "             style:family=\"paragraph\"\n" \
+    "             style:parent-style-name=\"Standard\"\n" \
+    "             style:class=\"html\">\n" \
+    "   <style:paragraph-properties fo:margin-top=\"0in\" fo:margin-bottom=\"0in\" fo:text-align=\"start\"\n" \
+    "                               style:justify-single-word=\"false\"/>\n" \
+    "   <style:text-properties style:font-name=\"Courier New\" fo:font-size=\"11pt\"\n" \
+    "                          style:font-name-asian=\"Courier New\"\n" \
+    "                          style:font-size-asian=\"11pt\"\n" \
+    "                          style:font-name-complex=\"Courier New\"\n" \
+    "                          style:font-size-complex=\"11pt\"/>\n" \
+    "</style:style>\n" \
+    "<style:style style:name=\"Source_20_Text\" style:display-name=\"Source Text\"\n" \
+    "             style:family=\"text\">\n" \
+    "   <style:text-properties style:font-name=\"Courier New\" style:font-name-asian=\"Courier New\"\n" \
+    "                          style:font-name-complex=\"Courier New\"\n" \
+    "                          fo:font-size=\"11pt\"/>\n" \
+    "</style:style>\n" \
+    "<style:style style:name=\"List\" style:family=\"paragraph\"\n" \
+    "             style:parent-style-name=\"Standard\"\n" \
+    "             style:class=\"list\">\n" \
+    "   <style:paragraph-properties fo:text-align=\"start\" style:justify-single-word=\"false\"/>\n" \
+    "   <style:text-properties style:font-size-asian=\"12pt\"/>\n" \
+    "</style:style>\n" \
+    "<style:style style:name=\"Quotations\" style:family=\"paragraph\"\n" \
+    "             style:parent-style-name=\"Standard\"\n" \
+    "             style:class=\"html\">\n" \
+    "   <style:paragraph-properties fo:margin-left=\"0.3937in\" fo:margin-right=\"0.3937in\" fo:margin-top=\"0in\"\n" \
+    "                               fo:margin-bottom=\"0.1965in\"\n" \
+    "                               fo:text-align=\"justify\"" \ 
+    "                               style:justify-single-word=\"false\"" \
+    "                               fo:text-indent=\"0in\"\n" \
+    "                               style:auto-text-indent=\"false\"/>\n" \
+    "</style:style>\n" \
+    "<style:style style:name=\"Table_20_Heading\" style:display-name=\"Table Heading\"\n" \
+    "             style:family=\"paragraph\"\n" \
+    "             style:parent-style-name=\"Table_20_Contents\"\n" \
+    "             style:class=\"extra\">\n" \
+    "   <style:paragraph-properties fo:text-align=\"center\" style:justify-single-word=\"false\"\n" \
+    "                               text:number-lines=\"false\"\n" \
+    "                               text:line-number=\"0\"/>\n" \
+    "   <style:text-properties fo:font-weight=\"bold\" style:font-weight-asian=\"bold\"\n" \
+    "                          style:font-weight-complex=\"bold\"/>\n" \
+    "</style:style>\n" \
+    "<style:style style:name=\"Horizontal_20_Line\" style:display-name=\"Horizontal Line\"\n" \
+    "             style:family=\"paragraph\"\n" \
+    "             style:parent-style-name=\"Standard\"\n" \
+    "             style:class=\"html\">\n" \
+    "   <style:paragraph-properties fo:margin-top=\"0in\" fo:margin-bottom=\"0.1965in\"\n" \
+    "                               style:border-line-width-bottom=\"0.0008in 0.0138in 0.0008in\"\n" \
+    "                               fo:padding=\"0in\"\n" \
+    "                               fo:border-left=\"none\"\n" \
+    "                               fo:border-right=\"none\"\n" \
+    "                               fo:border-top=\"none\"\n" \
+    "                               fo:border-bottom=\"0.0154in double #808080\"\n" \
+    "                               text:number-lines=\"false\"\n" \
+    "                               text:line-number=\"0\"\n" \
+    "                               style:join-border=\"false\"/>\n" \
+    "   <style:text-properties fo:font-size=\"6pt\" style:font-size-asian=\"6pt\" style:font-size-complex=\"6pt\"/>\n" \
+    "</style:style>\n" \
+    "</office:styles>\n");
+
+    /* Automatic style information */
+    g_string_append_printf(out, "<office:automatic-styles>" \
+    "   <style:style style:name=\"MMD-Italic\" style:family=\"text\">\n" \
+    "      <style:text-properties fo:font-style=\"italic\" style:font-style-asian=\"italic\"\n" \
+    "                             style:font-style-complex=\"italic\"/>\n" \
+    "   </style:style>\n" \
+    "   <style:style style:name=\"MMD-Bold\" style:family=\"text\">\n" \
+    "      <style:text-properties fo:font-weight=\"bold\" style:font-weight-asian=\"bold\"\n" \
+    "                             style:font-weight-complex=\"bold\"/>\n" \
+    "   </style:style>\n" \
+    "<style:style style:name=\"MMD-Table\" style:family=\"paragraph\" style:parent-style-name=\"Standard\">\n" \
+    "   <style:paragraph-properties fo:margin-top=\"0in\" fo:margin-bottom=\"0.05in\"/>\n" \
+    "</style:style>\n" \
+    "<style:style style:name=\"MMD-Table-Center\" style:family=\"paragraph\" style:parent-style-name=\"MMD-Table\">\n" \
+    "   <style:paragraph-properties fo:text-align=\"center\" style:justify-single-word=\"false\"/>\n" \
+    "</style:style>\n" \
+    "<style:style style:name=\"MMD-Table-Right\" style:family=\"paragraph\" style:parent-style-name=\"MMD-Table\">\n" \
+    "   <style:paragraph-properties fo:text-align=\"right\" style:justify-single-word=\"false\"/>\n" \
+    "</style:style>\n" \
+    "<style:style style:name=\"P2\" style:family=\"paragraph\" style:parent-style-name=\"Standard\"\n" \
+    "             style:list-style-name=\"L2\">\n" \
+    "<style:paragraph-properties fo:text-align=\"start\" style:justify-single-word=\"false\"/>\n" \
+    "</style:style>\n" \
+    "</office:automatic-styles>\n" \
+    "<style:style style:name=\"P1\" style:family=\"paragraph\" style:parent-style-name=\"Standard\"\n" \
+    "             style:list-style-name=\"L1\"/>\n" \
+    "<text:list-style style:name=\"L1\">\n" \
+    "   <text:list-level-style-bullet />\n" \
+    "</text:list-style>\n" \
+    "<text:list-style style:name=\"L2\">\n" \
+    "   <text:list-level-style-number />\n" \
+    "</text:list-style>\n");
 }
 
 void print_odf_footer(GString *out) {
-	g_string_append_printf(out, "</office:text>\n</office:body>\n</office:document>");
+    g_string_append_printf(out, "</office:text>\n</office:body>\n</office:document>");
 }
 

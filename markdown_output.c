@@ -37,6 +37,7 @@ static int language = ENGLISH;
 static bool html_footer = FALSE;
 static int odf_type = 0;
 static bool in_list = FALSE;
+static bool no_latex_footnote = FALSE;
 
 static void print_html_string(GString *out, char *str, bool obfuscate);
 static void print_html_element_list(GString *out, element *list, bool obfuscate);
@@ -80,6 +81,7 @@ element * element_for_attribute(char *querystring, element *list);
 char * dimension_for_attribute(char *querystring, element *list);
 
 static void print_odf_code_string(GString *out, char *str);
+static void print_odf_string(GString *out, char *str);
 
 
 /**********************************************************************
@@ -495,6 +497,10 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
             g_string_append_printf(out, "\n");
         } else if (strcmp(elt->contents.str, "baseheaderlevel") == 0) {
             base_header_level = atoi(elt->children->contents.str);
+        } else if (strcmp(elt->contents.str, "xhtmlheaderlevel") == 0) {
+            base_header_level = atoi(elt->children->contents.str);
+        } else if (strcmp(elt->contents.str, "htmlheaderlevel") == 0) {
+            base_header_level = atoi(elt->children->contents.str);
         } else if (strcmp(elt->contents.str, "quoteslanguage") == 0) {
             label = label_from_element_list(elt->children, 0);
             if (strcmp(label, "dutch") == 0) { language = DUTCH; } else 
@@ -814,9 +820,12 @@ static void print_latex_element(GString *out, element *elt) {
             /* This is a [text](link) */
             g_string_append_printf(out, "\\href{%s}{", elt->contents.link->url);
             print_latex_element_list(out, elt->contents.link->label);
-            g_string_append_printf(out, "}\\footnote{\\href{%s}{", elt->contents.link->url);
-            print_latex_string(out, elt->contents.link->url);
-            g_string_append_printf(out, "}}");
+            g_string_append_printf(out, "}");
+            if ( no_latex_footnote == FALSE ) {
+                g_string_append_printf(out, "\\footnote{\\href{%s}{", elt->contents.link->url);
+                print_latex_string(out, elt->contents.link->url);
+                g_string_append_printf(out, "}}");
+            }
         }
         break;
     case IMAGE:
@@ -903,21 +912,21 @@ static void print_latex_element(GString *out, element *elt) {
                 g_string_append_printf(out, "\\noindent\\textbf{");
                 break;
         }
-        /* generate a label for each header (MMD)*/
+        /* generate a label for each header (MMD);
+            don't allow footnotes since invalid here */
+        no_latex_footnote = TRUE;
         if (elt->children->key == AUTOLABEL) {
             label = label_from_string(elt->children->contents.str,0);
             print_latex_element_list(out, elt->children->next);
-            g_string_append_printf(out, "}\n\\label{");
-            g_string_append_printf(out, "%s", label);
-            free(label);
         } else {
             label = label_from_element_list(elt->children,0);
             print_latex_element_list(out, elt->children);
-            g_string_append_printf(out, "}\n\\label{");
-            g_string_append_printf(out, "%s", label);
-            free(label);
         }
+        no_latex_footnote = FALSE;
+        g_string_append_printf(out, "}\n\\label{");
+        g_string_append_printf(out, "%s", label);
         g_string_append_printf(out, "}\n");
+        free(label);
         padded = 1;
         break;
     case PLAIN:
@@ -1111,6 +1120,8 @@ static void print_latex_element(GString *out, element *elt) {
             print_latex_element_list(out, elt->children);
             g_string_append_printf(out, "}\n");
         } else if (strcmp(elt->contents.str, "baseheaderlevel") == 0) {
+            base_header_level = atoi(elt->children->contents.str);
+        } else if (strcmp(elt->contents.str, "latexheaderlevel") == 0) {
             base_header_level = atoi(elt->children->contents.str);
         } else if (strcmp(elt->contents.str, "latexinput") == 0) {
             g_string_append_printf(out, "\\input{%s}\n", elt->children->contents.str);
@@ -1441,7 +1452,8 @@ void print_element_list(GString *out, element *elt, int format, int exts) {
     base_header_level = 1;
     language = ENGLISH;
     html_footer = FALSE;
-    
+    no_latex_footnote = FALSE;
+
     extensions = exts;
     padded = 2;  /* set padding to 2, so no extra blank lines at beginning */
 
@@ -1659,21 +1671,21 @@ static void print_beamer_element(GString *out, element *elt) {
                     g_string_append_printf(out, "\\emph{");
                     break;
             }
-            /* generate a label for each header (MMD)*/
+            /* generate a label for each header (MMD);
+                don't allow footnotes since invalid here */
+            no_latex_footnote = TRUE;
             if (elt->children->key == AUTOLABEL) {
                 label = label_from_string(elt->children->contents.str,0);
                 print_latex_element_list(out, elt->children->next);
-                g_string_append_printf(out, "}\n\\label{");
-                g_string_append_printf(out, "%s", label);
-                free(label);
             } else {
                 label = label_from_element_list(elt->children,0);
                 print_latex_element_list(out, elt->children);
-                g_string_append_printf(out, "}\n\\label{");
-                g_string_append_printf(out, "%s", label);
-                free(label);
             }
+            no_latex_footnote = FALSE;
+            g_string_append_printf(out, "}\n\\label{");
+            g_string_append_printf(out, "%s", label);
             g_string_append_printf(out, "}\n");
+            free(label);
             padded = 1;
             break;
         default:
@@ -1868,10 +1880,14 @@ static bool is_html_complete_doc(element *meta) {
     step = meta->children;
     
     while (step != NULL) {
-        if (strcmp(step->contents.str, "baseheaderlevel") != 0) {
-            if (strcmp(step->contents.str, "quoteslanguage") !=0 ){
-                return TRUE;
-            }
+        if ((strcmp(step->contents.str, "baseheaderlevel") != 0) &&
+            (strcmp(step->contents.str, "xhtmlheaderlevel") != 0) &&
+            (strcmp(step->contents.str, "htmlheaderlevel") != 0) &&
+            (strcmp(step->contents.str, "latexheaderlevel") != 0) &&
+            (strcmp(step->contents.str, "odfheaderlevel") != 0) &&
+            (strcmp(step->contents.str, "quoteslanguage") != 0))
+        {
+            return TRUE;
         }
         step = step->next;
     }
@@ -2056,9 +2072,9 @@ void print_odf_element(GString *out, element *elt) {
             /* This is a cross-reference */
             label = label_from_string(elt->contents.link->url,0);
             if (elt->contents.link->label != NULL) {
-                g_string_append_printf(out, "<text:bookmark-ref text:reference-format=\"page\" text:ref-name=\"%s\">",label);
+                g_string_append_printf(out, "<text:a xlink:type=\"simple\" xlink:href=\"#%s\">",label);
                 print_latex_element_list(out, elt->contents.link->label);
-                g_string_append_printf(out,"</text:bookmark-ref>");
+                g_string_append_printf(out,"</text:a>");
             } else {
                 
             }
@@ -2081,9 +2097,9 @@ void print_odf_element(GString *out, element *elt) {
         /* Images can't (easily and reliably) be put in ODF from MMD, so a
         placeholder is used instead */
         g_string_append_printf(out, "[Image \"");
-        print_odf_code_string(out, elt->contents.link->title);
+        print_odf_string(out, elt->contents.link->title);
         g_string_append_printf(out, "\", ");
-        print_odf_code_string(out, elt->contents.link->url);
+        print_odf_string(out, elt->contents.link->url);
         g_string_append_printf(out, "]");
         break;
     case EMPH:
@@ -2130,6 +2146,7 @@ void print_odf_element(GString *out, element *elt) {
     case PARA:
         g_string_append_printf(out, "<text:p");
         switch (odf_type) {
+            case DEFINITION:
             case BLOCKQUOTE:
                 g_string_append_printf(out," text:style-name=\"Quotations\"");
                 break;
@@ -2141,7 +2158,7 @@ void print_odf_element(GString *out, element *elt) {
                 break;
             case ORDEREDLIST:
             case BULLETLIST:
-                g_string_append_printf(out," text:style-name=\"List\"");
+                g_string_append_printf(out," text:style-name=\"P2\"");
                 break;
             case NOTE:
                 g_string_append_printf(out," text:style-name=\"Footnote\"");
@@ -2154,6 +2171,18 @@ void print_odf_element(GString *out, element *elt) {
         print_odf_element_list(out, elt->children);
         g_string_append_printf(out, "</text:p>\n");
         break;
+    case HRULE:
+        g_string_append_printf(out,"<text:p text:style-name=\"Horizontal_20_Line\"/>\n");
+        break;
+    case HTMLBLOCK:
+        /* don't print HTML block */
+        /* but do print HTML comments for raw ODF */
+        if (strncmp(elt->contents.str,"<!--",4) == 0) {
+            /* trim "-->" from end */
+            elt->contents.str[strlen(elt->contents.str)-3] = '\0';
+            g_string_append_printf(out, "%s", &elt->contents.str[4]);
+        }
+        break;
     case VERBATIM:
         old_type = odf_type;
         odf_type = VERBATIM;
@@ -2165,7 +2194,9 @@ void print_odf_element(GString *out, element *elt) {
     case BULLETLIST:
         if ((odf_type == BULLETLIST) ||
             (odf_type == ORDEREDLIST)) {
-            g_string_append_printf(out, "</text:p>");
+            /* I think this was made unnecessary by another change.
+            Same for ORDEREDLIST below */
+            /*  g_string_append_printf(out, "</text:p>"); */
         }
         old_type = odf_type;
         odf_type = BULLETLIST;
@@ -2177,7 +2208,7 @@ void print_odf_element(GString *out, element *elt) {
     case ORDEREDLIST:
         if ((odf_type == BULLETLIST) ||
             (odf_type == ORDEREDLIST)) {
-            g_string_append_printf(out, "</text:p>");
+            /* g_string_append_printf(out, "</text:p>"); */
         }
         old_type = odf_type;
         odf_type = ORDEREDLIST;
@@ -2226,14 +2257,15 @@ void print_odf_element(GString *out, element *elt) {
                 print_odf_element_list(out, elt->children);
                 g_string_append_printf(out, "</text:note-body>\n</text:note>\n");
             }
-        }
+       }
+        elt->children = NULL;
         odf_type = old_type;
         break;
     case GLOSSARY:
         break;
     case GLOSSARYTERM:
         g_string_append_printf(out, "<text:p text:style-name=\"Glossary\">");
-        print_odf_code_string(out, elt->children->contents.str);
+        print_odf_string(out, elt->children->contents.str);
         g_string_append_printf(out, ":");
         g_string_append_printf(out, "</text:p>");
         break;
@@ -2241,12 +2273,39 @@ void print_odf_element(GString *out, element *elt) {
         break;
     case NOCITATION:
     case CITATION:
-        g_string_append_printf(out, "[#%s] (Citations Not supported yet)", elt->contents.str);
+        if (strncmp(elt->contents.str,"[#",2) == 0) {
+            /* bibtex citation key */
+            g_string_append_printf(out, "%s", elt->contents.str);
+        } else {
+            g_string_append_printf(out, "[#%s]", elt->contents.str);
+        }
+        elt->children = NULL;
+        break;
+    case DEFLIST:
+        print_odf_element_list(out, elt->children);
+        break;
+    case TERM:
+        g_string_append_printf(out, "<text:p><text:span text:style-name=\"MMD-Bold\">");
+        print_odf_string(out, elt->contents.str);
+        g_string_append_printf(out, "</text:span></text:p>");
+        break;
+    case DEFINITION:
+        old_type = odf_type;
+        odf_type = DEFINITION;
+        g_string_append_printf(out, "<text:p text:style-name=\"Quotations\">");
+        print_odf_element_list(out, elt->children);
+        g_string_append_printf(out, "</text:p>");
+        odf_type = old_type;
         break;
     case METADATA:
         g_string_append_printf(out, "<office:meta>\n");
         print_odf_element_list(out, elt->children);
         g_string_append_printf(out, "</office:meta>\n");
+        element *header;
+        header = metadata_for_key("odfheader",elt);
+        if (header != NULL) {
+            print_raw_element(out,header->children);
+        }
         break;
     case METAKEY:
         if (strcmp(elt->contents.str, "title") == 0) {
@@ -2255,7 +2314,11 @@ void print_odf_element(GString *out, element *elt) {
             g_string_append_printf(out,"</dc:title>\n");
         } else if (strcmp(elt->contents.str, "css") == 0) {
         } else if (strcmp(elt->contents.str, "baseheaderlevel") == 0) {
+            base_header_level = atoi(elt->children->contents.str);
+        } else if (strcmp(elt->contents.str, "odfheaderlevel") == 0) {
+            base_header_level = atoi(elt->children->contents.str);
         } else if (strcmp(elt->contents.str, "xhtmlheader") == 0) {
+        } else if (strcmp(elt->contents.str, "odfheader") == 0) {
         } else if (strcmp(elt->contents.str, "latexfooter") == 0) {
         } else if (strcmp(elt->contents.str, "latexinput") == 0) {
         } else if (strcmp(elt->contents.str, "latexmode") == 0) {
@@ -2269,14 +2332,14 @@ void print_odf_element(GString *out, element *elt) {
              free(label);
         } else {
             g_string_append_printf(out, "<meta:user-defined meta:name=\"");
-            print_odf_code_string(out,elt->contents.str);
+            print_odf_string(out,elt->contents.str);
             g_string_append_printf(out, "\">");
             print_odf_element(out, elt->children);
             g_string_append_printf(out,"</meta:user-defined>\n");
         }
         break;
     case METAVALUE:
-        print_odf_code_string(out, elt->contents.str);
+        print_odf_string(out, elt->contents.str);
         break;
     case FOOTER:
         break;
@@ -2287,19 +2350,23 @@ void print_odf_element(GString *out, element *elt) {
         g_string_append_printf(out,"\n<table:table>\n");
         print_odf_element_list(out, elt->children);
         g_string_append_printf(out, "</table:table>");
+        /* print caption if present */
+        if (elt->children->key == TABLECAPTION) {
+            if (elt->children->children->key == TABLELABEL) {
+                label = label_from_element_list(elt->children->children->children,0);
+            } else {
+                label = label_from_element_list(elt->children->children,0);
+            }
+            g_string_append_printf(out,"<text:p text:style-name=\"Table\"><text:bookmark text:name=\"%s\"/>Table <text:sequence text:name=\"Table\" text:formula=\"ooow:Table+1\" style:num-format=\"1\"> Update Fields to calculate numbers</text:sequence>:", label);
+            print_odf_element_list(out,elt->children->children);
+            g_string_append_printf(out, "<text:bookmark-end text:name=\"%s\"/></text:p>\n",label);
+            free(label);
+        }
         break;
    case TABLESEPARATOR:
        table_alignment = elt->contents.str;
        break;
     case TABLECAPTION:
-        if (elt->children->key == TABLELABEL) {
-            label = label_from_element_list(elt->children->children,0);
-        } else {
-            label = label_from_element_list(elt->children,0);
-        }
-        g_string_append_printf(out,"<text:bookmark text:name=\"%s\"/>", label);
-        g_string_append_printf(out,"<text:bookmark-end text:name=\"%s\"/>", label);
-        free(label);
         break;
     case TABLELABEL:
         break;
@@ -2330,10 +2397,12 @@ void print_odf_element(GString *out, element *elt) {
             g_string_append_printf(out, " text:style-name=\"Table_20_Heading\"");
         } else {
             if ( strncmp(&table_alignment[table_column],"r",1) == 0) {
-                g_string_append_printf(out, " text:style-name=\"MMD-Right\"", cell_type);
+                g_string_append_printf(out, " text:style-name=\"MMD-Table-Right\"", cell_type);
             } else if ( strncmp(&table_alignment[table_column],"c",1) == 0) {
-                g_string_append_printf(out, " text:style-name=\"MMD-Center\"", cell_type);
-            }
+                g_string_append_printf(out, " text:style-name=\"MMD-Table-Center\"", cell_type);
+            } else {
+                g_string_append_printf(out, " text:style-name=\"MMD-Table\"", cell_type);
+}
         }
         g_string_append_printf(out, ">");
         print_odf_element_list(out,elt->children);
@@ -2383,6 +2452,64 @@ static void print_odf_code_string(GString *out, char *str) {
             break;
         case '\n':
             g_string_append_printf(out, "<text:line-break/>");
+            break;
+        case ' ':
+            tmp = str;
+            tmp++;
+            if (*tmp == ' ') {
+                tmp++;
+                if (*tmp == ' ') {
+                    tmp++;
+                    if (*tmp == ' ') {
+                        g_string_append_printf(out, "<text:tab/>");
+                        str = tmp;
+                    } else {
+                        g_string_append_printf(out, " ");
+                    }
+                } else {
+                    g_string_append_printf(out, " ");
+                }
+            } else {
+                g_string_append_printf(out, " ");
+            }
+            break;
+        default:
+               g_string_append_c(out, *str);
+        }
+    str++;
+    }
+}
+
+/* print_odf_string - print string, escaping for HTML and saving newlines */
+static void print_odf_string(GString *out, char *str) {
+    char *tmp;
+    while (*str != '\0') {
+        switch (*str) {
+        case '&':
+            g_string_append_printf(out, "&amp;");
+            break;
+        case '<':
+            g_string_append_printf(out, "&lt;");
+            break;
+        case '>':
+            g_string_append_printf(out, "&gt;");
+            break;
+        case '"':
+            g_string_append_printf(out, "&quot;");
+            break;
+        case '\n':
+            tmp = str;
+            tmp--;
+            if (*tmp == ' ') {
+                tmp--;
+                if (*tmp == ' ') {
+                    g_string_append_printf(out, "<text:line-break/>");
+                } else {
+                    g_string_append_printf(out, "\n");
+                }
+            } else {
+                g_string_append_printf(out, "\n");
+            }
             break;
         case ' ':
             tmp = str;
