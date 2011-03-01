@@ -2098,7 +2098,7 @@ void print_odf_element(GString *out, element *elt) {
     case IMAGE:
         height = dimension_for_attribute("height", elt->contents.link->attr);
         width = dimension_for_attribute("width", elt->contents.link->attr);
-        g_string_append_printf(out, "<draw:frame text:anchor-type=\"paragraph\"\n");
+        g_string_append_printf(out, "<draw:frame text:anchor-type=\"char\"\n");
         /* need both attributes for image to be visible */
         if ((height != NULL) && (width != NULL)) {
             g_string_append_printf(out, "svg:height=\"%s\"\n",height);
