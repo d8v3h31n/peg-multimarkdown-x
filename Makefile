@@ -37,7 +37,8 @@ clean:
 	rm windows_installer/README.txt; \
 	rm windows_installer/multimarkdown.exe; \
 	rm windows_installer/multimarkdown.xml.backup; \
-	rm windows_installer/LICENSE.html
+	rm windows_installer/LICENSE.html; \
+	rm -rf mac_installer/*.pkg
 
 distclean: clean
 	make -C $(PEGDIR) spotless
@@ -74,14 +75,34 @@ win-installer:
 	zip -r windows_installer/MultiMarkdown-Windows-$(VERSION).zip windows_installer/MMD-windows*.exe -x windows_installer/MultiMarkdown*.zip
 
 mac-installer: $(PROGRAM)
-	mkdir mac_installer/Package_Root/usr/local/bin
+	mkdir -p mac_installer/Package_Root/usr/local/bin
 	mkdir -p mac_installer/Support_Root/Library/Application\ Support
 	cp multimarkdown scripts/mmd* mac_installer/Package_Root/usr/local/bin/
 	./multimarkdown README > mac_installer/Resources/README.html
 	./multimarkdown mac_installer/Resources/Welcome.txt > mac_installer/Resources/Welcome.html
 	./multimarkdown LICENSE > mac_installer/Resources/License.html
 	./multimarkdown mac_installer/Resources/Support_Welcome.txt > mac_installer/Resources/Support_Welcome.html
-	cp -r Support mac_installer/Support_Root/Library/Application\ Support/MultiMarkdown
+	git clone Support mac_installer/Support_Root/Library/Application\ Support/MultiMarkdown
+	cd mac_installer; /Developer/usr/bin/packagemaker \
+	--doc "Make Support Installer.pmdoc" \
+	--title "MultiMarkdown Support Files" \
+	--version $(VERSION) \
+	--filter "\.DS_Store" \
+	--filter "\.git" \
+	--id net.fletcherpenney.MMD-Support.pkg \
+	--domain user \
+	--out "MultiMarkdown-Support-Mac-$(VERSION).pkg" \
+	--no-relocate; \
+	/Developer/usr/bin/packagemaker \
+	--doc "Make OS X Installer.pmdoc" \
+	--title "MultiMarkdown" \
+	--version $(VERSION) \
+	--filter "\.DS_Store" \
+	--filter "\.git" \
+	--id net.fletcherpenney.multimarkdown.pkg \
+	--out "MultiMarkdown-Mac-$(VERSION).pkg";
+	
+#	cp -r Support mac_installer/Support_Root/Library/Application\ Support/MultiMarkdown
 
 # Requires installation of the platypus command line tool to create
 # a drag and drop application for Mac OS X
