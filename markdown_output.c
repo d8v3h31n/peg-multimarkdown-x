@@ -2027,8 +2027,8 @@ static void print_opml_metadata(GString *out, element *elt) {
 void print_odf_element(GString *out, element *elt) {
     int lev;
     char *label;
-	char *height;
-	char *width;
+    char *height;
+    char *width;
     int old_type = 0;
     switch (elt->key) {
     case SPACE:
@@ -2102,6 +2102,8 @@ void print_odf_element(GString *out, element *elt) {
         /* need both attributes for image to be visible */
         if ((width != NULL)) {
             g_string_append_printf(out, "svg:width=\"%s\"\n", width);
+        } else {
+            g_string_append_printf(out, "svg:width=\"95%%\"\n");
         }
         g_string_append_printf(out, ">\n<draw:text-box><text:p><draw:frame text:anchor-type=\"as-char\" draw:z-index=\"1\" ");
         if ((height != NULL) && (width != NULL)) {
@@ -2110,7 +2112,7 @@ void print_odf_element(GString *out, element *elt) {
         }
         g_string_append_printf(out, "><draw:image xlink:href=\"");
         print_odf_string(out, elt->contents.link->url);
-        g_string_append_printf(out,"\" xlink:type=\"simple\" xlink:show=\"embed\" xlink:actuate=\"onLoad\" draw:filter-name=\"&lt;All formats&gt;\"/>\n</draw:frame>");
+        g_string_append_printf(out,"\" xlink:type=\"simple\" xlink:show=\"embed\" xlink:actuate=\"onLoad\" draw:filter-name=\"&lt;All formats&gt;\"/>\n</draw:frame></text:p><text:p>");
         if (strlen(elt->contents.link->title) > 0) {
             g_string_append_printf(out, "Figure <text:sequence text:name=\"Figure\" text:formula=\"ooow:Figure+1\" style:num-format=\"1\"> Update Fields to calculate numbers</text:sequence>: ");
             print_latex_string(out, elt->contents.link->title);
@@ -2338,9 +2340,9 @@ void print_odf_element(GString *out, element *elt) {
         } else if (strcmp(elt->contents.str, "latexinput") == 0) {
         } else if (strcmp(elt->contents.str, "latexmode") == 0) {
         } else if (strcmp(elt->contents.str, "keywords") == 0) {
-			g_string_append_printf(out, "<meta:keyword>");
-			print_odf_string(out,elt->contents.str);
-			g_string_append_printf(out, "</meta:keyword>\n");
+            g_string_append_printf(out, "<meta:keyword>");
+            print_odf_string(out,elt->contents.str);
+            g_string_append_printf(out, "</meta:keyword>\n");
         } else if (strcmp(elt->contents.str, "quoteslanguage") == 0) {
              label = label_from_element_list(elt->children, 0);
              if (strcmp(label, "dutch") == 0) { language = DUTCH; } else 
