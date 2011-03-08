@@ -1065,9 +1065,12 @@ TableBody = a:StartList (TableRow {a = cons($$, a);})+
     { $$ = mk_list(TABLEBODY, a);}
 
 TableRow = a:StartList
-    (!SeparatorLine (CellDivider | TableCell { a = cons($$, a); }) 
+    (!SeparatorLine &(TableLine)
+    CellDivider?
     (TableCell { a = cons($$, a); })+ ) Sp Newline
     { $$ = mk_list(TABLEROW, a); }
+
+TableLine = (!Newline !CellDivider .)* CellDivider
 
 TableCell = ExtendedCell | EmptyCell | FullCell
 
@@ -1092,7 +1095,9 @@ FullCell = Sp a:StartList  ((!CellDivider CellStr | !Newline !Endline !CellDivid
 EmptyCell = Sp CellDivider
 { $$ = mk_element(TABLECELL);}
 
-SeparatorLine = a:StartList ( CellDivider | AlignmentCell { a = cons($$,a);})
+SeparatorLine = a:StartList 
+    &(TableLine)
+    CellDivider?
     ( AlignmentCell { a = cons($$, a);})+ Sp Newline
     {
         $$ = mk_str_from_list(a,false);
