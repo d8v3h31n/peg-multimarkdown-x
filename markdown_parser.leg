@@ -1178,7 +1178,7 @@ OPMLSectionBlock =
 OPMLPlain = a:StartList (!BlankLine Line { a = cons($$,a); })+
     { $$ = mk_list(PLAIN, a); }
 
-MarkdownHtmlAttribute = "markdown" Spnl '=' Spnl '"' Spnl "1" Spnl '"' Spnl
+MarkdownHtmlAttribute = "markdown" Spnl '=' Spnl ('"' Spnl)? "1" (Spnl '"')? Spnl
 
 
 %%
