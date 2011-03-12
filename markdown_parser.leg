@@ -90,7 +90,7 @@ Block =     BlankLine*
             | HtmlBlock
             | StyleBlock
             | Table
-            | Para
+            | !(Sp? HtmlBlockOpenDiv) Para
             | Plain )
 
 HeadingSectionBlock =
@@ -108,7 +108,7 @@ HeadingSectionBlock =
             | HtmlBlock
             | StyleBlock
             | Table
-            | Para
+            | !(Sp? HtmlBlockOpenDiv) Para
             | Plain )
 
 Para =      NonindentSpace a:Inlines BlankLine+
@@ -140,7 +140,7 @@ SetextHeading2 =  &(RawLine SetextBottom2)
 a:StartList ( !Endline !( &{ !extension(EXT_COMPATIBILITY) } Sp AutoLabel ) Inline { a = cons($$, a); } )+ ( Sp b:AutoLabel { append_list(b,a)} Sp? )? Sp? Newline
                   SetextBottom2 { $$ = mk_list(H2, a); }
 
-Heading = AtxHeading | SetextHeading
+Heading = SetextHeading | AtxHeading
 
 HeadingSection = a:StartList Heading { a = cons($$, a); }
     (HeadingSectionBlock {a = cons($$, a); })*
@@ -417,7 +417,7 @@ HtmlBlockInTags = HtmlBlockAddress
                 | HtmlBlockTr
                 | HtmlBlockScript
 
-HtmlBlock = < ( HtmlBlockInTags | HtmlComment | HtmlBlockSelfClosing ) >
+HtmlBlock = !MarkdownHtmlTagOpen < ( HtmlBlockInTags | HtmlComment | HtmlBlockSelfClosing ) >
             BlankLine+
             {   if (extension(EXT_FILTER_HTML)) {
                     $$ = mk_list(LIST, NULL);
@@ -467,6 +467,7 @@ Inline  = Str
         | NoteReference
  #       | InlineNote           # Not used in MultiMarkdown
         | Code
+        | MarkdownHtmlTagOpen
         | RawHtml
         | Entity
         | EscapedChar
@@ -1052,9 +1053,12 @@ TableBody = a:StartList (TableRow {a = cons($$, a);})+
     { $$ = mk_list(TABLEBODY, a);}
 
 TableRow = a:StartList
-    (!SeparatorLine (CellDivider | TableCell { a = cons($$, a); }) 
+    (!SeparatorLine &(TableLine)
+    CellDivider?
     (TableCell { a = cons($$, a); })+ ) Sp Newline
     { $$ = mk_list(TABLEROW, a); }
+
+TableLine = (!Newline !CellDivider .)* CellDivider
 
 TableCell = ExtendedCell | EmptyCell | FullCell
 
@@ -1079,7 +1083,9 @@ FullCell = Sp a:StartList  ((!CellDivider CellStr | !Newline !Endline !CellDivid
 EmptyCell = Sp CellDivider
 { $$ = mk_element(TABLECELL);}
 
-SeparatorLine = a:StartList ( CellDivider | AlignmentCell { a = cons($$,a);})
+SeparatorLine = a:StartList 
+    &(TableLine)
+    CellDivider?
     ( AlignmentCell { a = cons($$, a);})+ Sp Newline
     {
         $$ = mk_str_from_list(a,false);
@@ -1109,7 +1115,7 @@ TableCaption = a:Label ( b:Label { b->key = TABLELABEL})? Sp Newline
     }
 }
 
-AutoLabel = '[' < (!']' .)+ > ']' &(!(Sp? '('))
+AutoLabel = '[' < ( !Newline !']' . )+ > ']' &(!(Sp? ('(' | '[')))
 { 
     char *label = label_from_string(yytext,0);
     $$ = mk_str(label);
@@ -1159,6 +1165,24 @@ OPMLSectionBlock =
 
 OPMLPlain = a:StartList (!BlankLine Line { a = cons($$,a); })+
     { $$ = mk_list(PLAIN, a); }
+
+
+MarkdownHtmlAttribute = ("markdown" | "MARKDOWN")
+            Spnl '=' Spnl ('"' Spnl)? "1" (Spnl '"')? Spnl
+
+MarkdownHtmlTagOpen = a:StartList '<' {a = cons(mk_str("<"),a);}
+            Spnl <HtmlBlockType> {a = cons(mk_str(yytext),a);} Spnl
+            (!MarkdownHtmlAttribute
+            <HtmlAttribute> {a = cons(mk_str(" "),a);
+                a = cons(mk_str(yytext),a);})*
+            MarkdownHtmlAttribute
+            (<HtmlAttribute> {a = cons(mk_str(" "),a);
+                a = cons(mk_str(yytext),a);})*
+            '>' { a = cons(mk_str(">"),a);}
+            {
+                $$ = mk_str_from_list(a,false);
+                $$->key = HTML;
+            }
 
 %%
 
