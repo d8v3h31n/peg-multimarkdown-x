@@ -417,7 +417,7 @@ HtmlBlockInTags = HtmlBlockAddress
                 | HtmlBlockTr
                 | HtmlBlockScript
 
-HtmlBlock = !MarkdownHtmlBlockOpen < ( HtmlBlockInTags | HtmlComment | HtmlBlockSelfClosing ) >
+HtmlBlock = !MarkdownHtmlTagOpen < ( HtmlBlockInTags | HtmlComment | HtmlBlockSelfClosing ) >
             BlankLine+
             {   if (extension(EXT_FILTER_HTML)) {
                     $$ = mk_list(LIST, NULL);
@@ -467,7 +467,7 @@ Inline  = Str
         | NoteReference
  #       | InlineNote           # Not used in MultiMarkdown
         | Code
-		| MarkdownHtmlBlockOpen
+		| MarkdownHtmlTagOpen
         | RawHtml
         | Entity
         | EscapedChar
@@ -1170,7 +1170,7 @@ OPMLPlain = a:StartList (!BlankLine Line { a = cons($$,a); })+
 MarkdownHtmlAttribute = ("markdown" | "MARKDOWN")
 			Spnl '=' Spnl ('"' Spnl)? "1" (Spnl '"')? Spnl
 
-MarkdownHtmlBlockOpen = a:StartList '<' {a = cons(mk_str("<"),a);}
+MarkdownHtmlTagOpen = a:StartList '<' {a = cons(mk_str("<"),a);}
 			Spnl <HtmlBlockType> {a = cons(mk_str(yytext),a);} Spnl
 			(!MarkdownHtmlAttribute
 			<HtmlAttribute> {a = cons(mk_str(" "),a);
