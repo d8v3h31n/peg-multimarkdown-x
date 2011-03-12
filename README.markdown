@@ -300,9 +300,8 @@ a certain part of your document is processed into LaTeX, it's a neat trick.
 
 In the original MultiMarkdown, you could use something like `<div markdown=1>`
 to tell MultiMarkdown to process the text inside the div. In
-peg-multimarkdown, you can use the command-line option `--process-html` to
-process the text inside all raw HTML. For the moment, there is not way to
-process the text inside only selected HTML elements.
+peg-multimarkdown, you can do this, or you can use the command-line option
+`--process-html` to process the text inside all raw HTML.
 
 
 ## Math Support ##
