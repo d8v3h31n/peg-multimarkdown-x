@@ -1045,11 +1045,11 @@ static void print_latex_element(GString *out, element *elt) {
                 g_string_append_printf(out, "~\\nocite{%s}", &elt->contents.str[2]);
             } else {
                 if ((elt->children != NULL) && (elt->children->key == LOCATOR)) {
-                    g_string_append_printf(out, "~\\cite[");
+                    g_string_append_printf(out, "~\\citep[");
                     print_latex_element(out,elt->children);
                     g_string_append_printf(out, "]{%s}",&elt->contents.str[2]);
                 } else {
-                    g_string_append_printf(out, "~\\cite{%s}", &elt->contents.str[2]);
+                    g_string_append_printf(out, "~\\citep{%s}", &elt->contents.str[2]);
                 }
             }
         } else {
@@ -1062,7 +1062,7 @@ static void print_latex_element(GString *out, element *elt) {
                 free_element(temp);
             } else {
                 if ((elt->children != NULL) && (elt->children->key == LOCATOR)){
-                    g_string_append_printf(out, "~\\cite[");
+                    g_string_append_printf(out, "~\\citep[");
                     print_latex_element(out,elt->children);
                     g_string_append_printf(out, "]{%s}",elt->contents.str);
                     element *temp;
@@ -1070,7 +1070,7 @@ static void print_latex_element(GString *out, element *elt) {
                     elt->children = temp->next;
                     free_element(temp);
                 } else {
-                    g_string_append_printf(out, "~\\cite{%s}", elt->contents.str);
+                    g_string_append_printf(out, "~\\citep{%s}", elt->contents.str);
                 }
             }
             if (elt->children->contents.str == NULL) {
@@ -2027,6 +2027,8 @@ static void print_opml_metadata(GString *out, element *elt) {
 void print_odf_element(GString *out, element *elt) {
     int lev;
     char *label;
+    char *height;
+    char *width;
     int old_type = 0;
     switch (elt->key) {
     case SPACE:
@@ -2094,13 +2096,28 @@ void print_odf_element(GString *out, element *elt) {
         }
         break;
     case IMAGE:
-        /* Images can't (easily and reliably) be put in ODF from MMD, so a
-        placeholder is used instead */
-        g_string_append_printf(out, "[Image \"");
-        print_odf_string(out, elt->contents.link->title);
-        g_string_append_printf(out, "\", ");
+        height = dimension_for_attribute("height", elt->contents.link->attr);
+        width = dimension_for_attribute("width", elt->contents.link->attr);
+        g_string_append_printf(out, "<draw:frame text:anchor-type=\"as-char\"\ndraw:z-index=\"0\" draw:style-name=\"fr1\" ");
+        /* need both attributes for image to be visible */
+        if ((width != NULL)) {
+            g_string_append_printf(out, "svg:width=\"%s\"\n", width);
+        } else {
+            g_string_append_printf(out, "svg:width=\"95%%\"\n");
+        }
+        g_string_append_printf(out, ">\n<draw:text-box><text:p><draw:frame text:anchor-type=\"as-char\" draw:z-index=\"1\" ");
+        if ((height != NULL) && (width != NULL)) {
+            g_string_append_printf(out, "svg:height=\"%s\"\n",height);
+            g_string_append_printf(out, "svg:width=\"%s\"\n", width);
+        }
+        g_string_append_printf(out, "><draw:image xlink:href=\"");
         print_odf_string(out, elt->contents.link->url);
-        g_string_append_printf(out, "]");
+        g_string_append_printf(out,"\" xlink:type=\"simple\" xlink:show=\"embed\" xlink:actuate=\"onLoad\" draw:filter-name=\"&lt;All formats&gt;\"/>\n</draw:frame></text:p><text:p>");
+        if (strlen(elt->contents.link->title) > 0) {
+            g_string_append_printf(out, "Figure <text:sequence text:name=\"Figure\" text:formula=\"ooow:Figure+1\" style:num-format=\"1\"> Update Fields to calculate numbers</text:sequence>: ");
+            print_latex_string(out, elt->contents.link->title);
+        }
+        g_string_append_printf(out, "</text:p></draw:text-box></draw:frame>\n");
         break;
     case EMPH:
         g_string_append_printf(out,
@@ -2322,6 +2339,10 @@ void print_odf_element(GString *out, element *elt) {
         } else if (strcmp(elt->contents.str, "latexfooter") == 0) {
         } else if (strcmp(elt->contents.str, "latexinput") == 0) {
         } else if (strcmp(elt->contents.str, "latexmode") == 0) {
+        } else if (strcmp(elt->contents.str, "keywords") == 0) {
+            g_string_append_printf(out, "<meta:keyword>");
+            print_odf_string(out,elt->contents.str);
+            g_string_append_printf(out, "</meta:keyword>\n");
         } else if (strcmp(elt->contents.str, "quoteslanguage") == 0) {
              label = label_from_element_list(elt->children, 0);
              if (strcmp(label, "dutch") == 0) { language = DUTCH; } else 

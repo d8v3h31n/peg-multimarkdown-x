@@ -155,6 +155,13 @@ void print_odf_header(GString *out){
     "             style:list-style-name=\"L2\">\n" \
     "<style:paragraph-properties fo:text-align=\"start\" style:justify-single-word=\"false\"/>\n" \
     "</style:style>\n" \
+	"<style:style style:name=\"fr1\" style:family=\"graphic\" style:parent-style-name=\"Frame\">\n" \
+	"   <style:graphic-properties style:print-content=\"false\" style:vertical-pos=\"top\"\n" \
+	"                             style:vertical-rel=\"baseline\"\n" \
+	"                             fo:padding=\"0in\"\n" \
+	"                             fo:border=\"none\"\n" \
+	"                             style:shadow=\"none\"/>\n" \
+	"</style:style>\n" \
     "</office:automatic-styles>\n" \
     "<style:style style:name=\"P1\" style:family=\"paragraph\" style:parent-style-name=\"Standard\"\n" \
     "             style:list-style-name=\"L1\"/>\n" \

@@ -295,30 +295,24 @@ static char *label_from_string(char *str, bool obfuscate) {
     GString *out = g_string_new("");
     char *label;
 
-    if ( strcspn(str,"[") == strlen(str)) {
-        while (*str != '\0') {
-            if (valid) {
-            /* can relax on following characters */
-                if ((*str >= '0' && *str <= '9') || (*str >= 'A' && *str <= 'Z')
-                    || (*str >= 'a' && *str <= 'z') || (*str == '.') || (*str== '_')
-                    || (*str== '-') || (*str== ':'))
-                {
-                    g_string_append_c(out, tolower(*str));
-                }           
-            } else {
-            /* need alpha as first character */
-                if ((*str >= 'A' && *str <= 'Z') || (*str >= 'a' && *str <= 'z'))
-                {
-                    g_string_append_c(out, tolower(*str));
-                    valid = TRUE;
-                }
+    while (*str != '\0') {
+        if (valid) {
+        /* can relax on following characters */
+            if ((*str >= '0' && *str <= '9') || (*str >= 'A' && *str <= 'Z')
+                || (*str >= 'a' && *str <= 'z') || (*str == '.') || (*str== '_')
+                || (*str== '-') || (*str== ':'))
+            {
+                g_string_append_c(out, tolower(*str));
+            }           
+        } else {
+        /* need alpha as first character */
+            if ((*str >= 'A' && *str <= 'Z') || (*str >= 'a' && *str <= 'z'))
+            {
+                g_string_append_c(out, tolower(*str));
+                valid = TRUE;
             }
-        str++;
         }
-    } else {
-        char *token;
-        token = strtok (&str[strcspn(str,"[")+1],"]");
-        g_string_append_c(out, (int) label_from_string(token,obfuscate));
+    str++;
     }
     label = out->str;
     g_string_free(out, false);

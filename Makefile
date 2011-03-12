@@ -1,6 +1,6 @@
 ALL : multimarkdown
 
-VERSION=3.0b9
+VERSION=3.0b10
 
 PROGRAM=multimarkdown
 
