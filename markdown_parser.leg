@@ -90,7 +90,7 @@ Block =     BlankLine*
             | HtmlBlock
             | StyleBlock
             | Table
-            | &(!HtmlBlockOpenDiv) Para
+            | !(Sp? HtmlBlockOpenDiv) Para
             | Plain )
 
 HeadingSectionBlock =
@@ -108,7 +108,7 @@ HeadingSectionBlock =
             | HtmlBlock
             | StyleBlock
             | Table
-            | &(!HtmlBlockOpenDiv) Para
+            | !(Sp? HtmlBlockOpenDiv) Para
             | Plain )
 
 Para =      NonindentSpace a:Inlines BlankLine+
@@ -417,7 +417,7 @@ HtmlBlockInTags = HtmlBlockAddress
                 | HtmlBlockTr
                 | HtmlBlockScript
 
-HtmlBlock = &(!MarkdownHtmlBlockOpen) < ( HtmlBlockInTags | HtmlComment | HtmlBlockSelfClosing ) >
+HtmlBlock = !MarkdownHtmlBlockOpen < ( HtmlBlockInTags | HtmlComment | HtmlBlockSelfClosing ) >
             BlankLine+
             {   if (extension(EXT_FILTER_HTML)) {
                     $$ = mk_list(LIST, NULL);
