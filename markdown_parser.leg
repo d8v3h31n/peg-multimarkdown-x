@@ -708,7 +708,8 @@ RefSrc = < Nonspacechar+ >
            $$->key = HTML; }
 
 RefTitle =  ( RefTitleSingle | RefTitleDouble | RefTitleParens | EmptyTitle )
-            { $$ = mk_str(yytext); }
+            { $$ = mk_str(yytext); 
+				$$->key = RAW;}
 
 EmptyTitle = < "" >
 
