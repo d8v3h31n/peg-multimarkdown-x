@@ -1863,7 +1863,7 @@ char * dimension_for_attribute(char *querystring, element *list) {
 
     result = g_string_new(dimension);
     
-    if (strcmp(dimension,upper) == 0) {
+	if ((strcmp(dimension,upper) == 0) && (dimension[strlen(dimension) -1] != '%')) {
         /* no units */
         g_string_append_printf(result, "pt");
     }
