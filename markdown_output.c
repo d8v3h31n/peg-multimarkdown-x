@@ -805,6 +805,7 @@ static void print_latex_element(GString *out, element *elt) {
             }
             free(label);
         } else if ( (elt->contents.link->label != NULL) &&
+                ( elt->contents.link->label->contents.str != NULL) &&
                 ( strcmp(elt->contents.link->label->contents.str, 
                 elt->contents.link->url) == 0 )) {
             /* This is a <link> */
@@ -812,6 +813,7 @@ static void print_latex_element(GString *out, element *elt) {
             print_latex_string(out, elt->contents.link->url);
             g_string_append_printf(out, "}");
         } else if ( (elt->contents.link->label != NULL) && 
+                ( elt->contents.link->label->contents.str != NULL) &&
                 ( strcmp(&elt->contents.link->url[7], 
                 elt->contents.link->label->contents.str) == 0 )) {
             /* This is a <mailto> */
