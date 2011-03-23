@@ -747,6 +747,7 @@ static void print_latex_element(GString *out, element *elt) {
     char *label;
     char *height;
     char *width;
+	double floatnum;
     switch (elt->key) {
     case SPACE:
         g_string_append_printf(out, "%s", elt->contents.str);
@@ -846,12 +847,26 @@ static void print_latex_element(GString *out, element *elt) {
                 g_string_append_printf(out, "keepaspectratio,");
             }
             if (width != NULL) {
-                g_string_append_printf(out,"width=%s,", width);
+                if (width[strlen(width)-1] == '%') {
+                    width[strlen(width)-1] = '\0';
+                    floatnum = strtod(width, NULL);
+                    floatnum = floatnum/100;
+                    g_string_append_printf(out,"width=%.4f\\textwidth,", floatnum);
+                } else {
+                    g_string_append_printf(out,"width=%s,", width);
+                }
             } else {
                 g_string_append_printf(out, "width=\\textwidth,");
             }
             if (height != NULL) {
-                g_string_append_printf(out,"height=%s",height);
+                if (height[strlen(height)-1] == '%') {
+                    height[strlen(height)-1] = '\0';
+                    floatnum = strtod(height, NULL);
+                    floatnum = floatnum/100;
+                    g_string_append_printf(out,"height=%.4f\\textheight,", floatnum);
+                } else {
+                    g_string_append_printf(out,"height=%s",height);
+                }
             } else {
                 g_string_append_printf(out, "height=0.75\\textheight");
             }
