@@ -1832,7 +1832,7 @@ element * element_for_attribute(char *querystring, element *list) {
     return NULL;
 }
 
-/* convert attribute to dimensions suitable for LaTeX */
+/* convert attribute to dimensions suitable for LaTeX or ODF */
 /* returns c string that needs to be freed */
 
 char * dimension_for_attribute(char *querystring, element *list) {
