@@ -162,6 +162,9 @@ static void add_endnote(element *elt) {
 static void print_html_element(GString *out, element *elt, bool obfuscate) {
     int lev;
     char *label;
+    element *attribute;
+    char *height;
+    char *width;
     switch (elt->key) {
     case SPACE:
         g_string_append_printf(out, "%s", elt->contents.str);
@@ -234,8 +237,28 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
             print_html_string(out, elt->contents.link->title, obfuscate);
             g_string_append_printf(out, "\"");
         }
+        width = NULL;
+        height = NULL;
+        attribute = element_for_attribute("height", elt->contents.link->attr);
+        if (attribute != NULL) {
+            height = strdup(attribute->children->contents.str);
+        }
+        attribute = element_for_attribute("width", elt->contents.link->attr);
+        if (attribute != NULL) {
+            width = strdup(attribute->children->contents.str);
+        }
+        if ((height != NULL) || (width != NULL)) {
+            g_string_append_printf(out, " style=\"");
+            if (height != NULL)
+                g_string_append_printf(out, "height:%s;", height);
+            if (width != NULL)
+                g_string_append_printf(out, "width:%s;", width);
+            g_string_append_printf(out, "\"");
+        }
         print_html_element_list(out, elt->contents.link->attr, obfuscate);
         g_string_append_printf(out, " />");
+        free(height);
+        free(width);
         break;
     case EMPH:
         g_string_append_printf(out, "<em>");
@@ -594,8 +617,12 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
     case CELLSPAN:
         break;
     case ATTRKEY:
-        g_string_append_printf(out, " %s=\"%s\"", elt->contents.str,
-            elt->children->contents.str);
+        if ( (strcmp(elt->contents.str,"height") == 0) || 
+            (strcmp(elt->contents.str, "width") == 0)) {
+        } else {
+            g_string_append_printf(out, " %s=\"%s\"", elt->contents.str,
+                elt->children->contents.str);
+        }
         break;
     case MATHSPAN:
         if ( elt->contents.str[strlen(elt->contents.str)-1] == ']') {
@@ -747,7 +774,7 @@ static void print_latex_element(GString *out, element *elt) {
     char *label;
     char *height;
     char *width;
-	double floatnum;
+    double floatnum;
     switch (elt->key) {
     case SPACE:
         g_string_append_printf(out, "%s", elt->contents.str);
@@ -1878,7 +1905,7 @@ char * dimension_for_attribute(char *querystring, element *list) {
 
     result = g_string_new(dimension);
     
-	if ((strcmp(dimension,upper) == 0) && (dimension[strlen(dimension) -1] != '%')) {
+    if ((strcmp(dimension,upper) == 0) && (dimension[strlen(dimension) -1] != '%')) {
         /* no units */
         g_string_append_printf(result, "pt");
     }
