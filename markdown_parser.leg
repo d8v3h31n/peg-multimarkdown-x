@@ -90,6 +90,7 @@ Block =     BlankLine*
             | HtmlBlock
             | StyleBlock
             | Table
+			| ImageBlock
             | !(Sp? HtmlBlockOpenDiv) Para
             | Plain )
 
@@ -108,6 +109,7 @@ HeadingSectionBlock =
             | HtmlBlock
             | StyleBlock
             | Table
+			| ImageBlock
             | !(Sp? HtmlBlockOpenDiv) Para
             | Plain )
 
@@ -478,8 +480,15 @@ Space = Spacechar+
         { $$ = mk_str(" ");
           $$->key = SPACE; }
 
-Str = < NormalChar (NormalChar | '_'+ &Alphanumeric)* >
-        { $$ = mk_str(yytext); }
+Str = a:StartList < NormalChar+ > { a = cons(mk_str(yytext), a); }
+      ( StrChunk { a = cons($$, a); } )*
+      { if (a->next == NULL) { $$ = a; } else { $$ = mk_list(LIST, a); } }
+
+StrChunk = < (NormalChar | '_'+ &Alphanumeric)+ > { $$ = mk_str(yytext); } |
+           AposChunk
+
+AposChunk = &{ extension(EXT_SMART) } '\'' &Alphanumeric
+      { $$ = mk_element(APOSTROPHE); }
 
 EscapedChar =   '\\' !Newline < [-\\`|*_{}[\]()#+.!><] >
                 { $$ = mk_str(yytext); }
@@ -548,6 +557,9 @@ StrongUl =  TwoUlOpen
             ( !TwoUlClose Inline { a = cons($$, a); } )*
             TwoUlClose { a = cons($$, a); }
             { $$ = mk_list(STRONG, a); }
+
+ImageBlock = Image Sp Newline BlankLine+
+	{ $$->key = IMAGEBLOCK; }
 
 Image = '!' ( ExplicitLink | ReferenceLink )
         { if ($$->key == LINK) {
@@ -647,8 +659,8 @@ AutoLinkEmail = '<' ( "mailto:" )? < [-A-Za-z0-9+_]+ '@' ( !Newline !'>' . )+ > 
                     free(mailto);
                 }
 
-Reference = a:StartList NonindentSpace !"[]" l:Label ':' Spnl s:RefSrc Spnl 
-        t:RefTitle (Spnl Attributes { a = cons($$,a);})? BlankLine*
+Reference = a:StartList NonindentSpace !"[]" l:Label ':' Spnl s:RefSrc
+        t:RefTitle (Attributes { a = cons($$,a);})? BlankLine+
         { 
             char *label;
             GString *text = g_string_new("");
@@ -673,7 +685,7 @@ Reference = a:StartList NonindentSpace !"[]" l:Label ':' Spnl s:RefSrc Spnl
 Attributes = a:StartList (Attribute { a =cons($$,a);})+
     { $$ = mk_list(LIST,a); }
 
-Attribute = a:AttrKey '=' b:AttrValue Spnl
+Attribute = Spnl a:AttrKey '=' b:AttrValue
     { 
         $$ = a;
         $$->children = b;
@@ -713,11 +725,11 @@ RefTitle =  ( RefTitleSingle | RefTitleDouble | RefTitleParens | EmptyTitle )
 
 EmptyTitle = < "" >
 
-RefTitleSingle = '\'' < ( !( '\'' Sp Newline | Newline | '\'' Sp AlphanumericAscii+ '=' ) . )* > '\''
+RefTitleSingle = Spnl '\'' < ( !( '\'' Sp Newline | Newline | '\'' Sp AlphanumericAscii+ '=' ) . )* > '\''
 
-RefTitleDouble = '"' < ( !('"' Sp Newline | Newline | '"' Sp AlphanumericAscii+ '=' ) . )* > '"'
+RefTitleDouble = Spnl '"' < ( !('"' Sp Newline | Newline | '"' Sp AlphanumericAscii+ '=' ) . )* > '"'
 
-RefTitleParens = '(' < ( !(')' Sp Newline | Newline | ')' Sp AlphanumericAscii+ '=' ) . )* > ')'
+RefTitleParens = Spnl '(' < ( !(')' Sp Newline | Newline | ')' Sp AlphanumericAscii+ '=' ) . )* > ')'
 
 References = a:StartList
              ( b:Reference { a = cons(b, a); } | SkipBlock )*
@@ -812,7 +824,7 @@ EmDash = ( <"---"> )
          }
 
 
-SingleQuoteStart = '\'' ![)!\],.;:-? \t\n] !( ( "s" | "t" | "m" | "ve" | "ll" | "re" ) !Alphanumeric )
+SingleQuoteStart = '\'' ![)!\],.;:-? \t\n]
 
 SingleQuoteEnd = '\'' !Alphanumeric
 

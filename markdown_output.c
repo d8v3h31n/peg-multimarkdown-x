@@ -162,6 +162,9 @@ static void add_endnote(element *elt) {
 static void print_html_element(GString *out, element *elt, bool obfuscate) {
     int lev;
     char *label;
+    element *attribute;
+    char *height;
+    char *width;
     switch (elt->key) {
     case SPACE:
         g_string_append_printf(out, "%s", elt->contents.str);
@@ -218,21 +221,53 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
         print_html_element_list(out, elt->contents.link->label, obfuscate);
         g_string_append_printf(out, "</a>");
         break;
+	case IMAGEBLOCK:
+    	pad(out, 2);
     case IMAGE:
-        g_string_append_printf(out, "<figure>\n<img src=\"");
+		if (elt->key == IMAGEBLOCK) {
+			g_string_append_printf(out, "<figure>\n");
+		}
+		g_string_append_printf(out, "<img src=\"");
         print_html_string(out, elt->contents.link->url, obfuscate);
+        g_string_append_printf(out, "\" alt=\"");
+        print_html_element_list(out, elt->contents.link->label, obfuscate);
         if ( extension(EXT_COMPATIBILITY) ) {
             g_string_append_printf(out, "\"");
         } else {
             g_string_append_printf(out, "\" id=\"%s\"",elt->contents.link->identifier);
         }
         print_html_element_list(out, elt->contents.link->attr, obfuscate);
-        g_string_append_printf(out, " />");
-        if (strlen(elt->contents.link->title) > 0) {
-            g_string_append_printf(out, "<figcaption>");
-            print_html_string(out, elt->contents.link->title, obfuscate);
+        width = NULL;
+        height = NULL;
+        attribute = element_for_attribute("height", elt->contents.link->attr);
+        if (attribute != NULL) {
+            height = strdup(attribute->children->contents.str);
         }
-        g_string_append_printf(out, "</figure>\n");
+        attribute = element_for_attribute("width", elt->contents.link->attr);
+        if (attribute != NULL) {
+            width = strdup(attribute->children->contents.str);
+        }
+        if ((height != NULL) || (width != NULL)) {
+            g_string_append_printf(out, " style=\"");
+            if (height != NULL)
+                g_string_append_printf(out, "height:%s;", height);
+            if (width != NULL)
+                g_string_append_printf(out, "width:%s;", width);
+            g_string_append_printf(out, "\"");
+        }
+        print_html_element_list(out, elt->contents.link->attr, obfuscate);
+        g_string_append_printf(out, " />");
+        
+        if (elt->key == IMAGEBLOCK) {
+            if (strlen(elt->contents.link->title) > 0) {
+                g_string_append_printf(out, "\n<figcaption>");
+                print_html_string(out, elt->contents.link->title, obfuscate);
+                g_string_append_printf(out, "</figcaption>");
+            }
+            g_string_append_printf(out, "</figure>\n");
+        }
+        free(height);
+        free(width);
         break;
     case EMPH:
         g_string_append_printf(out, "<em>");
@@ -545,15 +580,17 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
         break;
     case TABLEHEAD:
         /* print column alignment for XSLT processing if needed */
+        g_string_append_printf(out, "<colgroup>\n");
         for (table_column=0;table_column<strlen(table_alignment);table_column++) {
            if ( strncmp(&table_alignment[table_column],"r",1) == 0) {
-                g_string_append_printf(out, "<col align=\"right\"/>\n");
+                g_string_append_printf(out, "<col style=\"text-align:right;\"/>\n");
             } else if ( strncmp(&table_alignment[table_column],"c",1) == 0) {
-                g_string_append_printf(out, "<col align=\"center\"/>\n");
+                g_string_append_printf(out, "<col style=\"text-align:center;\"/>\n");
             } else {
-                g_string_append_printf(out, "<col align=\"left\"/>\n");
+                g_string_append_printf(out, "<col style=\"text-align:left;\"/>\n");
             }
         }
+        g_string_append_printf(out, "</colgroup>\n");
         cell_type = 'h';
         g_string_append_printf(out, "\n<thead>\n");
         print_html_element_list(out, elt->children, obfuscate);
@@ -573,11 +610,11 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
         break;
     case TABLECELL:
         if ( strncmp(&table_alignment[table_column],"r",1) == 0) {
-            g_string_append_printf(out, "\t<t%c align=\"right\"", cell_type);
+            g_string_append_printf(out, "\t<t%c style=\"text-align:right;\"", cell_type);
         } else if ( strncmp(&table_alignment[table_column],"c",1) == 0) {
-            g_string_append_printf(out, "\t<t%c align=\"center\"", cell_type);
+            g_string_append_printf(out, "\t<t%c style=\"text-align:center;\"", cell_type);
         } else {
-            g_string_append_printf(out, "\t<t%c align=\"left\"", cell_type);
+            g_string_append_printf(out, "\t<t%c style=\"text-align:left;\"", cell_type);
         }
         if ((elt->children != NULL) && (elt->children->key == CELLSPAN)) {
             g_string_append_printf(out, " colspan=\"%d\"",(int)strlen(elt->children->contents.str)+1);
@@ -591,8 +628,12 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
     case CELLSPAN:
         break;
     case ATTRKEY:
-        g_string_append_printf(out, " %s=\"%s\"", elt->contents.str,
-            elt->children->contents.str);
+        if ( (strcmp(elt->contents.str,"height") == 0) || 
+            (strcmp(elt->contents.str, "width") == 0)) {
+        } else {
+            g_string_append_printf(out, " %s=\"%s\"", elt->contents.str,
+                elt->children->contents.str);
+        }
         break;
     case MATHSPAN:
         if ( elt->contents.str[strlen(elt->contents.str)-1] == ']') {
@@ -744,6 +785,7 @@ static void print_latex_element(GString *out, element *elt) {
     char *label;
     char *height;
     char *width;
+    double floatnum;
     switch (elt->key) {
     case SPACE:
         g_string_append_printf(out, "%s", elt->contents.str);
@@ -802,6 +844,7 @@ static void print_latex_element(GString *out, element *elt) {
             }
             free(label);
         } else if ( (elt->contents.link->label != NULL) &&
+                ( elt->contents.link->label->contents.str != NULL) &&
                 ( strcmp(elt->contents.link->label->contents.str, 
                 elt->contents.link->url) == 0 )) {
             /* This is a <link> */
@@ -809,6 +852,7 @@ static void print_latex_element(GString *out, element *elt) {
             print_latex_string(out, elt->contents.link->url);
             g_string_append_printf(out, "}");
         } else if ( (elt->contents.link->label != NULL) && 
+                ( elt->contents.link->label->contents.str != NULL) &&
                 ( strcmp(&elt->contents.link->url[7], 
                 elt->contents.link->label->contents.str) == 0 )) {
             /* This is a <mailto> */
@@ -825,11 +869,15 @@ static void print_latex_element(GString *out, element *elt) {
             }
         }
         break;
+	case IMAGEBLOCK:
     case IMAGE:
         /* Figure if we have height, width, neither */
         height = dimension_for_attribute("height", elt->contents.link->attr);
         width = dimension_for_attribute("width", elt->contents.link->attr);
-        g_string_append_printf(out, "\\begin{figure}[htbp]\n\\centering\n\\includegraphics[");
+		if (elt->key == IMAGEBLOCK) {
+			g_string_append_printf(out, "\\begin{figure}[htbp]\n\\centering\n");
+		}
+		g_string_append_printf(out, "\\includegraphics[");
         if ((height == NULL) && (width == NULL)) {
             /* No dimensions given */
             g_string_append_printf(out,"keepaspectratio,width=\\textwidth,height=0.75\\textheight");
@@ -841,27 +889,43 @@ static void print_latex_element(GString *out, element *elt) {
                 g_string_append_printf(out, "keepaspectratio,");
             }
             if (width != NULL) {
-                g_string_append_printf(out,"width=%s,", width);
+                if (width[strlen(width)-1] == '%') {
+                    width[strlen(width)-1] = '\0';
+                    floatnum = strtod(width, NULL);
+                    floatnum = floatnum/100;
+                    g_string_append_printf(out,"width=%.4f\\textwidth,", floatnum);
+                } else {
+                    g_string_append_printf(out,"width=%s,", width);
+                }
             } else {
                 g_string_append_printf(out, "width=\\textwidth,");
             }
             if (height != NULL) {
-                g_string_append_printf(out,"height=%s",height);
+                if (height[strlen(height)-1] == '%') {
+                    height[strlen(height)-1] = '\0';
+                    floatnum = strtod(height, NULL);
+                    floatnum = floatnum/100;
+                    g_string_append_printf(out,"height=%.4f\\textheight,", floatnum);
+                } else {
+                    g_string_append_printf(out,"height=%s",height);
+                }
             } else {
                 g_string_append_printf(out, "height=0.75\\textheight");
             }
         }
 
         g_string_append_printf(out, "]{%s}\n", elt->contents.link->url);
-        if (strlen(elt->contents.link->title) > 0) {
-            g_string_append_printf(out, "\\caption{");
+		if (elt->key == IMAGEBLOCK) {
 	        if (strlen(elt->contents.link->title) > 0) {
-	            print_latex_string(out, elt->contents.link->title);
+	            g_string_append_printf(out, "\\caption{");
+		        if (strlen(elt->contents.link->title) > 0) {
+		            print_latex_string(out, elt->contents.link->title);
+		        }
+	            g_string_append_printf(out, "}\n");
 	        }
-            g_string_append_printf(out, "}\n");
-        }
-        g_string_append_printf(out, "\\label{%s}\n", elt->contents.link->identifier);
-        g_string_append_printf(out,"\\end{figure}\n");
+	        g_string_append_printf(out, "\\label{%s}\n", elt->contents.link->identifier);
+	        g_string_append_printf(out,"\\end{figure}\n");
+		}
         free(height);
         free(width);
         break;
@@ -1044,11 +1108,21 @@ static void print_latex_element(GString *out, element *elt) {
                 g_string_append_printf(out, "~\\nocite{%s}", &elt->contents.str[2]);
             } else {
                 if ((elt->children != NULL) && (elt->children->key == LOCATOR)) {
-                    g_string_append_printf(out, "~\\citep[");
+                    if (strcmp(&elt->contents.str[strlen(elt->contents.str) - 1],";") == 0) {
+                        g_string_append_printf(out, " \\citet[");
+                        elt->contents.str[strlen(elt->contents.str) - 1] = '\0';
+                    } else {
+                        g_string_append_printf(out, "~\\citep[");
+                    }
                     print_latex_element(out,elt->children);
                     g_string_append_printf(out, "]{%s}",&elt->contents.str[2]);
                 } else {
-                    g_string_append_printf(out, "~\\citep{%s}", &elt->contents.str[2]);
+                    if (strcmp(&elt->contents.str[strlen(elt->contents.str) - 1],";") == 0) {
+                        elt->contents.str[strlen(elt->contents.str) - 1] = '\0';
+                        g_string_append_printf(out, " \\citet{%s}", &elt->contents.str[2]);
+                    } else {
+                        g_string_append_printf(out, "~\\citep{%s}", &elt->contents.str[2]);
+                    }
                 }
             }
         } else {
@@ -1061,7 +1135,12 @@ static void print_latex_element(GString *out, element *elt) {
                 free_element(temp);
             } else {
                 if ((elt->children != NULL) && (elt->children->key == LOCATOR)){
-                    g_string_append_printf(out, "~\\citep[");
+                    if (strcmp(&elt->contents.str[strlen(elt->contents.str) - 1],";") == 0) {
+                        g_string_append_printf(out, " \\citet[");
+                        elt->contents.str[strlen(elt->contents.str) - 1] = '\0';
+                    } else {
+                        g_string_append_printf(out, "~\\citep[");
+                    }
                     print_latex_element(out,elt->children);
                     g_string_append_printf(out, "]{%s}",elt->contents.str);
                     element *temp;
@@ -1069,7 +1148,12 @@ static void print_latex_element(GString *out, element *elt) {
                     elt->children = temp->next;
                     free_element(temp);
                 } else {
-                    g_string_append_printf(out, "~\\citep{%s}", elt->contents.str);
+                    if (strcmp(&elt->contents.str[strlen(elt->contents.str) - 1],";") == 0) {
+                        elt->contents.str[strlen(elt->contents.str) - 1] = '\0';
+                        g_string_append_printf(out, " \\citet{%s}", &elt->contents.str[2]);
+                    } else {
+                        g_string_append_printf(out, "~\\citep{%s}", &elt->contents.str[2]);
+                    }
                 }
             }
             if (elt->children->contents.str == NULL) {
@@ -1515,7 +1599,7 @@ void print_element_list(GString *out, element *elt, int format, int exts) {
 
 void print_html_header(GString *out, element *elt, bool obfuscate) {
     g_string_append_printf(out,
-"<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\n<html xmlns=\"http://www.w3.org/1999/xhtml\">\n<head>\n");
+"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>\n<!DOCTYPE html>\n<html xmlns=\"http://www.w3.org/1999/xhtml\">\n<head>\n");
 
     print_html_element_list(out, elt->children, obfuscate);
     g_string_append_printf(out, "</head>\n<body>\n");    
@@ -1832,7 +1916,7 @@ element * element_for_attribute(char *querystring, element *list) {
     return NULL;
 }
 
-/* convert attribute to dimensions suitable for LaTeX */
+/* convert attribute to dimensions suitable for LaTeX or ODF */
 /* returns c string that needs to be freed */
 
 char * dimension_for_attribute(char *querystring, element *list) {
@@ -1863,7 +1947,7 @@ char * dimension_for_attribute(char *querystring, element *list) {
 
     result = g_string_new(dimension);
     
-    if (strcmp(dimension,upper) == 0) {
+    if ((strcmp(dimension,upper) == 0) && (dimension[strlen(dimension) -1] != '%')) {
         /* no units */
         g_string_append_printf(result, "pt");
     }
@@ -2097,6 +2181,7 @@ void print_odf_element(GString *out, element *elt) {
             g_string_append_printf(out, "</text:a>");
         }
         break;
+	case IMAGEBLOCK:
     case IMAGE:
         height = dimension_for_attribute("height", elt->contents.link->attr);
         width = dimension_for_attribute("width", elt->contents.link->attr);
