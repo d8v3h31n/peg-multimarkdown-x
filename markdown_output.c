@@ -1089,11 +1089,21 @@ static void print_latex_element(GString *out, element *elt) {
                 g_string_append_printf(out, "~\\nocite{%s}", &elt->contents.str[2]);
             } else {
                 if ((elt->children != NULL) && (elt->children->key == LOCATOR)) {
-                    g_string_append_printf(out, "~\\citep[");
+                    if (strcmp(&elt->contents.str[strlen(elt->contents.str) - 1],";") == 0) {
+                        g_string_append_printf(out, " \\citet[");
+                        elt->contents.str[strlen(elt->contents.str) - 1] = '\0';
+                    } else {
+                        g_string_append_printf(out, "~\\citep[");
+                    }
                     print_latex_element(out,elt->children);
                     g_string_append_printf(out, "]{%s}",&elt->contents.str[2]);
                 } else {
-                    g_string_append_printf(out, "~\\citep{%s}", &elt->contents.str[2]);
+                    if (strcmp(&elt->contents.str[strlen(elt->contents.str) - 1],";") == 0) {
+                        elt->contents.str[strlen(elt->contents.str) - 1] = '\0';
+                        g_string_append_printf(out, " \\citet{%s}", &elt->contents.str[2]);
+                    } else {
+                        g_string_append_printf(out, "~\\citep{%s}", &elt->contents.str[2]);
+                    }
                 }
             }
         } else {
@@ -1106,7 +1116,12 @@ static void print_latex_element(GString *out, element *elt) {
                 free_element(temp);
             } else {
                 if ((elt->children != NULL) && (elt->children->key == LOCATOR)){
-                    g_string_append_printf(out, "~\\citep[");
+                    if (strcmp(&elt->contents.str[strlen(elt->contents.str) - 1],";") == 0) {
+                        g_string_append_printf(out, " \\citet[");
+                        elt->contents.str[strlen(elt->contents.str) - 1] = '\0';
+                    } else {
+                        g_string_append_printf(out, "~\\citep[");
+                    }
                     print_latex_element(out,elt->children);
                     g_string_append_printf(out, "]{%s}",elt->contents.str);
                     element *temp;
@@ -1114,7 +1129,12 @@ static void print_latex_element(GString *out, element *elt) {
                     elt->children = temp->next;
                     free_element(temp);
                 } else {
-                    g_string_append_printf(out, "~\\citep{%s}", elt->contents.str);
+                    if (strcmp(&elt->contents.str[strlen(elt->contents.str) - 1],";") == 0) {
+                        elt->contents.str[strlen(elt->contents.str) - 1] = '\0';
+                        g_string_append_printf(out, " \\citet{%s}", &elt->contents.str[2]);
+                    } else {
+                        g_string_append_printf(out, "~\\citep{%s}", &elt->contents.str[2]);
+                    }
                 }
             }
             if (elt->children->contents.str == NULL) {
