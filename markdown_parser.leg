@@ -90,7 +90,7 @@ Block =     BlankLine*
             | HtmlBlock
             | StyleBlock
             | Table
-			| ImageBlock
+            | ImageBlock
             | !(Sp? HtmlBlockOpenDiv) Para
             | Plain )
 
@@ -109,7 +109,7 @@ HeadingSectionBlock =
             | HtmlBlock
             | StyleBlock
             | Table
-			| ImageBlock
+            | ImageBlock
             | !(Sp? HtmlBlockOpenDiv) Para
             | Plain )
 
@@ -559,7 +559,7 @@ StrongUl =  TwoUlOpen
             { $$ = mk_list(STRONG, a); }
 
 ImageBlock = Image Sp Newline BlankLine+
-	{ $$->key = IMAGEBLOCK; }
+    { $$->key = IMAGEBLOCK; }
 
 Image = '!' ( ExplicitLink | ReferenceLink )
         { if ($$->key == LINK) {
