@@ -571,6 +571,7 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
         break;
     case TABLEHEAD:
         /* print column alignment for XSLT processing if needed */
+        g_string_append_printf(out, "<colgroup>\n");
         for (table_column=0;table_column<strlen(table_alignment);table_column++) {
            if ( strncmp(&table_alignment[table_column],"r",1) == 0) {
                 g_string_append_printf(out, "<col style=\"text-align:right;\"/>\n");
@@ -580,6 +581,7 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
                 g_string_append_printf(out, "<col style=\"text-align:left;\"/>\n");
             }
         }
+        g_string_append_printf(out, "</colgroup>\n");
         cell_type = 'h';
         g_string_append_printf(out, "\n<thead>\n");
         print_html_element_list(out, elt->children, obfuscate);
