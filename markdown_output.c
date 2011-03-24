@@ -1577,7 +1577,7 @@ void print_element_list(GString *out, element *elt, int format, int exts) {
 
 void print_html_header(GString *out, element *elt, bool obfuscate) {
     g_string_append_printf(out,
-"<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\n<html xmlns=\"http://www.w3.org/1999/xhtml\">\n<head>\n");
+"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>\n<!DOCTYPE html>\n<html xmlns=\"http://www.w3.org/1999/xhtml\">\n<head>\n");
 
     print_html_element_list(out, elt->children, obfuscate);
     g_string_append_printf(out, "</head>\n<body>\n");    
