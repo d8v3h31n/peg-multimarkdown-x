@@ -256,16 +256,21 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
             g_string_append_printf(out, "\"");
         }
         print_html_element_list(out, elt->contents.link->attr, obfuscate);
-        g_string_append_printf(out, " />");
         
         if (elt->key == IMAGEBLOCK) {
+	        g_string_append_printf(out, " />");
             if (strlen(elt->contents.link->title) > 0) {
                 g_string_append_printf(out, "\n<figcaption>");
                 print_html_string(out, elt->contents.link->title, obfuscate);
                 g_string_append_printf(out, "</figcaption>");
             }
             g_string_append_printf(out, "</figure>\n");
-        }
+        } else {
+            if (strlen(elt->contents.link->title) > 0) {
+                g_string_append_printf(out, " title=\"%s\"",elt->contents.link->title);
+            }
+	        g_string_append_printf(out, " />");
+		}
         free(height);
         free(width);
         break;

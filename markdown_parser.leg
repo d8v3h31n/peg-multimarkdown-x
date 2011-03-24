@@ -90,7 +90,7 @@ Block =     BlankLine*
             | HtmlBlock
             | StyleBlock
             | Table
-            | ImageBlock
+            | &{ !extension(EXT_COMPATIBILITY) } ImageBlock
             | !(Sp? HtmlBlockOpenDiv) Para
             | Plain )
 
@@ -109,7 +109,7 @@ HeadingSectionBlock =
             | HtmlBlock
             | StyleBlock
             | Table
-            | ImageBlock
+            | &{ !extension(EXT_COMPATIBILITY) } ImageBlock
             | !(Sp? HtmlBlockOpenDiv) Para
             | Plain )
 
