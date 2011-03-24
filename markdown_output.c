@@ -599,11 +599,11 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
         break;
     case TABLECELL:
         if ( strncmp(&table_alignment[table_column],"r",1) == 0) {
-            g_string_append_printf(out, "\t<t%c align=\"right\"", cell_type);
+            g_string_append_printf(out, "\t<t%c style=\"text-align:right;\"", cell_type);
         } else if ( strncmp(&table_alignment[table_column],"c",1) == 0) {
-            g_string_append_printf(out, "\t<t%c align=\"center\"", cell_type);
+            g_string_append_printf(out, "\t<t%c style=\"text-align:center;\"", cell_type);
         } else {
-            g_string_append_printf(out, "\t<t%c align=\"left\"", cell_type);
+            g_string_append_printf(out, "\t<t%c style=\"text-align:left;\"", cell_type);
         }
         if ((elt->children != NULL) && (elt->children->key == CELLSPAN)) {
             g_string_append_printf(out, " colspan=\"%d\"",(int)strlen(elt->children->contents.str)+1);
