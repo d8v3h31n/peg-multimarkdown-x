@@ -221,13 +221,13 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
         print_html_element_list(out, elt->contents.link->label, obfuscate);
         g_string_append_printf(out, "</a>");
         break;
-	case IMAGEBLOCK:
-    	pad(out, 2);
+    case IMAGEBLOCK:
+        pad(out, 2);
     case IMAGE:
-		if (elt->key == IMAGEBLOCK) {
-			g_string_append_printf(out, "<figure>\n");
-		}
-		g_string_append_printf(out, "<img src=\"");
+        if (elt->key == IMAGEBLOCK) {
+            g_string_append_printf(out, "<figure>\n");
+        }
+        g_string_append_printf(out, "<img src=\"");
         print_html_string(out, elt->contents.link->url, obfuscate);
         g_string_append_printf(out, "\" alt=\"");
         print_html_element_list(out, elt->contents.link->label, obfuscate);
@@ -869,15 +869,16 @@ static void print_latex_element(GString *out, element *elt) {
             }
         }
         break;
-	case IMAGEBLOCK:
+    case IMAGEBLOCK:
+        pad(out, 2);
     case IMAGE:
         /* Figure if we have height, width, neither */
         height = dimension_for_attribute("height", elt->contents.link->attr);
         width = dimension_for_attribute("width", elt->contents.link->attr);
-		if (elt->key == IMAGEBLOCK) {
-			g_string_append_printf(out, "\\begin{figure}[htbp]\n\\centering\n");
-		}
-		g_string_append_printf(out, "\\includegraphics[");
+        if (elt->key == IMAGEBLOCK) {
+            g_string_append_printf(out, "\\begin{figure}[htbp]\n\\centering\n");
+        }
+        g_string_append_printf(out, "\\includegraphics[");
         if ((height == NULL) && (width == NULL)) {
             /* No dimensions given */
             g_string_append_printf(out,"keepaspectratio,width=\\textwidth,height=0.75\\textheight");
@@ -915,17 +916,17 @@ static void print_latex_element(GString *out, element *elt) {
         }
 
         g_string_append_printf(out, "]{%s}\n", elt->contents.link->url);
-		if (elt->key == IMAGEBLOCK) {
-	        if (strlen(elt->contents.link->title) > 0) {
-	            g_string_append_printf(out, "\\caption{");
-		        if (strlen(elt->contents.link->title) > 0) {
-		            print_latex_string(out, elt->contents.link->title);
-		        }
-	            g_string_append_printf(out, "}\n");
-	        }
-	        g_string_append_printf(out, "\\label{%s}\n", elt->contents.link->identifier);
-	        g_string_append_printf(out,"\\end{figure}\n");
-		}
+        if (elt->key == IMAGEBLOCK) {
+            if (strlen(elt->contents.link->title) > 0) {
+                g_string_append_printf(out, "\\caption{");
+                if (strlen(elt->contents.link->title) > 0) {
+                    print_latex_string(out, elt->contents.link->title);
+                }
+                g_string_append_printf(out, "}\n");
+            }
+            g_string_append_printf(out, "\\label{%s}\n", elt->contents.link->identifier);
+            g_string_append_printf(out,"\\end{figure}\n");
+        }
         free(height);
         free(width);
         break;
@@ -1577,9 +1578,9 @@ void print_element_list(GString *out, element *elt, int format, int exts) {
         if (elt != NULL) print_odf_element_list(out,elt);
         print_odf_footer(out);
         break;
-	case ODF_BODY_FORMAT:
-		if (elt != NULL) print_odf_body_element_list(out, elt);
-		break;
+    case ODF_BODY_FORMAT:
+        if (elt != NULL) print_odf_body_element_list(out, elt);
+        break;
     case GROFF_MM_FORMAT:
         print_groff_mm_element_list(out, elt);
         break;
@@ -2181,7 +2182,8 @@ void print_odf_element(GString *out, element *elt) {
             g_string_append_printf(out, "</text:a>");
         }
         break;
-	case IMAGEBLOCK:
+    case IMAGEBLOCK:
+        g_string_append_printf(out, "<text:p>\n");
     case IMAGE:
         height = dimension_for_attribute("height", elt->contents.link->attr);
         width = dimension_for_attribute("width", elt->contents.link->attr);
@@ -2199,12 +2201,17 @@ void print_odf_element(GString *out, element *elt) {
         }
         g_string_append_printf(out, "><draw:image xlink:href=\"");
         print_odf_string(out, elt->contents.link->url);
-        g_string_append_printf(out,"\" xlink:type=\"simple\" xlink:show=\"embed\" xlink:actuate=\"onLoad\" draw:filter-name=\"&lt;All formats&gt;\"/>\n</draw:frame></text:p><text:p>");
-        if (strlen(elt->contents.link->title) > 0) {
-            g_string_append_printf(out, "Figure <text:sequence text:name=\"Figure\" text:formula=\"ooow:Figure+1\" style:num-format=\"1\"> Update Fields to calculate numbers</text:sequence>: ");
-            print_odf_string(out, elt->contents.link->title);
+        g_string_append_printf(out,"\" xlink:type=\"simple\" xlink:show=\"embed\" xlink:actuate=\"onLoad\" draw:filter-name=\"&lt;All formats&gt;\"/>\n</draw:frame></text:p>");
+        if (elt->key == IMAGEBLOCK) {
+            g_string_append_printf(out, "<text:p>");
+            if (strlen(elt->contents.link->title) > 0) {
+                g_string_append_printf(out, "Figure <text:sequence text:name=\"Figure\" text:formula=\"ooow:Figure+1\" style:num-format=\"1\"> Update Fields to calculate numbers</text:sequence>: ");
+                print_odf_string(out, elt->contents.link->title);
+            }
+            g_string_append_printf(out, "</text:p></draw:text-box></draw:frame>\n</text:p>\n");
+        } else {
+            g_string_append_printf(out, "</draw:text-box></draw:frame>\n");
         }
-        g_string_append_printf(out, "</text:p></draw:text-box></draw:frame>\n");
         break;
     case EMPH:
         g_string_append_printf(out,
@@ -2544,16 +2551,16 @@ void print_odf_element_list(GString *out, element *list) {
 /* print_odf_body_element - print an element as ODF */
 void print_odf_body_element(GString *out, element *elt) {
     switch (elt->key) {
-	case PARA:
-		print_odf_element_list(out, elt->children);
-		break;
-	default:
-		print_odf_element(out, elt);
-	}
+    case PARA:
+        print_odf_element_list(out, elt->children);
+        break;
+    default:
+        print_odf_element(out, elt);
+    }
 }
 
 /* print_odf_body_element_list - print an element list as ODF for specific 
-	places, eg image captions */
+    places, eg image captions */
 void print_odf_body_element_list(GString *out, element *list) {
     while (list != NULL) {
         print_odf_body_element(out, list);
