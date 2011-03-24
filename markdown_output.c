@@ -162,7 +162,6 @@ static void add_endnote(element *elt) {
 static void print_html_element(GString *out, element *elt, bool obfuscate) {
     int lev;
     char *label;
-	char *markdown;
     switch (elt->key) {
     case SPACE:
         g_string_append_printf(out, "%s", elt->contents.str);
@@ -231,10 +230,7 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
         g_string_append_printf(out, " />");
         if (strlen(elt->contents.link->title) > 0) {
             g_string_append_printf(out, "<figcaption>");
-            markdown = markdown_to_string(elt->contents.link->title, extensions, HTML_FORMAT);
-            g_string_append_printf(out, "%s", markdown);
-            g_string_append_printf(out, "</figcaption>\n");
-            free(markdown);
+            print_html_string(out, elt->contents.link->title, obfuscate);
         }
         g_string_append_printf(out, "</figure>\n");
         break;
@@ -748,7 +744,6 @@ static void print_latex_element(GString *out, element *elt) {
     char *label;
     char *height;
     char *width;
-	char *markdown;
     switch (elt->key) {
     case SPACE:
         g_string_append_printf(out, "%s", elt->contents.str);
@@ -861,9 +856,7 @@ static void print_latex_element(GString *out, element *elt) {
         if (strlen(elt->contents.link->title) > 0) {
             g_string_append_printf(out, "\\caption{");
 	        if (strlen(elt->contents.link->title) > 0) {
-	            markdown = markdown_to_string(elt->contents.link->title, extensions, LATEX_FORMAT);
-	            g_string_append_printf(out, "%s", markdown);
-	            free(markdown);
+	            print_latex_string(out, elt->contents.link->title);
 	        }
             g_string_append_printf(out, "}\n");
         }
@@ -2038,7 +2031,6 @@ void print_odf_element(GString *out, element *elt) {
     char *label;
     char *height;
     char *width;
-	char *markdown;
     int old_type = 0;
     switch (elt->key) {
     case SPACE:
@@ -2125,9 +2117,7 @@ void print_odf_element(GString *out, element *elt) {
         g_string_append_printf(out,"\" xlink:type=\"simple\" xlink:show=\"embed\" xlink:actuate=\"onLoad\" draw:filter-name=\"&lt;All formats&gt;\"/>\n</draw:frame></text:p><text:p>");
         if (strlen(elt->contents.link->title) > 0) {
             g_string_append_printf(out, "Figure <text:sequence text:name=\"Figure\" text:formula=\"ooow:Figure+1\" style:num-format=\"1\"> Update Fields to calculate numbers</text:sequence>: ");
-            markdown = markdown_to_string(elt->contents.link->title, extensions, ODF_BODY_FORMAT);
-            g_string_append_printf(out, "%s", markdown);
-			free(markdown);
+            print_odf_string(out, elt->contents.link->title);
         }
         g_string_append_printf(out, "</text:p></draw:text-box></draw:frame>\n");
         break;
