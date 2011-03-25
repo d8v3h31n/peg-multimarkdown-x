@@ -90,6 +90,7 @@ Block =     BlankLine*
             | HtmlBlock
             | StyleBlock
             | Table
+            | &{ !extension(EXT_COMPATIBILITY) } ImageBlock
             | !(Sp? HtmlBlockOpenDiv) Para
             | Plain )
 
@@ -108,6 +109,7 @@ HeadingSectionBlock =
             | HtmlBlock
             | StyleBlock
             | Table
+            | &{ !extension(EXT_COMPATIBILITY) } ImageBlock
             | !(Sp? HtmlBlockOpenDiv) Para
             | Plain )
 
@@ -478,8 +480,15 @@ Space = Spacechar+
         { $$ = mk_str(" ");
           $$->key = SPACE; }
 
-Str = < NormalChar (NormalChar | '_'+ &Alphanumeric)* >
-        { $$ = mk_str(yytext); }
+Str = a:StartList < NormalChar+ > { a = cons(mk_str(yytext), a); }
+      ( StrChunk { a = cons($$, a); } )*
+      { if (a->next == NULL) { $$ = a; } else { $$ = mk_list(LIST, a); } }
+
+StrChunk = < (NormalChar | '_'+ &Alphanumeric)+ > { $$ = mk_str(yytext); } |
+           AposChunk
+
+AposChunk = &{ extension(EXT_SMART) } '\'' &Alphanumeric
+      { $$ = mk_element(APOSTROPHE); }
 
 EscapedChar =   '\\' !Newline < [-\\`|*_{}[\]()#+.!><] >
                 { $$ = mk_str(yytext); }
@@ -548,6 +557,9 @@ StrongUl =  TwoUlOpen
             ( !TwoUlClose Inline { a = cons($$, a); } )*
             TwoUlClose { a = cons($$, a); }
             { $$ = mk_list(STRONG, a); }
+
+ImageBlock = Image Sp Newline BlankLine+
+    { $$->key = IMAGEBLOCK; }
 
 Image = '!' ( ExplicitLink | ReferenceLink )
         { if ($$->key == LINK) {
@@ -647,7 +659,7 @@ AutoLinkEmail = '<' ( "mailto:" )? < [-A-Za-z0-9+_]+ '@' ( !Newline !'>' . )+ > 
                     free(mailto);
                 }
 
-Reference = a:StartList NonindentSpace !"[]" l:Label ':' Spnl s:RefSrc 
+Reference = a:StartList NonindentSpace !"[]" l:Label ':' Spnl s:RefSrc
         t:RefTitle (Attributes { a = cons($$,a);})? BlankLine+
         { 
             char *label;
@@ -708,7 +720,8 @@ RefSrc = < Nonspacechar+ >
            $$->key = HTML; }
 
 RefTitle =  ( RefTitleSingle | RefTitleDouble | RefTitleParens | EmptyTitle )
-            { $$ = mk_str(yytext); }
+            { $$ = mk_str(yytext); 
+				$$->key = RAW;}
 
 EmptyTitle = < "" >
 
@@ -811,7 +824,7 @@ EmDash = ( <"---"> )
          }
 
 
-SingleQuoteStart = '\'' ![)!\],.;:-? \t\n] !( ( "s" | "t" | "m" | "ve" | "ll" | "re" ) !Alphanumeric )
+SingleQuoteStart = '\'' ![)!\],.;:-? \t\n]
 
 SingleQuoteEnd = '\'' !Alphanumeric
 
