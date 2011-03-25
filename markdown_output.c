@@ -2480,7 +2480,7 @@ void print_odf_element(GString *out, element *elt) {
             } else {
                 label = label_from_element_list(elt->children->children,0);
             }
-            g_string_append_printf(out,"<text:p text:style-name=\"Table\"><text:bookmark text:name=\"%s\"/>Table <text:sequence text:name=\"Table\" text:formula=\"ooow:Table+1\" style:num-format=\"1\"> Update Fields to calculate numbers</text:sequence>:", label);
+            g_string_append_printf(out,"<text:p><text:bookmark text:name=\"%s\"/>Table <text:sequence text:name=\"Table\" text:formula=\"ooow:Table+1\" style:num-format=\"1\"> Update Fields to calculate numbers</text:sequence>:", label);
             print_odf_element_list(out,elt->children->children);
             g_string_append_printf(out, "<text:bookmark-end text:name=\"%s\"/></text:p>\n",label);
             free(label);
