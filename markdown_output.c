@@ -230,11 +230,16 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
         g_string_append_printf(out, "<img src=\"");
         print_html_string(out, elt->contents.link->url, obfuscate);
         g_string_append_printf(out, "\" alt=\"");
-        print_html_element_list(out, elt->contents.link->label, obfuscate);
+        print_raw_element_list(out,elt->contents.link->label);
         if ( extension(EXT_COMPATIBILITY) ) {
             g_string_append_printf(out, "\"");
         } else {
             g_string_append_printf(out, "\" id=\"%s\"",elt->contents.link->identifier);
+        }
+        if (strlen(elt->contents.link->title) > 0) {
+            g_string_append_printf(out, " title=\"");
+            print_html_string(out, elt->contents.link->title, obfuscate);
+            g_string_append_printf(out, "\"");
         }
         print_html_element_list(out, elt->contents.link->attr, obfuscate);
         width = NULL;
@@ -256,21 +261,15 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
             g_string_append_printf(out, "\"");
         }
         print_html_element_list(out, elt->contents.link->attr, obfuscate);
-        
+        g_string_append_printf(out, " />");
         if (elt->key == IMAGEBLOCK) {
-	        g_string_append_printf(out, " />");
-            if (strlen(elt->contents.link->title) > 0) {
+            if (elt->contents.link->label != NULL) {
                 g_string_append_printf(out, "\n<figcaption>");
-                print_html_string(out, elt->contents.link->title, obfuscate);
+                print_html_element_list(out, elt->contents.link->label, obfuscate);
                 g_string_append_printf(out, "</figcaption>");
             }
             g_string_append_printf(out, "</figure>\n");
-        } else {
-            if (strlen(elt->contents.link->title) > 0) {
-                g_string_append_printf(out, " title=\"%s\"",elt->contents.link->title);
-            }
-	        g_string_append_printf(out, " />");
-		}
+        }
         free(height);
         free(width);
         break;
@@ -928,11 +927,9 @@ static void print_latex_element(GString *out, element *elt) {
 
         g_string_append_printf(out, "]{%s}\n", elt->contents.link->url);
         if (elt->key == IMAGEBLOCK) {
-            if (strlen(elt->contents.link->title) > 0) {
+           if (elt->contents.link->label != NULL) {
                 g_string_append_printf(out, "\\caption{");
-                if (strlen(elt->contents.link->title) > 0) {
-                    print_latex_string(out, elt->contents.link->title);
-                }
+                print_latex_element_list(out, elt->contents.link->label);
                 g_string_append_printf(out, "}\n");
             }
             g_string_append_printf(out, "\\label{%s}\n", elt->contents.link->identifier);
@@ -2215,9 +2212,9 @@ void print_odf_element(GString *out, element *elt) {
         g_string_append_printf(out,"\" xlink:type=\"simple\" xlink:show=\"embed\" xlink:actuate=\"onLoad\" draw:filter-name=\"&lt;All formats&gt;\"/>\n</draw:frame></text:p>");
         if (elt->key == IMAGEBLOCK) {
             g_string_append_printf(out, "<text:p>");
-            if (strlen(elt->contents.link->title) > 0) {
+            if (elt->contents.link->label != NULL) {
                 g_string_append_printf(out, "Figure <text:sequence text:name=\"Figure\" text:formula=\"ooow:Figure+1\" style:num-format=\"1\"> Update Fields to calculate numbers</text:sequence>: ");
-                print_odf_string(out, elt->contents.link->title);
+                print_odf_element_list(out, elt->contents.link->label);
             }
             g_string_append_printf(out, "</text:p></draw:text-box></draw:frame>\n</text:p>\n");
         } else {
