@@ -714,7 +714,13 @@ static void print_latex_string(GString *out, char *str) {
             g_string_append_printf(out, "$>$");
             break;
         case '/':
+            str++;
+            while (*str == '/') {
+                g_string_append_printf(out, "/");
+                str++;
+            }
             g_string_append_printf(out, "\\slash ");
+            str--;
             break;
         case '\n':
             tmp = str;
