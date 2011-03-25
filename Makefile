@@ -47,7 +47,7 @@ test: $(PROGRAM)
 
 mmdtest: $(PROGRAM)
 	cd MarkdownTest; \
-	./MarkdownTest.pl --Script=../$(PROGRAM) --Tidy --testdir=MultiMarkdownTests
+	./MarkdownTest.pl --Script=../$(PROGRAM) --testdir=MultiMarkdownTests
 
 latextest: $(PROGRAM)
 	cd MarkdownTest; \
