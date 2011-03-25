@@ -1137,9 +1137,9 @@ static void print_latex_element(GString *out, element *elt) {
                 } else {
                     if (strcmp(&elt->contents.str[strlen(elt->contents.str) - 1],";") == 0) {
                         elt->contents.str[strlen(elt->contents.str) - 1] = '\0';
-                        g_string_append_printf(out, " \\citet{%s}", &elt->contents.str[2]);
+                        g_string_append_printf(out, " \\citet{%s}", elt->contents.str);
                     } else {
-                        g_string_append_printf(out, "~\\citep{%s}", &elt->contents.str[2]);
+                        g_string_append_printf(out, "~\\citep{%s}", elt->contents.str);
                     }
                 }
             }
