@@ -47,7 +47,7 @@ test: $(PROGRAM)
 
 mmdtest: $(PROGRAM)
 	cd MarkdownTest; \
-	./MarkdownTest.pl --Script=../$(PROGRAM) --Tidy --testdir=MultiMarkdownTests
+	./MarkdownTest.pl --Script=../$(PROGRAM) --testdir=MultiMarkdownTests
 
 latextest: $(PROGRAM)
 	cd MarkdownTest; \
@@ -58,11 +58,11 @@ latextest: $(PROGRAM)
 xslttest: $(PROGRAM)
 	cd MarkdownTest; \
 	./MarkdownTest.pl --Script=/bin/cat --testdir=MultiMarkdownTests \
-	--TrailFlags="| ../Support/bin/mmd2xslt" --ext=".tex"; \
+	--TrailFlags="| ../Support/bin/mmd2tex-xslt" --ext=".tex"; \
 	./MarkdownTest.pl --Script=/bin/cat --testdir=BeamerTests \
-	--TrailFlags="| ../Support/bin/mmd2xslt" --ext=".tex"; \
+	--TrailFlags="| ../Support/bin/mmd2tex-xslt" --ext=".tex"; \
 	./MarkdownTest.pl --Script=/bin/cat --testdir=MemoirTests \
-	--TrailFlags="| ../Support/bin/mmd2xslt" --ext=".tex"; \
+	--TrailFlags="| ../Support/bin/mmd2tex-xslt" --ext=".tex"; \
 
 leak-check: $(PROGRAM)
 	valgrind --leak-check=full ./multimarkdown TEST.markdown > TEST.html
