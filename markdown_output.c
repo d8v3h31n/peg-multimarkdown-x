@@ -1211,6 +1211,10 @@ static void print_latex_element(GString *out, element *elt) {
             g_string_append_printf(out, "\\def\\mydate{");
             print_latex_element_list(out, elt->children);
             g_string_append_printf(out, "}\n");
+        } else if (strcmp(elt->contents.str, "copyright") == 0) {
+            g_string_append_printf(out, "\\def\\mycopyright{");
+            print_latex_element_list(out, elt->children);
+            g_string_append_printf(out, "}\n");
         } else if (strcmp(elt->contents.str, "baseheaderlevel") == 0) {
             base_header_level = atoi(elt->children->contents.str);
         } else if (strcmp(elt->contents.str, "latexheaderlevel") == 0) {
@@ -2443,7 +2447,7 @@ void print_odf_element(GString *out, element *elt) {
         } else if (strcmp(elt->contents.str, "latexmode") == 0) {
         } else if (strcmp(elt->contents.str, "keywords") == 0) {
             g_string_append_printf(out, "<meta:keyword>");
-            print_odf_string(out,elt->contents.str);
+            print_odf_element(out,elt->children);
             g_string_append_printf(out, "</meta:keyword>\n");
         } else if (strcmp(elt->contents.str, "quoteslanguage") == 0) {
              label = label_from_element_list(elt->children, 0);
