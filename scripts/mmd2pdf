@@ -1,0 +1,36 @@
+#!/bin/sh
+#
+# mmd2pdf --- MultiMarkdown convenience script
+#	<http://fletcherpenney.net/multimarkdown/>
+#	Fletcher T. Penney
+#
+# Pass arguments on to the binary to convert text to LaTeX
+# Then use latexmk to process into PDF.
+# Requires a few extra passes of pdflatex to be sure all autorefs
+# 	are managed.
+# Then call latexmk with -c option to try and clean up some extra files.
+#
+#	NOTE: This file is included as a convenience for users - it's not 
+#		likely to fail gracefully if there are any issues in your
+#		LaTeX file.
+
+# Be sure to include multimarkdown in our PATH
+export PATH="/usr/local/bin:$PATH"
+
+if [ $# = 0 ]
+then
+	multimarkdown -t latex
+else
+until [ "$*" = "" ]
+do
+	multimarkdown -b -t latex "$1"
+
+	file_name=`echo $1| sed 's/\.[^.]*$//'`
+	latexmk "$file_name.tex"
+	makeglossaries "$file_name"
+	pdflatex "$file_name.tex"
+	pdflatex "$file_name.tex"
+	latexmk -c "$file_name.tex"
+	shift
+done
+fi
