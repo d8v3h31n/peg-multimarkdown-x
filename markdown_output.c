@@ -1312,12 +1312,17 @@ static void print_latex_element(GString *out, element *elt) {
             elt->children->contents.str);
         break;
     case MATHSPAN:
-        if ( elt->contents.str[strlen(elt->contents.str)-1] == ']') {
+        if (strncmp(&elt->contents.str[2],"\\begin",5) == 0) {
             elt->contents.str[strlen(elt->contents.str)-3] = '\0';
-            g_string_append_printf(out, "%s\\]", elt->contents.str);
+            g_string_append_printf(out, "%s",&elt->contents.str[2]);
         } else {
-            elt->contents.str[strlen(elt->contents.str)-3] = '\0';
-            g_string_append_printf(out, "%s\\)", elt->contents.str);
+            if ( elt->contents.str[strlen(elt->contents.str)-1] == ']') {
+                elt->contents.str[strlen(elt->contents.str)-3] = '\0';
+                g_string_append_printf(out, "%s\\]", elt->contents.str);
+            } else {
+                elt->contents.str[strlen(elt->contents.str)-3] = '\0';
+                g_string_append_printf(out, "%s\\)", elt->contents.str);
+            }
         }
         break;
     default: 
