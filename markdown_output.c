@@ -1321,7 +1321,7 @@ static void print_latex_element(GString *out, element *elt) {
                 g_string_append_printf(out, "%s\\]", elt->contents.str);
             } else {
                 elt->contents.str[strlen(elt->contents.str)-3] = '\0';
-                g_string_append_printf(out, "%s\\)", elt->contents.str);
+                g_string_append_printf(out, "$%s$", &elt->contents.str[2]);
             }
         }
         break;
