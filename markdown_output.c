@@ -241,7 +241,6 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
             print_html_string(out, elt->contents.link->title, obfuscate);
             g_string_append_printf(out, "\"");
         }
-        print_html_element_list(out, elt->contents.link->attr, obfuscate);
         width = NULL;
         height = NULL;
         attribute = element_for_attribute("height", elt->contents.link->attr);
