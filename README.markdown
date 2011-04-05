@@ -110,6 +110,15 @@ Once installed, you simply do something like the following:
   can further specify the `LaTeX Mode` metadata to customize output for
   compatibility with `memoir` or `beamer` classes.
 
+* `multimarkdown -t odf file.txt` --- output the results as an OpenDocument
+  Text Flat XML file. Does require the plugin be installed in your copy of
+  OpenOffice, which is available at the [downloads] page. LibreOffice includes
+  this plugin by default.
+
+* `multimarkdown -t opml file.txt` --- convert the MMD text file to an MMD
+  OPML file, compatible with OmniOutliner and certain other outlining and
+  mind-mapping programs (including iThoughts and iThoughtsHD).
+
 * `multimarkdown -h` --- display help and additional options.
 
 * `multimarkdown -b *.txt` --- `-b` or `--batch` mode can process multiple
@@ -120,10 +129,18 @@ Once installed, you simply do something like the following:
   overwrite existing files with the `html` or `tex` extension, so use with
   caution.
 
-**Note**: I create two aliases in my `.tcshrc` file to simplify things:
+**Note**: Several convenience scripts are available to simplify things:
 
-	alias mmd		'multimarkdown -b'
-	alias mmd2tex	'multimarkdown -b -t latex'
+	mmd			=> multimarkdown -b
+	mmd2tex		=> multimarkdown -b -t latex
+	mmd2odf		=> multimarkdown -b -t odf
+	mmd2opml	=> multimarkdown -b -t opml
+	
+	mmd2pdf		=> Unsupported script to try and run latex/xelatex.
+				   You can direct questions to the discussion list, but
+				   I may or may not respond.  It works for me, so I share
+				   it with those who are interested but make no
+				   guarantees.
 
 
 # Why create another version of MultiMarkdown? #
