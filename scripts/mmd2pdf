@@ -27,19 +27,45 @@ do
 
 	file_name=`echo $1| sed 's/\.[^.]*$//'`
 	
-	latexmk "$file_name.tex"
+	# Check for XeLaTeX mode
 	
-	if [ "$?" = "0" ]
+	xelatex=`multimarkdown -e usexelatex "$1"`
+	
+	if [ "$xelatex" != "" ]
 	then
+		# Use XeLaTeX
+		
+		xelatex "$file_name.tex"
+
+		if [ "$?" == "127" ]
+		then
+			echo "It doesn't appear that xelatex is installed properly." 1>&2
+			echo "Be sure you have a working LaTeX installation." 1>&2
+			exit 1
+		fi
+
+		xelatex "$file_name.tex"
+		xelatex "$file_name.tex"
+		xelatex "$file_name.tex"
+	
+	else
+		# Use LaTeX
+		latexmk "$file_name.tex"
+	
+		if [ "$?" == "127" ]
+		then
+			echo "It doesn't appear that latexmk is installed properly." 1>&2
+			echo "Be sure you have a working LaTeX installation." 1>&2
+			exit 1
+		fi
+
 		makeglossaries "$file_name"
 		pdflatex "$file_name.tex"
 		pdflatex "$file_name.tex"
 		latexmk -c "$file_name.tex"
-	else
-		echo "It doesn't appear that latexmk is installed properly." 1>&2
-		echo "Be sure you have a working LaTeX installation." 1>&2
-		exit 1
+
 	fi
+	
 	shift
 done
 fi
