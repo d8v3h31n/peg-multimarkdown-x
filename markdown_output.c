@@ -551,6 +551,9 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
         } else if (strcmp(elt->contents.str, "xhtmlheader") == 0) {
             print_raw_element(out, elt->children);
             g_string_append_printf(out, "\n");
+        } else if (strcmp(elt->contents.str, "htmlheader") == 0) {
+            print_raw_element(out, elt->children);
+            g_string_append_printf(out, "\n");
         } else if (strcmp(elt->contents.str, "baseheaderlevel") == 0) {
             base_header_level = atoi(elt->children->contents.str);
         } else if (strcmp(elt->contents.str, "xhtmlheaderlevel") == 0) {
@@ -1246,6 +1249,7 @@ static void print_latex_element(GString *out, element *elt) {
         } else if (strcmp(elt->contents.str, "bibtex") == 0) {
             g_string_append_printf(out, "\\def\\bibliocommand{\\bibliography{%s}}\n",elt->children->contents.str);
         } else if (strcmp(elt->contents.str, "xhtmlheader") == 0) {
+        } else if (strcmp(elt->contents.str, "htmlheader") == 0) {
         } else if (strcmp(elt->contents.str, "css") == 0) {
         } else if (strcmp(elt->contents.str, "quoteslanguage") == 0) {
             label = label_from_element_list(elt->children, 0);
@@ -1997,6 +2001,7 @@ void print_odf_element(GString *out, element *elt) {
         } else if (strcmp(elt->contents.str, "odfheaderlevel") == 0) {
             base_header_level = atoi(elt->children->contents.str);
         } else if (strcmp(elt->contents.str, "xhtmlheader") == 0) {
+        } else if (strcmp(elt->contents.str, "htmlheader") == 0) {
         } else if (strcmp(elt->contents.str, "odfheader") == 0) {
         } else if (strcmp(elt->contents.str, "latexfooter") == 0) {
         } else if (strcmp(elt->contents.str, "latexinput") == 0) {
@@ -2207,8 +2212,9 @@ void print_latex_header(GString *out, element *elt) {
 void print_latex_footer(GString *out) {
     if (latex_footer != NULL) {
         pad(out,2);
-        g_string_append_printf(out, "\\input{%s}\n\n\\end{document}", latex_footer);
+        g_string_append_printf(out, "\\input{%s}\n", latex_footer);
     }
+	g_string_append_printf(out, "\n\\end{document}");
 }
 
 
