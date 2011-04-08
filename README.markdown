@@ -110,6 +110,15 @@ Once installed, you simply do something like the following:
   can further specify the `LaTeX Mode` metadata to customize output for
   compatibility with `memoir` or `beamer` classes.
 
+* `multimarkdown -t odf file.txt` --- output the results as an OpenDocument
+  Text Flat XML file. Does require the plugin be installed in your copy of
+  OpenOffice, which is available at the [downloads] page. LibreOffice includes
+  this plugin by default.
+
+* `multimarkdown -t opml file.txt` --- convert the MMD text file to an MMD
+  OPML file, compatible with OmniOutliner and certain other outlining and
+  mind-mapping programs (including iThoughts and iThoughtsHD).
+
 * `multimarkdown -h` --- display help and additional options.
 
 * `multimarkdown -b *.txt` --- `-b` or `--batch` mode can process multiple
@@ -120,10 +129,18 @@ Once installed, you simply do something like the following:
   overwrite existing files with the `html` or `tex` extension, so use with
   caution.
 
-**Note**: I create two aliases in my `.tcshrc` file to simplify things:
+**Note**: Several convenience scripts are available to simplify things:
 
-	alias mmd		'multimarkdown -b'
-	alias mmd2tex	'multimarkdown -b -t latex'
+	mmd			=> multimarkdown -b
+	mmd2tex		=> multimarkdown -b -t latex
+	mmd2odf		=> multimarkdown -b -t odf
+	mmd2opml	=> multimarkdown -b -t opml
+	
+	mmd2pdf		=> Unsupported script to try and run latex/xelatex.
+				   You can direct questions to the discussion list, but
+				   I may or may not respond.  It works for me, so I share
+				   it with those who are interested but make no
+				   guarantees.
 
 
 # Why create another version of MultiMarkdown? #
@@ -148,13 +165,23 @@ Once installed, you simply do something like the following:
 * The syntax has been fairly stable, and it would be nice to be able to
   formalize it a bit --- which happens by definition when using a PEG.
 
+<<<<<<< HEAD
 * I wanted to revisit the syntax and features and clean things up a bit.
+=======
+`output_format` is either `HTML_FORMAT`, `LATEX_FORMAT`, `ODF_FORMAT`,
+or `GROFF_MM_FORMAT`.
+>>>>>>> 76a07552f9eabaadd46b8487c58741286f9a23db
 
 * Did I mention how much faster this is? And that it could (eventually) run on
   an iPhone?
 
 
+<<<<<<< HEAD
 # What's different? #
+=======
+It should be pretty easy to modify the program to produce other formats,
+and to parse syntax extensions.  A quick guide:
+>>>>>>> 76a07552f9eabaadd46b8487c58741286f9a23db
 
 
 ## "Complete" documents vs. "snippets" ##
@@ -176,6 +203,7 @@ becomes the following HTML snippet:
 	
 	<p>And a paragraph.</p>
 
+<<<<<<< HEAD
 and the following LaTeX snippet:
 
 	\part{This is a header}
@@ -385,3 +413,10 @@ the GNU LGPL 2.1.
 [downloads]:			http://github.com/fletcher/peg-multimarkdown/downloads
 [GTK+]:					http://www.gtk.org/
 [homebrew]:				https://github.com/mxcl/homebrew
+=======
+Acknowledgements
+================
+
+Support for ODF output was added by Fletcher T. Penney.
+
+>>>>>>> 76a07552f9eabaadd46b8487c58741286f9a23db
