@@ -48,6 +48,12 @@ static void print_latex_element(GString *out, element *elt);
 static void print_groff_string(GString *out, char *str);
 static void print_groff_mm_element_list(GString *out, element *list);
 static void print_groff_mm_element(GString *out, element *elt, int count);
+static void print_odf_code_string(GString *out, char *str);
+static void print_odf_string(GString *out, char *str);
+static void print_odf_element_list(GString *out, element *list);
+static void print_odf_element(GString *out, element *elt);
+static void print_odf_body_element_list(GString *out, element *list);
+static bool list_contains_key(element *list, int key);
 
 
 /* MultiMarkdown Routines */
@@ -71,7 +77,6 @@ static void print_opml_section_and_children(GString *out, element *list);
 
 element * print_html_headingsection(GString *out, element *list, bool obfuscate);
 
-static bool list_contains_key(element *list, int key);
 static bool is_html_complete_doc(element *meta);
 static int find_latex_mode(int format, element *list);
 element * metadata_for_key(char *key, element *list);
@@ -79,9 +84,6 @@ char * metavalue_for_key(char *key, element *list);
 
 element * element_for_attribute(char *querystring, element *list);
 char * dimension_for_attribute(char *querystring, element *list);
-
-static void print_odf_code_string(GString *out, char *str);
-static void print_odf_string(GString *out, char *str);
 
 
 /**********************************************************************
@@ -102,6 +104,25 @@ static void pad(GString *out, int num) {
     while (num-- > padded)
         g_string_append_printf(out, "\n");;
     padded = num;
+}
+
+/* determine whether a certain element is contained within a given list */
+bool list_contains_key(element *list, int key) {
+    element *step = NULL;
+
+    step = list;
+    while ( step != NULL ) {
+        if (step->key == key) {
+            return TRUE;
+        }
+        if (step->children != NULL) {
+            if (list_contains_key(step->children, key)) {
+                return TRUE;
+            }
+        }
+       step = step->next;
+    }
+    return FALSE;
 }
 
 /**********************************************************************
@@ -241,7 +262,6 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
             print_html_string(out, elt->contents.link->title, obfuscate);
             g_string_append_printf(out, "\"");
         }
-        print_html_element_list(out, elt->contents.link->attr, obfuscate);
         width = NULL;
         height = NULL;
         attribute = element_for_attribute("height", elt->contents.link->attr);
@@ -529,6 +549,9 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
             print_html_element(out, elt->children, obfuscate);
             g_string_append_printf(out, "\"/>\n");
         } else if (strcmp(elt->contents.str, "xhtmlheader") == 0) {
+            print_raw_element(out, elt->children);
+            g_string_append_printf(out, "\n");
+        } else if (strcmp(elt->contents.str, "htmlheader") == 0) {
             print_raw_element(out, elt->children);
             g_string_append_printf(out, "\n");
         } else if (strcmp(elt->contents.str, "baseheaderlevel") == 0) {
@@ -1211,6 +1234,10 @@ static void print_latex_element(GString *out, element *elt) {
             g_string_append_printf(out, "\\def\\mydate{");
             print_latex_element_list(out, elt->children);
             g_string_append_printf(out, "}\n");
+        } else if (strcmp(elt->contents.str, "copyright") == 0) {
+            g_string_append_printf(out, "\\def\\mycopyright{");
+            print_latex_element_list(out, elt->children);
+            g_string_append_printf(out, "}\n");
         } else if (strcmp(elt->contents.str, "baseheaderlevel") == 0) {
             base_header_level = atoi(elt->children->contents.str);
         } else if (strcmp(elt->contents.str, "latexheaderlevel") == 0) {
@@ -1222,6 +1249,7 @@ static void print_latex_element(GString *out, element *elt) {
         } else if (strcmp(elt->contents.str, "bibtex") == 0) {
             g_string_append_printf(out, "\\def\\bibliocommand{\\bibliography{%s}}\n",elt->children->contents.str);
         } else if (strcmp(elt->contents.str, "xhtmlheader") == 0) {
+        } else if (strcmp(elt->contents.str, "htmlheader") == 0) {
         } else if (strcmp(elt->contents.str, "css") == 0) {
         } else if (strcmp(elt->contents.str, "quoteslanguage") == 0) {
             label = label_from_element_list(elt->children, 0);
@@ -1308,12 +1336,17 @@ static void print_latex_element(GString *out, element *elt) {
             elt->children->contents.str);
         break;
     case MATHSPAN:
-        if ( elt->contents.str[strlen(elt->contents.str)-1] == ']') {
+        if (strncmp(&elt->contents.str[2],"\\begin",5) == 0) {
             elt->contents.str[strlen(elt->contents.str)-3] = '\0';
-            g_string_append_printf(out, "%s\\]", elt->contents.str);
+            g_string_append_printf(out, "%s",&elt->contents.str[2]);
         } else {
-            elt->contents.str[strlen(elt->contents.str)-3] = '\0';
-            g_string_append_printf(out, "%s\\)", elt->contents.str);
+            if ( elt->contents.str[strlen(elt->contents.str)-1] == ']') {
+                elt->contents.str[strlen(elt->contents.str)-3] = '\0';
+                g_string_append_printf(out, "%s\\]", elt->contents.str);
+            } else {
+                elt->contents.str[strlen(elt->contents.str)-3] = '\0';
+                g_string_append_printf(out, "$%s$", &elt->contents.str[2]);
+            }
         }
         break;
     default: 
@@ -1531,560 +1564,14 @@ static void print_groff_mm_element(GString *out, element *elt, int count) {
 
 /**********************************************************************
 
-  Parameterized function for printing an Element.
+  Functions for printing Elements as ODF
 
  ***********************************************************************/
 
-void print_element_list(GString *out, element *elt, int format, int exts) {
-    /* Initialize globals */
-    endnotes = NULL;
-    notenumber = 0;
-
-    /* And MultiMarkdown globals */
-    base_header_level = 1;
-    language = ENGLISH;
-    html_footer = FALSE;
-    no_latex_footnote = FALSE;
-
-    extensions = exts;
-    padded = 2;  /* set padding to 2, so no extra blank lines at beginning */
-
-    format = find_latex_mode(format, elt);
-    switch (format) {
-    case HTML_FORMAT:
-        print_html_element_list(out, elt, false);
-        if (endnotes != NULL) {
-            pad(out, 2);
-            print_html_endnotes(out);
-        }
-        if (html_footer == TRUE) print_html_footer(out, false);
-        break;
-    case LATEX_FORMAT:
-        print_latex_element_list(out, elt);
-        break;
-    case MEMOIR_FORMAT:
-        print_memoir_element_list(out, elt);
-        break;
-    case BEAMER_FORMAT:
-        print_beamer_element_list(out, elt);
-        break;
-    case OPML_FORMAT:
-        g_string_append_printf(out, "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<opml version=\"1.0\">\n");
-        g_string_append_printf(out, "<body>\n");
-        print_opml_element_list(out, elt);
-        if (html_footer == TRUE) print_opml_metadata(out, elt);
-        g_string_append_printf(out, "</body>\n</opml>");
-        break;
-    case ODF_FORMAT:
-        print_odf_header(out);
-        if (elt->key == METADATA) {
-            /* print metadata */
-            print_odf_element(out,elt);
-            elt = elt->next;
-        }
-        g_string_append_printf(out, "<office:body>\n<office:text>\n");
-        if (elt != NULL) print_odf_element_list(out,elt);
-        print_odf_footer(out);
-        break;
-    case ODF_BODY_FORMAT:
-        if (elt != NULL) print_odf_body_element_list(out, elt);
-        break;
-    case GROFF_MM_FORMAT:
-        print_groff_mm_element_list(out, elt);
-        break;
-    default:
-        fprintf(stderr, "print_element - unknown format = %d\n", format); 
-        exit(EXIT_FAILURE);
-    }
-}
-
-
-/**********************************************************************
-
-  MultiMarkdown Routines - Used for generating "complete" documents
-
- ***********************************************************************/
-
-
-void print_html_header(GString *out, element *elt, bool obfuscate) {
-    g_string_append_printf(out,
-"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>\n<!DOCTYPE html>\n<html xmlns=\"http://www.w3.org/1999/xhtml\">\n<head>\n");
-
-    print_html_element_list(out, elt->children, obfuscate);
-    g_string_append_printf(out, "</head>\n<body>\n");    
-}
-
-
-void print_html_footer(GString *out, bool obfuscate) {
-    g_string_append_printf(out, "\n</body>\n</html>");
-}
-
-
-void print_latex_header(GString *out, element *elt) {
-    print_latex_element_list(out, elt->children);
-}
-
-
-void print_latex_footer(GString *out) {
-    if (latex_footer != NULL) {
-        pad(out,2);
-        g_string_append_printf(out, "\\input{%s}\n\n\\end{document}", latex_footer);
-    }
-}
-
-
-/* print_memoir_element_list - print an element as LaTeX for memoir class */
-void print_memoir_element_list(GString *out, element *list) {
-    while (list != NULL) {
-        print_memoir_element(out, list);
-        list = list->next;
-    }
-}
-
-
-/* print_memoir_element - print an element as LaTeX for memoir class */
-static void print_memoir_element(GString *out, element *elt) {
-    int lev;
-    char *label;
-    switch (elt->key) {
-    case VERBATIM:
-        pad(out, 1);
-        g_string_append_printf(out, "\n\\begin{adjustwidth}{2.5em}{2.5em}\n\\begin{verbatim}\n\n");
-        print_raw_element(out, elt);
-        g_string_append_printf(out, "\n\\end{verbatim}\n\\end{adjustwidth}");
-        padded = 0;
-        break;
-    case HEADINGSECTION:
-        print_memoir_element_list(out, elt->children);
-        break;
-    case DEFLIST:
-        g_string_append_printf(out, "\\begin{description}");
-        padded = 0;
-        print_memoir_element_list(out, elt->children);
-        pad(out,1);
-        g_string_append_printf(out, "\\end{description}");
-        padded = 0;
-        break;
-    case DEFINITION:
-        pad(out,2);
-        padded = 2;
-        print_memoir_element_list(out, elt->children);
-        padded = 0;
-        break;
-    default:
-        /* most things are not changed for memoir output */
-        print_latex_element(out, elt);
-    }
-}
-
-
-/* print_beamer_element_list - print an element as LaTeX for beamer class */
-void print_beamer_element_list(GString *out, element *list) {
-    while (list != NULL) {
-        print_beamer_element(out, list);
-        list = list->next;
-    }
-}
-
-static void print_beamer_endnotes(GString *out) {
-    GSList *note;
-    element *note_elt;
-    if (endnotes == NULL) 
-        return;
-    note = g_slist_reverse(endnotes);
-    pad(out,2);
-    g_string_append_printf(out, "\\part{Bibliography}\n\\begin{frame}[allowframebreaks]\n\\frametitle{Bibliography}\n\\def\\newblock{}\n\\begin{thebibliography}{0}\n");
-    while (note != NULL) {
-        note_elt = note->data;
-        pad(out, 1);
-        g_string_append_printf(out, "\\bibitem{%s}\n", note_elt->contents.str);
-        padded=2;
-        print_latex_element_list(out, note_elt);
-        pad(out, 1);
-        note = note->next;
-    }
-    pad(out, 1);
-    g_string_append_printf(out, "\\end{thebibliography}\n\\end{frame}\n\n");
-    padded = 2;
-    g_slist_free(endnotes);
-}
-
-/* print_beamer_element - print an element as LaTeX for beamer class */
-static void print_beamer_element(GString *out, element *elt) {
-    int lev;
-    char *label;
-    switch (elt->key) {
-        case FOOTER:
-            print_beamer_endnotes(out);
-            g_string_append_printf(out, "\\mode<all>\n");
-            print_latex_footer(out);
-            g_string_append_printf(out, "\\mode*\n");
-            break;
-        case LISTITEM:
-            pad(out, 1);
-            g_string_append_printf(out, "\\item<+-> ");
-            padded = 2;
-            print_latex_element_list(out, elt->children);
-            g_string_append_printf(out, "\n");
-            break;
-        case HEADINGSECTION:
-            if (elt->children->key -H1 + base_header_level == 3) {
-                pad(out,2);
-               g_string_append_printf(out, "\\begin{frame}");
-                if (list_contains_key(elt->children,VERBATIM)) {
-                    g_string_append_printf(out, "[fragile]");
-                }
-                padded = 0;
-                print_beamer_element_list(out, elt->children);
-                g_string_append_printf(out, "\n\n\\end{frame}\n\n");
-                padded = 2;
-            } else if (elt->children->key -H1 + base_header_level == 4) {
-                pad(out, 1);
-                g_string_append_printf(out, "\\mode<article>{\n");
-                padded = 0;
-                print_beamer_element_list(out, elt->children->next);
-                g_string_append_printf(out, "\n\n}\n\n");
-                padded = 2;
-            } else {
-                print_beamer_element_list(out, elt->children);
-            }
-            break;
-        case H1: case H2: case H3: case H4: case H5: case H6:
-            pad(out, 2);
-            lev = elt->key - H1 + base_header_level;  /* assumes H1 ... H6 are in order */
-            switch (lev) {
-                case 1:
-                    g_string_append_printf(out, "\\part{");
-                    break;
-                case 2:
-                    g_string_append_printf(out, "\\section{");
-                    break;
-                case 3:
-                    g_string_append_printf(out, "\\frametitle{");
-                    break;
-                default:
-                    g_string_append_printf(out, "\\emph{");
-                    break;
-            }
-            /* generate a label for each header (MMD);
-                don't allow footnotes since invalid here */
-            no_latex_footnote = TRUE;
-            if (elt->children->key == AUTOLABEL) {
-                label = label_from_string(elt->children->contents.str,0);
-                print_latex_element_list(out, elt->children->next);
-            } else {
-                label = label_from_element_list(elt->children,0);
-                print_latex_element_list(out, elt->children);
-            }
-            no_latex_footnote = FALSE;
-            g_string_append_printf(out, "}\n\\label{");
-            g_string_append_printf(out, "%s", label);
-            g_string_append_printf(out, "}\n");
-            free(label);
-            padded = 1;
-            break;
-        default:
-        print_latex_element(out, elt);
-    }
-}
-
-
-element * print_html_headingsection(GString *out, element *list, bool obfuscate) {
-    element *base = list;
-    print_html_element_list(out, list->children, obfuscate);
-    
-    list = list->next;
-    while ( (list != NULL) && (list->key == HEADINGSECTION) && (list->children->key > base->children->key) && (list->children->key <= H6)) {
-        list = print_html_headingsection(out, list, obfuscate);
-    }
-
-    return list;
-}
-
-bool list_contains_key(element *list, int key) {
-    element *step = NULL;
-
-    step = list;
-    while ( step != NULL ) {
-        if (step->key == key) {
-            return TRUE;
-        }
-        if (step->children != NULL) {
-            if (list_contains_key(step->children, key)) {
-                return TRUE;
-            }
-        }
-       step = step->next;
-    }
-    return FALSE;
-}
-
-
-/* look for "LaTeX Mode" metadata and change format to match */
-static int find_latex_mode(int format, element *list) {
-    element *latex_mode;
-    char *label;
-    
-    if (format != LATEX_FORMAT) return format;
-    
-    if (list_contains_key(list,METAKEY)) {
-        latex_mode = metadata_for_key("latexmode", list);
-        if ( latex_mode != NULL) {
-            label = label_from_element_list(latex_mode->children, 0);
-            if (strcmp(label, "beamer") == 0) { format = BEAMER_FORMAT; } else 
-            if (strcmp(label, "memoir") == 0) { format = MEMOIR_FORMAT; } 
-            free(label);
-        }
-        return format;
-    } else {
-        return format;
-    }
-}
-
-
-/* find specified metadata key, if present */
-element * metadata_for_key(char *key, element *list) {
-    element *step = NULL;
-    step = list;
-    char *label;
-    
-    label = label_from_string(key,0);
-    
-    while (step != NULL) {
-        if (step->key == METADATA) {
-           /* search METAKEY children */
-            step = step->children;
-            while ( step != NULL) {
-                if (strcmp(step->contents.str, label) == 0) {
-                    free(label);
-                    return step;
-                }
-                step = step->next;
-            }
-            free(label);
-            return NULL;
-        }
-       step = step->next;
-    }
-    free(label);
-    return NULL;
-}
-
-
-/* find specified metadata key, if present */
-char * metavalue_for_key(char *key, element *list) {
-    element *step = NULL;
-    step = list;
-    char *label;
-    char *result;
-    
-    label = label_from_string(key,0);
-    
-    while (step != NULL) {
-        if (step->key == METADATA) {
-           /* search METAKEY children */
-            step = step->children;
-            while ( step != NULL) {
-                if (strcmp(step->contents.str, label) == 0) {
-                    /* Found a match */
-                    if ((strcmp(label,"latexmode") == 0) ||
-                        (strcmp(label,"quoteslanguage") == 0)) {
-                        result = label_from_string(step->children->contents.str,0);
-                    } else {
-                        result = strdup(step->children->contents.str);
-                    }
-                    free(label);
-                   return result;
-                }
-                step = step->next;
-            }
-            free(label);
-            return NULL;
-        }
-       step = step->next;
-    }
-    free(label);
-    return NULL;
-}
-
-/* find attribute, if present */
-element * element_for_attribute(char *querystring, element *list) {
-    element *step = NULL;
-    step = list;
-    char *query;
-    query = label_from_string(querystring,0);
-    
-    while (step != NULL) {
-        if (strcmp(step->contents.str,query) == 0) {
-            free(query);
-            return step;
-        }
-        step = step->next;
-    }
-    free(query);
-    return NULL;
-}
-
-/* convert attribute to dimensions suitable for LaTeX or ODF */
-/* returns c string that needs to be freed */
-
-char * dimension_for_attribute(char *querystring, element *list) {
-    element *attribute;
-    char *dimension;
-    char *ptr;
-    int i;
-    char *upper;
-    GString *result;
-
-    attribute = element_for_attribute(querystring, list);
-    if (attribute == NULL) return NULL;
-
-    dimension = strdup(attribute->children->contents.str);
-    upper = strdup(attribute->children->contents.str);
-
-    for(i = 0; dimension[ i ]; i++)
-        dimension[i] = tolower(dimension[ i ]);
-
-    for(i = 0; upper[ i ]; i++)
-        upper[i] = toupper(upper[ i ]);
-
-    if (strstr(dimension, "px")) {
-        ptr = strstr(dimension,"px");
-        ptr[0] = '\0';
-        strcat(ptr,"pt");
-    }
-
-    result = g_string_new(dimension);
-    
-    if ((strcmp(dimension,upper) == 0) && (dimension[strlen(dimension) -1] != '%')) {
-        /* no units */
-        g_string_append_printf(result, "pt");
-    }
-
-    free(upper);
-    free(dimension);
-    
-    dimension = result->str;
-    g_string_free(result, false);
-    return(dimension);
-}
-
-/* Check metadata keys and determine if I need a complete document */
-static bool is_html_complete_doc(element *meta) {
-    element *step;
-    step = meta->children;
-    
-    while (step != NULL) {
-        if ((strcmp(step->contents.str, "baseheaderlevel") != 0) &&
-            (strcmp(step->contents.str, "xhtmlheaderlevel") != 0) &&
-            (strcmp(step->contents.str, "htmlheaderlevel") != 0) &&
-            (strcmp(step->contents.str, "latexheaderlevel") != 0) &&
-            (strcmp(step->contents.str, "odfheaderlevel") != 0) &&
-            (strcmp(step->contents.str, "quoteslanguage") != 0))
-        {
-            return TRUE;
-        }
-        step = step->next;
-    }
-    
-    return FALSE;
-}
-
-
-/* print_opml_element_list - print an element list as OPML */
-void print_opml_element_list(GString *out, element *list) {
-    int lev;
-    while (list != NULL) {
-        if (list->key == HEADINGSECTION) {
-            lev = list->children->key;
-            
-            print_opml_section_and_children(out, list);
-            
-            while ((list->next != NULL) && (list->next->key == HEADINGSECTION)
-                && (list->next->children->key > lev)) {
-                    list = list->next;
-            }
-        } else {
-            print_opml_element(out, list);
-        }
-        list = list->next;
-    }
-}
-
-/* print_opml_section_and_children - print section and "children" */
-static void print_opml_section_and_children(GString *out, element *list) {
-    int lev = list->children->key;
-    /* Print current section, aka "parent" */
-    print_opml_element(out, list);
-    
-    /* check for children */
-    while ((list->next != NULL) && (list->next->key == HEADINGSECTION) 
-        && (list->next->children->key > lev)) {
-            /* next item is also HEADINGSECTION and is child */
-            if (list->next->children->key - lev == 1)
-                print_opml_section_and_children(out,list->next);
-            list = list->next;
-        }
-    g_string_append_printf(out, "</outline>\n");
-}
-
-/* print_opml_element - print an element as OPML */
-static void print_opml_element(GString *out, element *elt) {
-    switch (elt->key) {
-        case METADATA:
-            /* Metadata is present, so will need to be appended */
-            html_footer = true;
-            break;
-        case METAKEY:
-            g_string_append_printf(out, "<outline text=\"");
-            print_opml_string(out,elt->contents.str);
-            g_string_append_printf(out, "\" _note=\"", elt->contents.str);
-            print_opml_string(out, elt->children->contents.str);
-            g_string_append_printf(out, "\"/>");
-            break;
-        case HEADINGSECTION:
-            /* Need to handle "nesting" properly */
-            g_string_append_printf(out, "<outline ");
-            
-            /* Print header */
-            print_opml_element(out,elt->children);
-            
-            /* print remainder of paragraphs as note */
-            g_string_append_printf(out, " _note=\"");
-            print_opml_element_list(out,elt->children->next);
-            g_string_append_printf(out, "\">");
-            break;
-        case H1: case H2: case H3: case H4: case H5: case H6: 
-            g_string_append_printf(out, "text=\"");
-            print_opml_string(out, elt->contents.str);
-            g_string_append_printf(out,"\"");
-            break;
-        case VERBATIM:
-            print_opml_string(out, elt->contents.str);
-            break;
-        case SPACE:
-            print_opml_string(out, elt->contents.str);
-            break;
-        case STR:
-            print_opml_string(out, elt->contents.str);
-            break;
-        case LINEBREAK:
-            g_string_append_printf(out, "  &#10;");
-            break;
-        case PLAIN:
-            print_opml_element_list(out,elt->children);
-            if ((elt->next != NULL) && (elt->next->key == PLAIN)) {
-                g_string_append_printf(out, "&#10;");
-            }
-            break;
-        default: 
-            fprintf(stderr, "print_opml_element encountered unknown element key = %d\n", elt->key);
-            /*exit(EXIT_FAILURE);*/
-    }
-}
-
-/* print_opml_string - print string, escaping for OPML */
-static void print_opml_string(GString *out, char *str) {
+/* print_odf_code_string - print string, escaping for HTML and saving newlines 
+*/
+static void print_odf_code_string(GString *out, char *str) {
+    char *tmp;
     while (*str != '\0') {
         switch (*str) {
         case '&':
@@ -2099,24 +1586,101 @@ static void print_opml_string(GString *out, char *str) {
         case '"':
             g_string_append_printf(out, "&quot;");
             break;
-        case '\n': case '\r':
-            g_string_append_printf(out, "&#10;");
+        case '\n':
+            g_string_append_printf(out, "<text:line-break/>");
+            break;
+        case ' ':
+            tmp = str;
+            tmp++;
+            if (*tmp == ' ') {
+                tmp++;
+                if (*tmp == ' ') {
+                    tmp++;
+                    if (*tmp == ' ') {
+                        g_string_append_printf(out, "<text:tab/>");
+                        str = tmp;
+                    } else {
+                        g_string_append_printf(out, " ");
+                    }
+                } else {
+                    g_string_append_printf(out, " ");
+                }
+            } else {
+                g_string_append_printf(out, " ");
+            }
             break;
         default:
-            g_string_append_c(out, *str);
+               g_string_append_c(out, *str);
         }
     str++;
     }
 }
 
-
-/* print_opml_metadata - add metadata as last outline item */
-static void print_opml_metadata(GString *out, element *elt) {
-    g_string_append_printf(out, "<outline text=\"Metadata\">\n");
-    print_opml_element_list(out, elt->children);
-    g_string_append_printf(out, "</outline>");
+/* print_odf_string - print string, escaping for HTML and saving newlines */
+static void print_odf_string(GString *out, char *str) {
+    char *tmp;
+    while (*str != '\0') {
+        switch (*str) {
+        case '&':
+            g_string_append_printf(out, "&amp;");
+            break;
+        case '<':
+            g_string_append_printf(out, "&lt;");
+            break;
+        case '>':
+            g_string_append_printf(out, "&gt;");
+            break;
+        case '"':
+            g_string_append_printf(out, "&quot;");
+            break;
+        case '\n':
+            tmp = str;
+            tmp--;
+            if (*tmp == ' ') {
+                tmp--;
+                if (*tmp == ' ') {
+                    g_string_append_printf(out, "<text:line-break/>");
+                } else {
+                    g_string_append_printf(out, "\n");
+                }
+            } else {
+                g_string_append_printf(out, "\n");
+            }
+            break;
+        case ' ':
+            tmp = str;
+            tmp++;
+            if (*tmp == ' ') {
+                tmp++;
+                if (*tmp == ' ') {
+                    tmp++;
+                    if (*tmp == ' ') {
+                        g_string_append_printf(out, "<text:tab/>");
+                        str = tmp;
+                    } else {
+                        g_string_append_printf(out, " ");
+                    }
+                } else {
+                    g_string_append_printf(out, " ");
+                }
+            } else {
+                g_string_append_printf(out, " ");
+            }
+            break;
+        default:
+               g_string_append_c(out, *str);
+        }
+    str++;
+    }
 }
 
+/* print_odf_element_list - print an element list as ODF */
+void print_odf_element_list(GString *out, element *list) {
+    while (list != NULL) {
+        print_odf_element(out, list);
+        list = list->next;
+    }
+}
 
 /* print_odf_element - print an element as ODF */
 void print_odf_element(GString *out, element *elt) {
@@ -2437,13 +2001,14 @@ void print_odf_element(GString *out, element *elt) {
         } else if (strcmp(elt->contents.str, "odfheaderlevel") == 0) {
             base_header_level = atoi(elt->children->contents.str);
         } else if (strcmp(elt->contents.str, "xhtmlheader") == 0) {
+        } else if (strcmp(elt->contents.str, "htmlheader") == 0) {
         } else if (strcmp(elt->contents.str, "odfheader") == 0) {
         } else if (strcmp(elt->contents.str, "latexfooter") == 0) {
         } else if (strcmp(elt->contents.str, "latexinput") == 0) {
         } else if (strcmp(elt->contents.str, "latexmode") == 0) {
         } else if (strcmp(elt->contents.str, "keywords") == 0) {
             g_string_append_printf(out, "<meta:keyword>");
-            print_odf_string(out,elt->contents.str);
+            print_odf_element(out,elt->children);
             g_string_append_printf(out, "</meta:keyword>\n");
         } else if (strcmp(elt->contents.str, "quoteslanguage") == 0) {
              label = label_from_element_list(elt->children, 0);
@@ -2520,11 +2085,11 @@ void print_odf_element(GString *out, element *elt) {
             g_string_append_printf(out, " text:style-name=\"Table_20_Heading\"");
         } else {
             if ( strncmp(&table_alignment[table_column],"r",1) == 0) {
-                g_string_append_printf(out, " text:style-name=\"MMD-Table-Right\"", cell_type);
+                g_string_append_printf(out, " text:style-name=\"MMD-Table-Right\"");
             } else if ( strncmp(&table_alignment[table_column],"c",1) == 0) {
-                g_string_append_printf(out, " text:style-name=\"MMD-Table-Center\"", cell_type);
+                g_string_append_printf(out, " text:style-name=\"MMD-Table-Center\"");
             } else {
-                g_string_append_printf(out, " text:style-name=\"MMD-Table\"", cell_type);
+                g_string_append_printf(out, " text:style-name=\"MMD-Table\"");
 }
         }
         g_string_append_printf(out, ">");
@@ -2548,12 +2113,574 @@ void print_odf_element(GString *out, element *elt) {
     }
 }
 
-/* print_odf_element_list - print an element list as ODF */
-void print_odf_element_list(GString *out, element *list) {
+/**********************************************************************
+
+  Parameterized function for printing an Element.
+
+ ***********************************************************************/
+
+void print_element_list(GString *out, element *elt, int format, int exts) {
+    /* Initialize globals */
+    endnotes = NULL;
+    notenumber = 0;
+
+    /* And MultiMarkdown globals */
+    base_header_level = 1;
+    language = ENGLISH;
+    html_footer = FALSE;
+    no_latex_footnote = FALSE;
+
+    extensions = exts;
+    padded = 2;  /* set padding to 2, so no extra blank lines at beginning */
+
+    format = find_latex_mode(format, elt);
+    switch (format) {
+    case HTML_FORMAT:
+        print_html_element_list(out, elt, false);
+        if (endnotes != NULL) {
+            pad(out, 2);
+            print_html_endnotes(out);
+        }
+        if (html_footer == TRUE) print_html_footer(out, false);
+        break;
+    case LATEX_FORMAT:
+        print_latex_element_list(out, elt);
+        break;
+    case MEMOIR_FORMAT:
+        print_memoir_element_list(out, elt);
+        break;
+    case BEAMER_FORMAT:
+        print_beamer_element_list(out, elt);
+        break;
+    case OPML_FORMAT:
+        g_string_append_printf(out, "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<opml version=\"1.0\">\n");
+        g_string_append_printf(out, "<body>\n");
+        print_opml_element_list(out, elt);
+        if (html_footer == TRUE) print_opml_metadata(out, elt);
+        g_string_append_printf(out, "</body>\n</opml>");
+        break;
+    case ODF_FORMAT:
+        print_odf_header(out);
+        if (elt->key == METADATA) {
+            /* print metadata */
+            print_odf_element(out,elt);
+            elt = elt->next;
+        }
+        g_string_append_printf(out, "<office:body>\n<office:text>\n");
+        if (elt != NULL) print_odf_element_list(out,elt);
+        print_odf_footer(out);
+        break;
+    case ODF_BODY_FORMAT:
+        if (elt != NULL) print_odf_body_element_list(out, elt);
+        break;
+    case GROFF_MM_FORMAT:
+        print_groff_mm_element_list(out, elt);
+        break;
+    default:
+        fprintf(stderr, "print_element - unknown format = %d\n", format); 
+        exit(EXIT_FAILURE);
+    }
+}
+
+
+/**********************************************************************
+
+  MultiMarkdown Routines - Used for generating "complete" documents
+
+ ***********************************************************************/
+
+
+void print_html_header(GString *out, element *elt, bool obfuscate) {
+    g_string_append_printf(out,
+"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>\n<!DOCTYPE html>\n<html xmlns=\"http://www.w3.org/1999/xhtml\">\n<head>\n");
+
+    print_html_element_list(out, elt->children, obfuscate);
+    g_string_append_printf(out, "</head>\n<body>\n");    
+}
+
+
+void print_html_footer(GString *out, bool obfuscate) {
+    g_string_append_printf(out, "\n</body>\n</html>");
+}
+
+
+void print_latex_header(GString *out, element *elt) {
+    print_latex_element_list(out, elt->children);
+}
+
+
+void print_latex_footer(GString *out) {
+    if (latex_footer != NULL) {
+        pad(out,2);
+        g_string_append_printf(out, "\\input{%s}\n", latex_footer);
+    }
+	g_string_append_printf(out, "\n\\end{document}");
+}
+
+
+/* print_memoir_element_list - print an element as LaTeX for memoir class */
+void print_memoir_element_list(GString *out, element *list) {
     while (list != NULL) {
-        print_odf_element(out, list);
+        print_memoir_element(out, list);
         list = list->next;
     }
+}
+
+
+/* print_memoir_element - print an element as LaTeX for memoir class */
+static void print_memoir_element(GString *out, element *elt) {
+    int lev;
+    char *label;
+    switch (elt->key) {
+    case VERBATIM:
+        pad(out, 1);
+        g_string_append_printf(out, "\n\\begin{adjustwidth}{2.5em}{2.5em}\n\\begin{verbatim}\n\n");
+        print_raw_element(out, elt);
+        g_string_append_printf(out, "\n\\end{verbatim}\n\\end{adjustwidth}");
+        padded = 0;
+        break;
+    case HEADINGSECTION:
+        print_memoir_element_list(out, elt->children);
+        break;
+    case DEFLIST:
+        g_string_append_printf(out, "\\begin{description}");
+        padded = 0;
+        print_memoir_element_list(out, elt->children);
+        pad(out,1);
+        g_string_append_printf(out, "\\end{description}");
+        padded = 0;
+        break;
+    case DEFINITION:
+        pad(out,2);
+        padded = 2;
+        print_memoir_element_list(out, elt->children);
+        padded = 0;
+        break;
+    default:
+        /* most things are not changed for memoir output */
+        print_latex_element(out, elt);
+    }
+}
+
+
+/* print_beamer_element_list - print an element as LaTeX for beamer class */
+void print_beamer_element_list(GString *out, element *list) {
+    while (list != NULL) {
+        print_beamer_element(out, list);
+        list = list->next;
+    }
+}
+
+static void print_beamer_endnotes(GString *out) {
+    GSList *note;
+    element *note_elt;
+    if (endnotes == NULL) 
+        return;
+    note = g_slist_reverse(endnotes);
+    pad(out,2);
+    g_string_append_printf(out, "\\part{Bibliography}\n\\begin{frame}[allowframebreaks]\n\\frametitle{Bibliography}\n\\def\\newblock{}\n\\begin{thebibliography}{0}\n");
+    while (note != NULL) {
+        note_elt = note->data;
+        pad(out, 1);
+        g_string_append_printf(out, "\\bibitem{%s}\n", note_elt->contents.str);
+        padded=2;
+        print_latex_element_list(out, note_elt);
+        pad(out, 1);
+        note = note->next;
+    }
+    pad(out, 1);
+    g_string_append_printf(out, "\\end{thebibliography}\n\\end{frame}\n\n");
+    padded = 2;
+    g_slist_free(endnotes);
+}
+
+/* print_beamer_element - print an element as LaTeX for beamer class */
+static void print_beamer_element(GString *out, element *elt) {
+    int lev;
+    char *label;
+    switch (elt->key) {
+        case FOOTER:
+            print_beamer_endnotes(out);
+            g_string_append_printf(out, "\\mode<all>\n");
+            print_latex_footer(out);
+            g_string_append_printf(out, "\\mode*\n");
+            break;
+        case LISTITEM:
+            pad(out, 1);
+            g_string_append_printf(out, "\\item<+-> ");
+            padded = 2;
+            print_latex_element_list(out, elt->children);
+            g_string_append_printf(out, "\n");
+            break;
+        case HEADINGSECTION:
+            if (elt->children->key -H1 + base_header_level == 3) {
+                pad(out,2);
+               g_string_append_printf(out, "\\begin{frame}");
+                if (list_contains_key(elt->children,VERBATIM)) {
+                    g_string_append_printf(out, "[fragile]");
+                }
+                padded = 0;
+                print_beamer_element_list(out, elt->children);
+                g_string_append_printf(out, "\n\n\\end{frame}\n\n");
+                padded = 2;
+            } else if (elt->children->key -H1 + base_header_level == 4) {
+                pad(out, 1);
+                g_string_append_printf(out, "\\mode<article>{\n");
+                padded = 0;
+                print_beamer_element_list(out, elt->children->next);
+                g_string_append_printf(out, "\n\n}\n\n");
+                padded = 2;
+            } else {
+                print_beamer_element_list(out, elt->children);
+            }
+            break;
+        case H1: case H2: case H3: case H4: case H5: case H6:
+            pad(out, 2);
+            lev = elt->key - H1 + base_header_level;  /* assumes H1 ... H6 are in order */
+            switch (lev) {
+                case 1:
+                    g_string_append_printf(out, "\\part{");
+                    break;
+                case 2:
+                    g_string_append_printf(out, "\\section{");
+                    break;
+                case 3:
+                    g_string_append_printf(out, "\\frametitle{");
+                    break;
+                default:
+                    g_string_append_printf(out, "\\emph{");
+                    break;
+            }
+            /* generate a label for each header (MMD);
+                don't allow footnotes since invalid here */
+            no_latex_footnote = TRUE;
+            if (elt->children->key == AUTOLABEL) {
+                label = label_from_string(elt->children->contents.str,0);
+                print_latex_element_list(out, elt->children->next);
+            } else {
+                label = label_from_element_list(elt->children,0);
+                print_latex_element_list(out, elt->children);
+            }
+            no_latex_footnote = FALSE;
+            g_string_append_printf(out, "}\n\\label{");
+            g_string_append_printf(out, "%s", label);
+            g_string_append_printf(out, "}\n");
+            free(label);
+            padded = 1;
+            break;
+        default:
+        print_latex_element(out, elt);
+    }
+}
+
+
+element * print_html_headingsection(GString *out, element *list, bool obfuscate) {
+    element *base = list;
+    print_html_element_list(out, list->children, obfuscate);
+    
+    list = list->next;
+    while ( (list != NULL) && (list->key == HEADINGSECTION) && (list->children->key > base->children->key) && (list->children->key <= H6)) {
+        list = print_html_headingsection(out, list, obfuscate);
+    }
+
+    return list;
+}
+
+/* look for "LaTeX Mode" metadata and change format to match */
+static int find_latex_mode(int format, element *list) {
+    element *latex_mode;
+    char *label;
+    
+    if (format != LATEX_FORMAT) return format;
+    
+    if (list_contains_key(list,METAKEY)) {
+        latex_mode = metadata_for_key("latexmode", list);
+        if ( latex_mode != NULL) {
+            label = label_from_element_list(latex_mode->children, 0);
+            if (strcmp(label, "beamer") == 0) { format = BEAMER_FORMAT; } else 
+            if (strcmp(label, "memoir") == 0) { format = MEMOIR_FORMAT; } 
+            free(label);
+        }
+        return format;
+    } else {
+        return format;
+    }
+}
+
+
+/* find specified metadata key, if present */
+element * metadata_for_key(char *key, element *list) {
+    element *step = NULL;
+    step = list;
+    char *label;
+    
+    label = label_from_string(key,0);
+    
+    while (step != NULL) {
+        if (step->key == METADATA) {
+           /* search METAKEY children */
+            step = step->children;
+            while ( step != NULL) {
+                if (strcmp(step->contents.str, label) == 0) {
+                    free(label);
+                    return step;
+                }
+                step = step->next;
+            }
+            free(label);
+            return NULL;
+        }
+       step = step->next;
+    }
+    free(label);
+    return NULL;
+}
+
+
+/* find specified metadata key, if present */
+char * metavalue_for_key(char *key, element *list) {
+    element *step = NULL;
+    step = list;
+    char *label;
+    char *result;
+    
+    label = label_from_string(key,0);
+    
+    while (step != NULL) {
+        if (step->key == METADATA) {
+           /* search METAKEY children */
+            step = step->children;
+            while ( step != NULL) {
+                if (strcmp(step->contents.str, label) == 0) {
+                    /* Found a match */
+                    if ((strcmp(label,"latexmode") == 0) ||
+                        (strcmp(label,"quoteslanguage") == 0)) {
+                        result = label_from_string(step->children->contents.str,0);
+                    } else {
+                        result = strdup(step->children->contents.str);
+                    }
+                    free(label);
+                   return result;
+                }
+                step = step->next;
+            }
+            free(label);
+            return NULL;
+        }
+       step = step->next;
+    }
+    free(label);
+    return NULL;
+}
+
+/* find attribute, if present */
+element * element_for_attribute(char *querystring, element *list) {
+    element *step = NULL;
+    step = list;
+    char *query;
+    query = label_from_string(querystring,0);
+    
+    while (step != NULL) {
+        if (strcmp(step->contents.str,query) == 0) {
+            free(query);
+            return step;
+        }
+        step = step->next;
+    }
+    free(query);
+    return NULL;
+}
+
+/* convert attribute to dimensions suitable for LaTeX or ODF */
+/* returns c string that needs to be freed */
+
+char * dimension_for_attribute(char *querystring, element *list) {
+    element *attribute;
+    char *dimension;
+    char *ptr;
+    int i;
+    char *upper;
+    GString *result;
+
+    attribute = element_for_attribute(querystring, list);
+    if (attribute == NULL) return NULL;
+
+    dimension = strdup(attribute->children->contents.str);
+    upper = strdup(attribute->children->contents.str);
+
+    for(i = 0; dimension[ i ]; i++)
+        dimension[i] = tolower(dimension[ i ]);
+
+    for(i = 0; upper[ i ]; i++)
+        upper[i] = toupper(upper[ i ]);
+
+    if (strstr(dimension, "px")) {
+        ptr = strstr(dimension,"px");
+        ptr[0] = '\0';
+        strcat(ptr,"pt");
+    }
+
+    result = g_string_new(dimension);
+    
+    if ((strcmp(dimension,upper) == 0) && (dimension[strlen(dimension) -1] != '%')) {
+        /* no units */
+        g_string_append_printf(result, "pt");
+    }
+
+    free(upper);
+    free(dimension);
+    
+    dimension = result->str;
+    g_string_free(result, false);
+    return(dimension);
+}
+
+/* Check metadata keys and determine if I need a complete document */
+static bool is_html_complete_doc(element *meta) {
+    element *step;
+    step = meta->children;
+    
+    while (step != NULL) {
+        if ((strcmp(step->contents.str, "baseheaderlevel") != 0) &&
+            (strcmp(step->contents.str, "xhtmlheaderlevel") != 0) &&
+            (strcmp(step->contents.str, "htmlheaderlevel") != 0) &&
+            (strcmp(step->contents.str, "latexheaderlevel") != 0) &&
+            (strcmp(step->contents.str, "odfheaderlevel") != 0) &&
+            (strcmp(step->contents.str, "quoteslanguage") != 0))
+        {
+            return TRUE;
+        }
+        step = step->next;
+    }
+    
+    return FALSE;
+}
+
+
+/* print_opml_element_list - print an element list as OPML */
+void print_opml_element_list(GString *out, element *list) {
+    int lev;
+    while (list != NULL) {
+        if (list->key == HEADINGSECTION) {
+            lev = list->children->key;
+            
+            print_opml_section_and_children(out, list);
+            
+            while ((list->next != NULL) && (list->next->key == HEADINGSECTION)
+                && (list->next->children->key > lev)) {
+                    list = list->next;
+            }
+        } else {
+            print_opml_element(out, list);
+        }
+        list = list->next;
+    }
+}
+
+/* print_opml_section_and_children - print section and "children" */
+static void print_opml_section_and_children(GString *out, element *list) {
+    int lev = list->children->key;
+    /* Print current section, aka "parent" */
+    print_opml_element(out, list);
+    
+    /* check for children */
+    while ((list->next != NULL) && (list->next->key == HEADINGSECTION) 
+        && (list->next->children->key > lev)) {
+            /* next item is also HEADINGSECTION and is child */
+            if (list->next->children->key - lev == 1)
+                print_opml_section_and_children(out,list->next);
+            list = list->next;
+        }
+    g_string_append_printf(out, "</outline>\n");
+}
+
+/* print_opml_element - print an element as OPML */
+static void print_opml_element(GString *out, element *elt) {
+    switch (elt->key) {
+        case METADATA:
+            /* Metadata is present, so will need to be appended */
+            html_footer = true;
+            break;
+        case METAKEY:
+            g_string_append_printf(out, "<outline text=\"");
+            print_opml_string(out,elt->contents.str);
+            g_string_append_printf(out, "\" _note=\"");
+            print_opml_string(out, elt->children->contents.str);
+            g_string_append_printf(out, "\"/>");
+            break;
+        case HEADINGSECTION:
+            /* Need to handle "nesting" properly */
+            g_string_append_printf(out, "<outline ");
+            
+            /* Print header */
+            print_opml_element(out,elt->children);
+            
+            /* print remainder of paragraphs as note */
+            g_string_append_printf(out, " _note=\"");
+            print_opml_element_list(out,elt->children->next);
+            g_string_append_printf(out, "\">");
+            break;
+        case H1: case H2: case H3: case H4: case H5: case H6: 
+            g_string_append_printf(out, "text=\"");
+            print_opml_string(out, elt->contents.str);
+            g_string_append_printf(out,"\"");
+            break;
+        case VERBATIM:
+            print_opml_string(out, elt->contents.str);
+            break;
+        case SPACE:
+            print_opml_string(out, elt->contents.str);
+            break;
+        case STR:
+            print_opml_string(out, elt->contents.str);
+            break;
+        case LINEBREAK:
+            g_string_append_printf(out, "  &#10;");
+            break;
+        case PLAIN:
+            print_opml_element_list(out,elt->children);
+            if ((elt->next != NULL) && (elt->next->key == PLAIN)) {
+                g_string_append_printf(out, "&#10;");
+            }
+            break;
+        default: 
+            fprintf(stderr, "print_opml_element encountered unknown element key = %d\n", elt->key);
+            /*exit(EXIT_FAILURE);*/
+    }
+}
+
+/* print_opml_string - print string, escaping for OPML */
+static void print_opml_string(GString *out, char *str) {
+    while (*str != '\0') {
+        switch (*str) {
+        case '&':
+            g_string_append_printf(out, "&amp;");
+            break;
+        case '<':
+            g_string_append_printf(out, "&lt;");
+            break;
+        case '>':
+            g_string_append_printf(out, "&gt;");
+            break;
+        case '"':
+            g_string_append_printf(out, "&quot;");
+            break;
+        case '\n': case '\r':
+            g_string_append_printf(out, "&#10;");
+            break;
+        default:
+            g_string_append_c(out, *str);
+        }
+    str++;
+    }
+}
+
+
+/* print_opml_metadata - add metadata as last outline item */
+static void print_opml_metadata(GString *out, element *elt) {
+    g_string_append_printf(out, "<outline text=\"Metadata\">\n");
+    print_opml_element_list(out, elt->children);
+    g_string_append_printf(out, "</outline>");
 }
 
 /* print_odf_body_element - print an element as ODF */
@@ -2573,111 +2700,5 @@ void print_odf_body_element_list(GString *out, element *list) {
     while (list != NULL) {
         print_odf_body_element(out, list);
         list = list->next;
-    }
-}
-
-
-/* print_odf_code_string - print string, escaping for HTML and saving newlines */
-static void print_odf_code_string(GString *out, char *str) {
-    char *tmp;
-    while (*str != '\0') {
-        switch (*str) {
-        case '&':
-            g_string_append_printf(out, "&amp;");
-            break;
-        case '<':
-            g_string_append_printf(out, "&lt;");
-            break;
-        case '>':
-            g_string_append_printf(out, "&gt;");
-            break;
-        case '"':
-            g_string_append_printf(out, "&quot;");
-            break;
-        case '\n':
-            g_string_append_printf(out, "<text:line-break/>");
-            break;
-        case ' ':
-            tmp = str;
-            tmp++;
-            if (*tmp == ' ') {
-                tmp++;
-                if (*tmp == ' ') {
-                    tmp++;
-                    if (*tmp == ' ') {
-                        g_string_append_printf(out, "<text:tab/>");
-                        str = tmp;
-                    } else {
-                        g_string_append_printf(out, " ");
-                    }
-                } else {
-                    g_string_append_printf(out, " ");
-                }
-            } else {
-                g_string_append_printf(out, " ");
-            }
-            break;
-        default:
-               g_string_append_c(out, *str);
-        }
-    str++;
-    }
-}
-
-/* print_odf_string - print string, escaping for HTML and saving newlines */
-static void print_odf_string(GString *out, char *str) {
-    char *tmp;
-    while (*str != '\0') {
-        switch (*str) {
-        case '&':
-            g_string_append_printf(out, "&amp;");
-            break;
-        case '<':
-            g_string_append_printf(out, "&lt;");
-            break;
-        case '>':
-            g_string_append_printf(out, "&gt;");
-            break;
-        case '"':
-            g_string_append_printf(out, "&quot;");
-            break;
-        case '\n':
-            tmp = str;
-            tmp--;
-            if (*tmp == ' ') {
-                tmp--;
-                if (*tmp == ' ') {
-                    g_string_append_printf(out, "<text:line-break/>");
-                } else {
-                    g_string_append_printf(out, "\n");
-                }
-            } else {
-                g_string_append_printf(out, "\n");
-            }
-            break;
-        case ' ':
-            tmp = str;
-            tmp++;
-            if (*tmp == ' ') {
-                tmp++;
-                if (*tmp == ' ') {
-                    tmp++;
-                    if (*tmp == ' ') {
-                        g_string_append_printf(out, "<text:tab/>");
-                        str = tmp;
-                    } else {
-                        g_string_append_printf(out, " ");
-                    }
-                } else {
-                    g_string_append_printf(out, " ");
-                }
-            } else {
-                g_string_append_printf(out, " ");
-            }
-            break;
-        default:
-               g_string_append_c(out, *str);
-        }
-    str++;
     }
 }

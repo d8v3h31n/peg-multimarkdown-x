@@ -559,7 +559,7 @@ StrongUl =  TwoUlOpen
             { $$ = mk_list(STRONG, a); }
 
 ImageBlock = Image Sp Newline BlankLine+
-    { $$->key = IMAGEBLOCK; }
+    { if ($$->key == IMAGE) $$->key = IMAGEBLOCK; }
 
 Image = '!' ( ExplicitLink | ReferenceLink )
         { if ($$->key == LINK) {
@@ -824,7 +824,7 @@ EmDash = ( <"---"> )
          }
 
 
-SingleQuoteStart = '\'' ![)!\],.;:-? \t\n]
+SingleQuoteStart = '\''
 
 SingleQuoteEnd = '\'' !Alphanumeric
 
