@@ -165,13 +165,23 @@ Once installed, you simply do something like the following:
 * The syntax has been fairly stable, and it would be nice to be able to
   formalize it a bit --- which happens by definition when using a PEG.
 
+<<<<<<< HEAD
 * I wanted to revisit the syntax and features and clean things up a bit.
+=======
+`output_format` is either `HTML_FORMAT`, `LATEX_FORMAT`, `ODF_FORMAT`,
+or `GROFF_MM_FORMAT`.
+>>>>>>> 76a07552f9eabaadd46b8487c58741286f9a23db
 
 * Did I mention how much faster this is? And that it could (eventually) run on
   an iPhone?
 
 
+<<<<<<< HEAD
 # What's different? #
+=======
+It should be pretty easy to modify the program to produce other formats,
+and to parse syntax extensions.  A quick guide:
+>>>>>>> 76a07552f9eabaadd46b8487c58741286f9a23db
 
 
 ## "Complete" documents vs. "snippets" ##
@@ -193,6 +203,7 @@ becomes the following HTML snippet:
 	
 	<p>And a paragraph.</p>
 
+<<<<<<< HEAD
 and the following LaTeX snippet:
 
 	\part{This is a header}
@@ -402,3 +413,10 @@ the GNU LGPL 2.1.
 [downloads]:			http://github.com/fletcher/peg-multimarkdown/downloads
 [GTK+]:					http://www.gtk.org/
 [homebrew]:				https://github.com/mxcl/homebrew
+=======
+Acknowledgements
+================
+
+Support for ODF output was added by Fletcher T. Penney.
+
+>>>>>>> 76a07552f9eabaadd46b8487c58741286f9a23db
