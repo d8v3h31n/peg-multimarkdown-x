@@ -92,4 +92,7 @@ drop:
 docs: $(PROGRAM)
 	cd documentation; \
 	../Support/Utilities/mmd_merge.pl index.txt > ../manual.txt; \
-	cd ../; ./multimarkdown -b manual.txt
+	cd ../; ./multimarkdown -b -t latex manual.txt; \
+	latexmk manual.tex; \
+	latexmk -c manual.tex; \
+	cp manual.pdf documentation/mmd-manual.pdf
