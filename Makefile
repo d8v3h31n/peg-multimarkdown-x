@@ -91,11 +91,12 @@ drop:
 
 docs: $(PROGRAM)
 	cd documentation; \
-	../Support/Utilities/mmd_merge.pl index.txt > ../manual.txt; \
-	cd ../; ./multimarkdown -b -t latex manual.txt; \
+	../multimarkdown manual.txt > ../manual/index.html; \
+	../Support/Utilities/mmd_merge.pl index.txt > manual.txt; \
+	../multimarkdown -b -t latex manual.txt; \
 	latexmk manual.tex; \
 	latexmk -c manual.tex; \
-	cp manual.pdf manual/mmd-manual.pdf; \
-	./multimarkdown manual.txt > manual/index.html; \
-	cd manual; git add mmd-manual.pdf index.html; \
-	git commit -m "update manual"; git push origin gh-pages;
+	mv manual.pdf ../manual/mmd-manual.pdf; \
+	cd ../manual; git add mmd-manual.pdf index.html; \
+	git commit -m "update manual"; git push origin gh-pages; \
+	rm ../documentation/manual.t*;
