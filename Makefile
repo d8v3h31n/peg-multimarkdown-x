@@ -95,4 +95,7 @@ docs: $(PROGRAM)
 	cd ../; ./multimarkdown -b -t latex manual.txt; \
 	latexmk manual.tex; \
 	latexmk -c manual.tex; \
-	cp manual.pdf documentation/mmd-manual.pdf
+	cp manual.pdf manual/mmd-manual.pdf; \
+	./multimarkdown manual.txt > manual/index.html; \
+	cd manual; git add mmd-manual.pdf index.html; \
+	git commit -m "update manual"; git push origin gh-pages;
