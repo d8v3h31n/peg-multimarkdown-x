@@ -1,0 +1,2561 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta name="latexinput" content="mmd-memoir-header"/>
+	<title>MultiMarkdown User's Guide</title>
+	<meta name="subtitle" content="Version 3.0"/>
+	<meta name="author" content="Fletcher T. Penney"/>
+	<meta name="affiliation" content="http://fletcherpenney.net/mmd/"/>
+	<link type="text/css" rel="stylesheet" href="http://fletcherpenney.net/css/document.css"/>
+<script type="text/javascript"
+src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+	<meta name="latexmode" content="memoir"/>
+	<meta name="latexinput" content="mmd-memoir-begin-doc"/>
+	<meta name="latexfooter" content="mmd-memoir-footer"/>
+</head>
+<body>
+<h2 id="introduction">Introduction</h2>
+
+<blockquote>
+<p>As the world goes multi-platform with all of the new mobile operating
+systems, MultiMarkdown provides an easy way to share formatting between all of
+my devices. It&#8217;s easy to learn (even for us mortals) and immediately useful.</p>
+
+<blockquote>
+<p>&#8212; David Sparks, <a href="http://MacSparky.com/">MacSparky.com</a></p>
+</blockquote>
+</blockquote>
+
+<h3 id="whatismarkdown">What is Markdown?</h3>
+
+<p>To understand what MultiMarkdown is, you first should be familiar with
+<a href="http://daringfireball.net/projects/markdown/" title="Daring Fireball:
+Markdown">Markdown</a>. The best description of what Markdown is comes from John Gruber&#8217;s
+Markdown web site:</p>
+
+<blockquote>
+<p>Markdown is a text-to-HTML conversion tool for web writers. Markdown
+allows you to write using an easy-to-read, easy-to-write plain text
+format, then convert it to structurally valid XHTML (or HTML).</p>
+
+<p>Thus, &#8220;Markdown&#8221; is two things: (1) a plain text formatting
+syntax; and (2) a software tool, written in Perl, that converts
+the plain text formatting to HTML. See the Syntax page for details
+pertaining to Markdown’s formatting syntax. You can try it out,
+right now, using the online Dingus.</p>
+
+<p>The overriding design goal for Markdown’s formatting syntax is to
+make it as readable as possible. The idea is that a Markdown-formatted
+document should be publishable as-is, as plain text, without looking
+like it’s been marked up with tags or formatting instructions. While
+Markdown’s syntax has been influenced by several existing
+text-to-HTML filters, the single biggest source of inspiration for
+Markdown’s syntax is the format of plain text email. &#8212; <a href="http://daringfireball.net/projects/markdown/" title="Daring Fireball: Markdown">John Gruber</a></p>
+</blockquote>
+
+<h3 id="whatismultimarkdown">What is MultiMarkdown?</h3>
+
+<p>Markdown is great, but it lacked a few features that would allow it to work
+with documents, rather than just pieces of a web page.</p>
+
+<p>I wrote MultiMarkdown in order to leverage Markdown&#8217;s syntax, but to extend it
+to work with complete documents that could ultimately be converted from text
+into other formats, including complete HTML documents, LaTeX, PDF, ODF, or
+even (shudder) Microsoft Word documents.</p>
+
+<p>In addition to the ability to work with complete documents and conversion to
+other formats, the Markdown syntax was lacking a few other things. Michel
+Fortin added a few additional syntax features when writing <a href="http://www.michelf.com/projects/php-markdown/extra/">PHP Markdown
+Extra</a>. Some of his ideas were implemented and expanded on in MultiMarkdown,
+in addition to including features not available in other Markdown
+implementations. These features include tables, footnotes, citation support,
+image and link attributes, cross-references, math support, and more.</p>
+
+<p>John Gruber may disagree with me, but I really did try to stick with his
+proclaimed vision whenever I added a new syntax format to MultiMarkdown. The
+quality that attracted me to Markdown the most was its clean format. Reading a
+plain text document written in Markdown is <em>easy</em>. It makes sense, and it
+looks like it was designed for people, not computers. To the extent possible,
+I tried to keep this same concept in mind when working on MultiMarkdown.</p>
+
+<p>I may or may not have succeeded in this&#8230;.</p>
+
+<p>In the vein of Markdown&#8217;s multiple definitions, you can think of MultiMarkdown
+as:</p>
+
+<ol>
+<li><p>A program to convert plain text to a fully formatted document.</p></li>
+<li><p>The syntax used in the plain text to describe how to convert it to a
+ complete document.</p></li>
+</ol>
+
+<h3 id="whyshouldiusemultimarkdown">Why should I use MultiMarkdown?</h3>
+
+<p>Writing with MultiMarkdown allows you to separate the content and structure of
+your document from the formatting. You focus on the actual writing, without
+having to worry about making the styles of your chapter headers match, or
+ensuring the proper spacing between paragraphs. And with a little forethought,
+a single plain text document can easily be converted into multiple output
+formats without having to rewrite the entire thing or format it by hand. Even
+better, you don&#8217;t have to write in &#8220;computer-ese&#8221; to create well formatted
+HTML or LaTeX commands. You just write, MultiMarkdown takes care of the rest.</p>
+
+<p>For example, instead of writing:</p>
+
+<pre><code>&lt;p&gt;In order to create valid 
+&lt;a href=&quot;http://en.wikipedia.org/wiki/HTML&quot;&gt;HTML&lt;/a&gt;, you 
+need properly coded syntax that can be cumbersome for 
+&amp;#8220;non-programmers&amp;#8221; to write. Sometimes, you
+just want to easily make certain words &lt;strong&gt;bold
+&lt;/strong&gt;, and certain words &lt;em&gt;italicized&lt;/em&gt; without
+having to remember the syntax. Additionally, for example,
+creating lists:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;should be easy&lt;/li&gt;
+&lt;li&gt;should not involve programming&lt;/li&gt;
+&lt;/ul&gt;
+</code></pre>
+
+<p>You simply write:</p>
+
+<pre><code>In order to create valid [HTML], you need properly
+coded syntax that can be cumbersome for 
+&quot;non-programmers&quot; to write. Sometimes, you just want
+to easily make certain words **bold**, and certain 
+words *italicized* without having to remember the 
+syntax. Additionally, for example, creating lists:
+
+* should be easy
+* should not involve programming
+
+[HTML]: http://en.wikipedia.org/wiki/HTML
+</code></pre>
+
+<p>Additionally, you can write a MultiMarkdown document in any text editor, on
+any operating system, and know that it will be compatible with MultiMarkdown
+on any other operating system and processed into the same output. As a plain
+text format, your documents will be safe no matter how many times you switch
+computers, operating systems, or favorite applications. You will always be
+able to open and edit your documents, even when the version of the software
+you originally wrote them in is long gone.</p>
+
+<p>These features have prompted several people to use MultiMarkdown in the
+process of writing their books, theses, and countless other documents.</p>
+
+<p>There are many other reasons to use MultiMarkdown, but I won&#8217;t get into all of
+them here.</p>
+
+<p><em>By the way</em> &#8212; the MultiMarkdown web site is, of course, created using
+MultiMarkdown. To view the MMD source for any page, add <code>.txt</code> to the end of
+the URL. If the URL ends with <code>/</code>, then add <code>index.txt</code> to the end instead.
+The main MultiMarkdown page, for example, would be
+<a href="http://fletcherpenney.net/multimarkdown/index.txt">http://fletcherpenney.net/multimarkdown/index.txt</a>.</p>
+
+<h3 id="whereisthisguidekept">Where is this Guide Kept?</h3>
+
+<p>This User&#8217;s Guide is designed to be viewed as a single HTML document, or as a
+PDF after being processed by LaTeX. When processed by MultiMarkdown and
+viewed as a single document, it will demonstrate many of the features that
+MultiMarkdown offers, and should be fairly easy to navigate.</p>
+
+<p>The source text documents are actually stored in a wiki on Github so that the
+document can easily be worked on by anyone with a Github account:</p>
+
+<ul>
+<li><a href="https://github.com/fletcher/peg-multimarkdown/wiki/User's-Manual">https://github.com/fletcher/peg-multimarkdown/wiki/User's-Manual</a></li>
+</ul>
+
+<p><em>Note</em>: Currently, the Github wiki software supports Markdown, but not
+MultiMarkdown. This means that certain MultiMarkdown specific features will
+not work on the wiki, but will work when the source is processed by
+MultiMarkdown separately from the wiki.</p>
+
+<p>You can download a copy of the source files using the instructions contained
+at the wiki itself. Additionally, the source is linked to from within the
+source project for MultiMarkdown in the <code>documentation</code> directory. If you
+download the source, you can can compile a copy of the documentation
+automatically with:</p>
+
+<pre><code>make docs
+</code></pre>
+
+<p>(This command requires perl to be installed &#8212; maybe at some point I&#8217;ll work
+on an alternative for Windows users without perl).</p>
+
+<h2 id="howdoiinstallmultimarkdown">How do I install MultiMarkdown?</h2>
+
+<p>The &#8220;Basic&#8221; instructions below will get you a functioning installation of
+MultiMarkdown, including the following commands:</p>
+
+<ul>
+<li><code>multimarkdown</code></li>
+<li><code>mmd</code></li>
+<li><code>mmd2tex</code></li>
+<li><code>mmd2opml</code></li>
+<li><code>mmd2odf</code></li>
+</ul>
+
+<p>The &#8220;Advanced&#8221; instructions will help if you want to make use of some of the
+more advanced features, such as custom XSLT output, you will need to install
+the MultiMarkdown Support files.</p>
+
+<p>If you want to use the LaTeX features, it would be helpful to install the
+LaTeX support files.</p>
+
+<p>The instructions are provided for several operating systems:</p>
+
+<ul>
+<li><a href="#macosx">Mac OS X</a></li>
+<li><a href="#windows">Windows</a></li>
+<li><a href="#linux">Linux</a></li>
+</ul>
+
+<h3 id="macosx">Mac OS X</h3>
+
+<h4 id="basic">Basic</h4>
+
+<p>On the Mac, you can choose from using an installer to install the program and
+required libraries for you, or you can compile it yourself from scratch. If
+you know what that means, follow the instructions below in the Linux section.
+Otherwise, definitely go for the installer!</p>
+
+<ol>
+<li>Download the latest version of the <code>MultiMarkdown-Mac</code> installer from the
+ <a href="http://github.com/fletcher/peg-multimarkdown/downloads">downloads</a> page</li>
+<li>Unzip the downloaded file, then run the installer and follow the onscreen
+ directions.</li>
+</ol>
+
+<h4 id="advanced">Advanced</h4>
+
+<p>If you want to use <a href="http://en.wikipedia.org/wiki/XSLT">XSLT</a> to customize your output, or you want to use
+MultiMarkdown with <a href="http://www.literatureandlatte.com/scrivener.html">Scrivener</a> or <a href="http://macromates.com/">TextMate</a>, you should also download and
+run the <code>MultiMarkdown-Support-Mac</code> <a href="http://github.com/fletcher/peg-multimarkdown/downloads">installer</a>.</p>
+
+<p>If you want to use LaTeX to generate PDFs, I recommend downloading the LaTeX
+<a href="https://github.com/fletcher/peg-multimarkdown-latex-support">support files</a> and placing them in
+<code>~/Library/texmf/tex/latex/mmd</code>.</p>
+
+<h4 id="compiling">Compiling</h4>
+
+<p>The instructions for compiling on Mac OS X are similar to the <a href="#linux">Linux</a>
+instructions below. If you want to build an installer, you can switch to the
+<code>mac-installer</code> branch, and use the <code>make mac-installer</code> command.</p>
+
+<p>On Mac OS X, please note that you will need to install the Developer Tools.
+You then need to install a few libraries. I used <a href="https://github.com/mxcl/homebrew">homebrew</a>:</p>
+
+<pre><code>brew install pkg-config glib gettext
+</code></pre>
+
+<p>You can also use <a href="http://www.finkproject.org/">fink</a> or something similar (though this caused some machine
+architecture incompatibilities for me):</p>
+
+<pre><code>fink install glib2-shlibs glib2-dev
+</code></pre>
+
+<h3 id="windows">Windows</h3>
+
+<h4 id="basic">Basic</h4>
+
+<p>The easiest way to install MMD on Windows is the <code>MultiMarkdown-Windows</code>
+installer from the <a href="http://github.com/fletcher/peg-multimarkdown/downloads">downloads</a> page and run it. The installer is built using
+software by <a href="http://bitrock.com/">BitRock</a>.</p>
+
+<p>Just as with the Mac OS X version, the installer includes the <code>multimarkdown</code>
+binary, as well as several convenience scripts.</p>
+
+<p>You can use Windows Explorer to create shortcuts to the <code>multimarkdown</code>
+binary, and adjust the properties to allow you to create &#8220;drag and drop&#8221;
+versions of MMD as well.</p>
+
+<h4 id="advanced">Advanced</h4>
+
+<p>If you intend to use LaTeX to generate PDFs, you will need to install a
+working version of LaTeX. I have used <a href="http://www.tug.org/texlive/">TeX Live</a>
+in the past, but the details of installing that are up to you. I would also
+recommend installing the LaTeX <a href="https://github.com/fletcher/peg-multimarkdown-latex-support">support files</a>.</p>
+
+<p>If you want to use <a href="http://en.wikipedia.org/wiki/XSLT">XSLT</a> to customize your output, you will need to install a
+working version of <code>xsltproc</code> and a program to allow you to run shell scripts
+so that you can use the <a href="https://github.com/fletcher/MMD-Support">MMD-Support</a> utility scripts. This is fairly
+complicated to install on Windows, so I highly recommend that you determine
+whether you really need these features. Most of the customizations you need
+can actually be done within the LaTeX include files specified in the metadata,
+without requiring XSLT. Check out some of the examples in the <a href="https://github.com/fletcher/MultiMarkdown-Gallery">MultiMarkdown
+Gallery</a> and in the LaTeX Support files for ideas of what can be done.</p>
+
+<h4 id="compiling">Compiling</h4>
+
+<p>If you want to compile this yourself, you do it in the same way that you would
+install peg-markdown for Windows. The instructions are on the
+peg-multimarkdown <a href="https://github.com/fletcher/peg-multimarkdown/wiki/Building-for-Windows">wiki</a>. I
+was able to compile for Windows fairly easily using Ubuntu linux following
+those instructions. I have not tried to actually compile on a Windows machine.</p>
+
+<p>Otherwise, see the section on <a href="#linux">Linux</a> for further tips.</p>
+
+<p>(For those who are interested, I actually created an EC2 instance on Amazon
+and installed the necessary software to compile. It was pretty easy and
+probably cost me $0.02&#8230;)</p>
+
+<h3 id="linux">Linux</h3>
+
+<h4 id="basiccompiling">Basic compiling</h4>
+
+<p>Currently the only way to install MultiMarkdown on *nix machines is to compile
+it yourself. You need to have <code>glib2</code> installed. For example, on ubuntu:</p>
+
+<pre><code>sudo apt-get install libglib2.0-dev
+</code></pre>
+
+<p>For other linux distributions, you will need to do something similar.</p>
+
+<p>Once you have the libraries installed, you can either download the source from
+the <a href="http://github.com/fletcher/peg-multimarkdown/downloads">downloads</a> page, or (preferentially) you can use git:</p>
+
+<pre><code>git clone git://github.com/fletcher/peg-multimarkdown.git
+</code></pre>
+
+<p>At this point you can compile with:</p>
+
+<pre><code>make
+</code></pre>
+
+<h4 id="advancedcompiling">Advanced compiling</h4>
+
+<p>One additional step to include if you use git to clone the source, and if you
+have Perl installed is to run the <code>update_submodules.sh</code> script to ensure that
+the submodule configurations in <code>.git/config</code> have the proper URL format,
+e.g.:</p>
+
+<pre><code>[submodule &quot;Support&quot;]
+    url = git://github.com/fletcher/MMD-Support.git
+</code></pre>
+
+<p>instead of:</p>
+
+<pre><code>[submodule &quot;Support&quot;]
+    url = git@github.com:fletcher/MMD-Support.git
+</code></pre>
+
+<p>If the <code>update_submodules.sh</code> script won&#8217;t run you can make the changes by
+hand, and then run <code>git submodule update</code> to ensure you have the latest
+submodule source.</p>
+
+<p>Then, simply run <code>make</code> to compile the source. You can also run some test
+commands to verify that everything is working properly. Of note, it is normal
+to fail one test in the Markdown tests, but the others should pass. You can
+then install the binary and utility scripts wherever you like, though for
+consistency <code>/usr/local/bin</code> would probably be best.</p>
+
+<pre><code>make
+make test
+make mmdtest
+make latextest
+</code></pre>
+
+<p>As above, if you intend to use <a href="http://en.wikipedia.org/wiki/XSLT">XSLT</a>, <a href="http://en.wikipedia.org/wiki/LaTeX">LaTeX</a>, and the like, I recommend also
+installing the LaTeX Support <a href="https://github.com/fletcher/peg-multimarkdown-latex-support">files</a> and <a href="https://github.com/fletcher/MMD-Support">MultiMarkdown
+Support</a>.</p>
+
+<h2 id="howdoiusemultimarkdown">How do I use MultiMarkdown?</h2>
+
+<p>There are several ways to use MultiMarkdown, depending on your needs. You can
+use the <code>multimarkdown</code> command line tool, you can use MultiMarkdown with
+several applications that support it directly, or you can use a drag and drop
+approach.</p>
+
+<h3 id="commandlineusage">Command Line Usage</h3>
+
+<p>First, verify that you have properly installed MultiMarkdown:</p>
+
+<pre><code>multimarkdown -v
+</code></pre>
+
+<p>If you don&#8217;t see a message telling you which version of MultiMarkdown is
+installed, check out Troubleshooting.</p>
+
+<p>To learn more about the command line options to multimarkdown:</p>
+
+<pre><code>multimarkdown -h
+</code></pre>
+
+<p>Once you have properly installed MultiMarkdown:</p>
+
+<pre><code>multimarkdown file.txt
+</code></pre>
+
+<p>will convert the plain text file <code>file.txt</code> into HTML output. To save the
+results to a file:</p>
+
+<pre><code>multimarkdown file.txt &gt; file.html
+</code></pre>
+
+<p>A shortcut to this is to use MultiMarkdown&#8217;s batch mode, which will save the
+output to the same base filename that is input, with the extension <code>.html</code> (or
+<code>.tex</code> for LaTeX output):</p>
+
+<pre><code>multimarkdown -b file.txt
+</code></pre>
+
+<p>A benefit of batch mode is that you can process multiple files at once:</p>
+
+<pre><code>multimarkdown -b file1.txt file2.txt file3.txt
+</code></pre>
+
+<p>If you want to create LaTeX output instead of HTML:</p>
+
+<pre><code>multimarkdown -t latex file.txt
+</code></pre>
+
+<p>For OPML:</p>
+
+<pre><code>multimarkdown -t opml file.txt
+</code></pre>
+
+<p>And for an OpenDocument text file:</p>
+
+<pre><code>multimarkdown -t odf file.txt
+</code></pre>
+
+<p>There are also several convenience scripts included with MultiMarkdown:</p>
+
+<pre><code>mmd file.txt
+mmd2tex file.txt
+mmd2opml file.txt
+mmd2odf file.txt
+</code></pre>
+
+<p>These scripts run MultiMarkdown in batch mode to generate HTML, LaTeX, OPML,
+or ODF files respectively. These scripts are included with the Mac or Windows
+installers, and are available for *nix in the <code>scripts</code> directory in the
+source project. They are intended to be used as shortcuts for the most common
+command line options.</p>
+
+<h4 id="commandlineoptions">Command Line Options</h4>
+
+<p>There are several options when running MultiMarkdown from the command line.</p>
+
+<pre><code>multimarkdown -v, multimarkdown --version
+</code></pre>
+
+<p>Displays the version of MultiMarkdown currently installed.</p>
+
+<pre><code>multimarkdown -o, multimarkdown --output=FILE
+</code></pre>
+
+<p>Directs the output to the specified file. By default, the output is directed
+to <code>stdout</code>. The use of <code>batch</code> mode obviates the need to use this option, but
+if you want to specify a different output filename it can be handy.</p>
+
+<pre><code>multimarkdown -t html|latex|memoir|beamer|opml|odf
+</code></pre>
+
+<p>This options specified the format that MultiMarkdown outputs. The default is
+html. If you use the <code>LaTeX Mode</code> metadata, then MultiMarkdown will
+automatically choose <code>memoir</code> or <code>beamer</code> as directed without using these
+command line options. Using that metadata will also allow the various
+convenience scripts to choose the correct output format as well.</p>
+
+<pre><code>multimarkdown -x, multimarkdown --extensions
+</code></pre>
+
+<p>This turns on all extensions. It is really intended to be used when you would
+like to use some of the extensions of peg-markdown. Probably not useful for
+MultiMarkdown users, but I left it turned on just in case, except where it
+interferes with the desired MMD functionality.</p>
+
+<pre><code>multimarkdown --filter-html
+multimarkdown --filter-styles
+</code></pre>
+
+<p>The first command causes any raw HTML (except styles) included in the source
+document to <em>not</em> be included in the output. The second command removes HTML
+style tags from the output.</p>
+
+<pre><code>multimarkdown -c, multimarkdown --compatibility
+</code></pre>
+
+<p>Compatibility mode causes MultiMarkdown to output HTML that is compatible
+with that output from the original Markdown. This allows it to pass the
+original Markdown test suite. Syntax features that don&#8217;t exist in regular
+Markdown will still be output using the regular MultiMarkdown output
+formatting.</p>
+
+<pre><code>multimarkdown -b, multimarkdown --batch
+</code></pre>
+
+<p>Automatically redirects the output to a file with the same base name as the
+input file, but with the appropriate extension based on the output type. For
+example, <code>multimarkdown -b file.txt</code> would output the HTML to <code>file.html</code>, and
+<code>multimarkdown -b -t latex file.txt</code> would output to <code>file.tex</code>.</p>
+
+<pre><code>multimarkdown -e &quot;metakey&quot;, multimarkdown --extract &quot;metakey&quot;
+</code></pre>
+
+<p>The extract feature outputs the value of the specified metadata key. This is
+used in my convenience scripts to help choose the proper LaTeX output mode,
+and could be used in other circumstances as well.</p>
+
+<pre><code>multimarkdown --smart
+</code></pre>
+
+<p>Uses smart typography, similar to John Gruber&#8217;s <a href="http://daringfireball.net/projects/smartypants/">SmartyPants</a> program, which was included
+in MultiMarkdown 2.0. This extension is turned on by default in MultiMarkdown.</p>
+
+<pre><code>multimarkdown --notes
+</code></pre>
+
+<p>Enables the use of footnotes and similar markup (glossary, citations). Enabled
+by default in MultiMarkdown.</p>
+
+<pre><code>multimarkdown --process-html
+</code></pre>
+
+<p>This option tells MultiMarkdown to process the text included within HTML tags
+in the source document.</p>
+
+<p>Other options are available by checking out <code>multimarkdown --help-all</code>, but
+the ones listed above are the primary options.</p>
+
+<h4 id="advancedmode">Advanced Mode</h4>
+
+<p>MultiMarkdown version 2.0 had to first convert the source file to HTML, and
+then applied XSLT files to convert to the final LaTeX format. Since
+MultiMarkdown 3.0 can create LaTeX directly, this approach is no longer
+necessary.</p>
+
+<p>The one benefit of that approach, however, was that it became possible to
+perform a wide range of customizations on exactly how the LaTeX output was
+created by customizing the XSLT files.</p>
+
+<p>If you install the Support files on Mac or Linux, you can still use the
+advanced XSLT method to generate LaTeX output. For the time being, this
+approach doesn&#8217;t work with Windows, but it would be fairly easy to create a
+batch script or perl script to implement this feature on Windows.</p>
+
+<p>Keep in mind, however, that because of the more advanced mechanism of handling
+LaTeX in MultiMarkdown 3.0, you can do a great deal of customization without
+needing to use an XSLT file.</p>
+
+<p>The <code>mmd2xslt</code> script will convert a plain text file into LaTeX that is
+virtually identical with that created by the regular LaTeX approach.</p>
+
+<p>There are a few differences in the two approaches, however:</p>
+
+<ul>
+<li><p>Once a MultiMarkdown file is converted to HTML, it is impossible to tell
+ whether the resulting HTML was generated by MultiMarkdown, or if it was
+ included as raw HTML within the source document. So <em>either</em> way, it will
+ be converted to the analagous LaTeX syntax. The <code>multimarkdown</code> binary on
+ its own will <em>not</em> convert HTML into LaTeX.</p></li>
+<li><p>The whitespace that is generated will be different under certain
+ circumstances. Typically, this will result in one extra or one fewer blank
+ lines with the the XSLT approach. Generally this will not be an issue, but
+ when used with <code>&lt;!-- some comment --&gt;</code> it may cause a newline to be lost.</p></li>
+<li><p>The default XSLT recognizes <code>class=&quot;noxslt&quot;</code> when applied to HTML entities,
+ and will discard them from the output.</p></li>
+<li><p>An XSLT can only be applied to a complete HTML document, not a &#8220;snippet&#8221;.
+ Therefore, if you want to use the XSLT method, your file must have metadata
+ that triggers a complete document (i.e. any metadata except &#8220;quotes
+ language&#8221; or &#8220;base header level&#8221;).</p></li>
+<li><p>Using XSL to process an HTML file will &#8220;de-obfuscate&#8221; any email addresses
+ that were obfuscated by MultiMarkdown.</p></li>
+</ul>
+
+<h4 id="recommendations">Recommendations</h4>
+
+<p>I recommend that you become familiar with the &#8220;basic&#8221; approach to using
+MultiMarkdown before trying to experiment with XSLT. The basic approach is
+faster, and easier, and the results can still be customized quite a bit.</p>
+
+<p>Then you can experiment with modifying XSLT to further customize your output
+as needed.</p>
+
+<p>If you have XSLT files that you used in MultiMarkdown 2.0, you will likely
+need to modify them to recognize the HTML output generated by MultiMarkdown
+3.0. You can use the default XSLT files as a guide to what is different.</p>
+
+<h3 id="macosxapplications">Mac OS X Applications</h3>
+
+<p>There are several applications that have built-in support for MultiMarkdown,
+or that can easily use it with a plug-in.</p>
+
+<h4 id="usingmultimarkdownwithtextmate">Using MultiMarkdown with TextMate</h4>
+
+<p>If you want to run MultiMarkdown from directly within <a href="http://macromates.com/">TextMate</a>, you should
+install my MultiMarkdown <a href="https://github.com/fletcher/markdown.tmbundle">bundle</a>. This is a modified version of the original
+Markdown bundle for TextMate that includes better support for MultiMarkdown.</p>
+
+<p>This bundle will work with MultiMarkdown 2.0, or with MultiMarkdown 3.0 if you
+install the MultiMarkdown-Support files (available from the downloads
+<a href="http://github.com/fletcher/peg-multimarkdown/downloads">page</a>).</p>
+
+<h4 id="usingmultimarkdownwithscrivener">Using MultiMarkdown with Scrivener</h4>
+
+<p><a href="http://www.literatureandlatte.com/scrivener.html">Scrivener</a> is a great program for writers using Mac OS X. It includes built
+in support for MultiMarkdown. If you want to use MultiMarkdown 3.0 with
+Scrivener, you need to install the Support files in <code>~/Library/Application
+Support/MultiMarkdown</code>. The MultiMarkdown-Support installer is available from
+the downloads <a href="http://github.com/fletcher/peg-multimarkdown/downloads">page</a> and will install these files for you.</p>
+
+<h4 id="draganddrop">Drag and Drop</h4>
+
+<p>You can use the Mac OS X drag and drop applications to allow you to convert
+MultiMarkdown to other formats by dragging and dropping files in the Finder.
+They are available from the <a href="http://github.com/fletcher/peg-multimarkdown/downloads">downloads</a> page, or by running <code>make drop</code> from
+the command line in the <code>multimarkdown</code> source directory.</p>
+
+<h4 id="multimarkdownandfinderquicklook">MultiMarkdown and Finder &#8220;Quick Look&#8221;</h4>
+
+<p>Starting in Mac OS 10.5, the Finder has the ability to show a &#8220;Quick Look&#8221;
+preview of the contents of a file. I have two Quick Look generators that allow
+the finder to preview the contents of a MultiMarkdown text file as an HTML
+preview. One works on plain text files, and one works on OPML files.</p>
+
+<p>Available for download from <a href="https://github.com/fletcher/qlmultimarkdown/downloads">github</a>.</p>
+
+<h3 id="usingmultimarkdowninwindows">Using MultiMarkdown in Windows</h3>
+
+<p>You can use the same command line approach with Windows as described
+previously. While there aren&#8217;t drag and drop applications per se for the
+Windows system, you can use Windows Explorer to create links to the binary and
+specify and desired command line options to change the default output format.
+This will effectively allow you to create drag and drop applications for
+Windows.</p>
+
+<h3 id="multimarkdownandlatex">MultiMarkdown and LaTeX</h3>
+
+<p>Of note <a href="http://en.wikipedia.org/wiki/LaTeX">LaTeX</a> is a complex set of programs. MultiMarkdown doesn&#8217;t include
+LaTeX in the installer &#8212; it&#8217;s up to the user to install a working LaTeX
+setup on their machine if you want to use it.</p>
+
+<p>What MultiMarkdown does is make it easier to generate documents using the
+LaTeX syntax. It should handle 80% of the documents that 80% of MultiMarkdown
+need. It doesn&#8217;t handle all circumstances, and sometimes you will need to hand
+code your LaTeX yourself.</p>
+
+<p>In those cases you have a few options. MultiMarkdown will pass text included
+in HTML comments along to the LaTeX as raw output. For example:</p>
+
+<pre><code>&lt;!--  This is raw \LaTeX \[ {e}^{i\pi }+1=0 \] --&gt;
+</code></pre>
+
+<p>You can also include your desired LaTeX code in a separate file and link to
+it:</p>
+
+<pre><code>&lt;!-- \input{somefile} --&gt;
+</code></pre>
+
+<p>If you have questions about LaTeX itself, I can&#8217;t help. You&#8217;re welcome to send
+your question to the <a href="http://groups.google.com/group/multimarkdown/">MultiMarkdown Discussion List</a>, and perhaps someone will
+be able to offer some assistance. But you would be better off asking a group
+dedicated to LaTeX instead.</p>
+
+<p>If the problem is that MultiMarkdown itself is generating invalid LaTeX, then
+of course I want to know about it so I can fix it.</p>
+
+<p>If you need more information about how to use LaTeX to process a file into a
+PDF, check out the <a href="#process-latex">faq</a>.</p>
+
+<h3 id="multimarkdownandopml">MultiMarkdown and OPML</h3>
+
+<p>MultiMarkdown is well suited to plain text files, but it can also be useful to
+work on MultiMarkdown documents in an outliner or mind-mapping application.
+For this, it is easy to convert back and forth between OPML and plain text
+MultiMarkdown.</p>
+
+<p>To convert from a text file to OPML:</p>
+
+<pre><code>multimarkdown -t opml -b file.txt
+</code></pre>
+
+<p>or:</p>
+
+<pre><code>mmd2opml file.txt
+</code></pre>
+
+<p>The resulting OPML file uses the headings to build the outline structure, and
+puts the text within each section as a not for the corresponding level of the
+outline using the <code>_note</code> attribute. <strong>NOTE</strong>: not all outliners support this
+attribute. On Mac OS X, <a href="http://www.omnigroup.com/applications/omnioutliner/">OmniOutliner</a> is a fabulous outliner
+that supports this field. If you&#8217;re into mind mapping software, <a href="http://www.ithoughts.co.uk/">iThoughts</a> works on the iPad/iPhone and supports import and
+export with OPML and the <code>_note</code> attribute.</p>
+
+<p>To convert from OPML, you can use various commands in from the <a href="https://github.com/fletcher/MMD-Support">MMD-Support</a> package:</p>
+
+<pre><code>opml2HTML file.opml
+opml2mmd file.opml
+opml2LaTeX file.opml
+</code></pre>
+
+<p><strong>NOTE</strong>: These scripts require a working installation of <code>xsltproc</code>, and the
+ability to run shell scripts. This should work by default on most
+installations of Mac OS X or Linux, but will require these applications to be
+installed separately on Windows.</p>
+
+<h3 id="multimarkdownandopendocument">MultiMarkdown and OpenDocument</h3>
+
+<p>It is also possible to convert a MultiMarkdown text file into a word
+processing document for <a href="http://www.openoffice.org/">OpenOffice.org</a> or
+<a href="http://www.libreoffice.org/download">LibreOffice</a>. This file can then be
+converted by one of those applications into RTF, or a Microsoft Word document,
+or many other file formats. (If you&#8217;re not familiar with these applications,
+they are worth checking out. I don&#8217;t understand why people use Microsoft
+Office any more&#8230;)</p>
+
+<pre><code>multimarkdown -b -t odf file.txt
+</code></pre>
+
+<p>or</p>
+
+<pre><code>mmd2odf file.txt
+</code></pre>
+
+<p>MultiMarkdown 2.0 had partial support for outputting an RTF file, and could do
+it completely on Mac OS X by using Apple&#8217;s <code>textutil</code> program. MMD 3 no longer
+directly supports RTF as an output format, but the Flat OpenDocument format is
+a much better option.</p>
+
+<p><strong>NOTE</strong>: LibreOffice can open these Flat OpenDocument files by default, but
+OpenOffice requires that you install the <code>OpenDocument-Text-Flat-XML.jar</code> file
+available from the
+<a href="https://github.com/fletcher/peg-multimarkdown/downloads">downloads</a> page. To
+install it, create a new document in OpenOffice (or open an existing one),
+then go to the Tools-&gt;XML Filter Settings menu option. Use the &#8220;Open
+Package&#8230;&#8221; button to import the downloaded <code>.jar</code> file.</p>
+
+<h4 id="advanceduse">Advanced Use</h4>
+
+<p>It is possible to use an XSLT file to customize the OpenDocument output from
+MultiMarkdown. I suppose you could also write an XSLT to convert OpenDocument
+into LaTeX, similar to the default ones that convert HTML into LaTeX.</p>
+
+<p>You can also create an XSLT that converts the OpenDocument output and modifies
+it to incorporate necessary customizations. While a little tricky to learn,
+XSLT files can be quite powerful and you&#8217;re limited only by your imagination.</p>
+
+<h4 id="limitations">Limitations</h4>
+
+<p>There are several limitations to the OpenDocument Flat Text format:</p>
+
+<ul>
+<li><p>images are not fully supported &#8212; they work best if you specify a length
+ and a width in &#8220;fixed&#8221; units (not &#8216;%&#8217;), or do not specify any dimensions.</p></li>
+<li><p>citations are not supported &#8212; I would like to be able to do something
+ here, but I suspect you will need to use an external tool for the time
+ being</p></li>
+<li><p>math features are not supported, though I hope to be able to implement this
+ at some point in the future</p></li>
+</ul>
+
+<h2 id="howdoicreateamultimarkdowndocument">How do I create a MultiMarkdown document?</h2>
+
+<p>The general concept in MultiMarkdown is that it should be easy for someone to
+type a plain text file that is human-readable, and then use the MultiMarkdown
+program to convert that text file into a more complicated computer language
+such as HTML or LaTeX. This allows you to create high quality output without
+having to spend hours and hours fiddling with font sizes, margins, etc.</p>
+
+<p>The first step in learning to use MultiMarkdown is to learn how to use
+<a href="http://daringfireball.net/projects/markdown/">Markdown</a>. MultiMarkdown is an
+extension to Markdown, and builds off of the basic fundamentals used in
+Markdown.</p>
+
+<p>I recommend starting by familiarizing yourself with the Markdown <a href="http://daringfireball.net/projects/markdown/basics">basics</a> and
+<a href="http://daringfireball.net/projects/markdown/syntax">syntax</a> pages.</p>
+
+<p>Once you&#8217;re familiar with the basics of Markdown, it will be relatively easy
+to pick up the advanced features included in MultiMarkdown.</p>
+
+<h3 id="metadata">Metadata</h3>
+
+<p>It is possible to include special metadata at the top of a MultiMarkdown
+document, such as title, author, etc. This information can then be used to
+control how MultiMarkdown processes the document, or can be used in certain
+output formats in special ways.</p>
+
+<pre><code>Title:   A Sample MultiMarkdown Document  
+Author:  Fletcher T. Penney  
+Date:    February 9, 2011  
+Comment: This is a comment intended to demonstrate  
+         metadata that spans multiple lines, yet  
+         is treated as a single value.  
+Test:    And this is a new key-value pair  
+</code></pre>
+
+<p>The syntax for including metadata is simple.</p>
+
+<ul>
+<li><p>The metadata must begin at the very top of the document - no blank lines can
+ precede it.</p></li>
+<li><p>Metadata consists of the two parts - the <code>key</code> and the <code>value</code></p></li>
+<li><p>The metadata key must begin at the beginning of the line. It must start with
+ a letter or number, then the following characters can consist of letters,
+ numbers, spaces, hyphens, or underscore characters.</p></li>
+<li><p>The end of the metadata key is specified with a colon (&#8216;:&#8217;)</p></li>
+<li><p>After the colon comes the metadata value, which can consist of pretty much
+ any characters (including new lines). To keep multiline metadata values from
+ being confused with additional metadata, I recommend indenting each new line
+ of metadata. If your metadata value includes a colon, it <em>must</em> be indented
+ to keep it from being treated as a new key-value pair.</p></li>
+<li><p>While not required, I recommend using two spaces at the end of each line of
+ metadata. This will improve the appearance of the metadata section if your
+ document is processed by Markdown instead of MultiMarkdown.</p></li>
+<li><p>Metadata keys are case insensitive and stripped of all spaces during
+ processing. This means that <code>Base Header Level</code>, <code>base headerlevel</code>, and
+ <code>baseheaderlevel</code> are all the same.</p></li>
+<li><p>Metadata is processed as plain text, so it should <em>not</em> include
+ MultiMarkdown markup. It is possible to create customized XSLT files that
+ apply certain processing to the metadata value, but this is not the default
+ behavior.</p></li>
+<li><p>After the metadata is finished, a blank line triggers the beginning of the
+ rest of the document.</p></li>
+</ul>
+
+<h3 id="completedocumentsvssnippets">Complete documents vs &#8220;snippets&#8221;</h3>
+
+<p>In order to include metadata information such as a title, the HTML document
+created by MultiMarkdown must be &#8220;complete.&#8221; This means that it starts with
+something that looks like:</p>
+
+<pre><code>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;yes&quot; ?&gt;
+&lt;!DOCTYPE html&gt;
+&lt;html xmlns=&quot;http://www.w3.org/1999/xhtml&quot;&gt;
+&lt;head&gt;
+</code></pre>
+
+<p>If you include metadata in your document (with two exceptions), then you will
+generate a complete document. If you don&#8217;t include metadata, then you will
+instead generate a &#8220;snippet.&#8221; The snippet will just include the relevant
+portion of HTML, but will not include the <code>&lt;head&gt;</code> or <code>&lt;body&gt;</code> elements.</p>
+
+<p>Metadata that is only intended to affect the way MultiMarkdown processes the
+output will not trigger a complete document. Currently, this means you can use
+<code>Base Header Level</code> or <code>Quotes Language</code> and still output a snippet if you
+don&#8217;t include any other metadata.</p>
+
+<p>Document formats other than HTML don&#8217;t have distinctions between complete
+documents and snippets. Any included and relevant metadata will be included if
+present.</p>
+
+<h3 id="standardmetadatakeys">&#8220;Standard&#8221; Metadata keys</h3>
+
+<p>There are a few metadata keys that are standardized in MultiMarkdown. You can
+use any other keys that you desire, but you have to make use of them yourself.</p>
+
+<p>My goal is to keep the list of &#8220;standard&#8221; metadata keys as short as possible.</p>
+
+<h4 id="author">Author</h4>
+
+<p>This value represents the author of the document and is used in LaTeX
+documents to generate the title information.</p>
+
+<h4 id="affiliation">Affiliation</h4>
+
+<p>This is used to enter further information about the author &#8212; a link to a
+website, an employer, academic affiliation, etc.</p>
+
+<h4 id="baseheaderlevel">Base Header Level</h4>
+
+<p>This is used to change the top level of organization of the document. For example:</p>
+
+<pre><code>Base Header Level: 2
+
+# Introduction #
+</code></pre>
+
+<p>Normally, the Introduction would be output as <code>&lt;h1&gt;</code> in HTML, or <code>\part{}</code> in
+LaTeX. If you&#8217;re writing a shorter document, you may wish for the largest
+division in the document to be <code>&lt;h2&gt;</code> or <code>\chapter{}</code>. The <code>Base Header Level</code>
+metadata tells MultiMarkdown to change the largest division level to the
+specified value.</p>
+
+<p>This can also be useful when combining multiple documents.</p>
+
+<p><code>Base Header Level</code> does not trigger a complete document.</p>
+
+<p>Additionally, there are &#8220;flavors&#8221; of this metadata key for various output
+formats so that you can specify a different header level for different output
+formats &#8212; i.e. <code>LaTeX Header Level</code>, <code>HTML Header Level</code>, and <code>ODF Header
+Level</code>.</p>
+
+<h4 id="bibliostyle">Biblio Style</h4>
+
+<p>This metadata specifies the name of the BibTeX style to be used, if you are
+not using natbib.</p>
+
+<h4 id="bibtex">BibTeX</h4>
+
+<p>This metadata specifies the name of the BibTeX file used to store citation
+information. Do not include the trailing &#8216;.bib&#8217;.</p>
+
+<h4 id="copyright">Copyright</h4>
+
+<p>This can be used to provide a copyright string.</p>
+
+<h4 id="css">CSS</h4>
+
+<p>This metadata specifies a URL to be used as a CSS file for the produced
+document. Obviously, this is only useful when outputting to HTML.</p>
+
+<h4 id="date">Date</h4>
+
+<p>Specify a date to be associated with the document.</p>
+
+<h4 id="htmlheader">HTML Header</h4>
+
+<p>You can include raw HTML information to be included in the header.
+MultiMarkdown doesn&#8217;t perform any validation on this data &#8212; it just copies
+it as is.</p>
+
+<p>As an example, this can be useful to link your document to a working MathJax
+installation (not provided by me):</p>
+
+<pre><code>HTML header:  &lt;script type=&quot;text/javascript&quot;
+    src=&quot;http://example.net/mathjax/MathJax.js&quot;&gt;
+    &lt;/script&gt;
+</code></pre>
+
+<h4 id="quoteslanguage">Quotes Language</h4>
+
+<p>This is used to specify which style of &#8220;smart&#8221; quotes to use in the output document. The available options are:</p>
+
+<ul>
+<li>dutch</li>
+<li>english</li>
+<li>french</li>
+<li>german</li>
+<li>germanguillemets</li>
+<li>swedish</li>
+</ul>
+
+<p>The default is <code>english</code> if not specified. This affects HTML output. To
+change the language of a document in LaTeX is up to the individual.</p>
+
+<p><code>Quotes Language</code> does not trigger a complete document.</p>
+
+<h4 id="latexfooter">LaTeX Footer</h4>
+
+<p>A special case of the <code>LaTeX Input</code> metadata below. This file will be linked
+to at the very end of the document.</p>
+
+<h4 id="latexinput">LaTeX Input</h4>
+
+<p>When outputting a LaTeX document it is necessary to include various directions
+that specify how the document should be formatted. These are not included in
+the MultiMarkdown document itself &#8212; instead they should be stored separately
+and linked to with <code>\input{file}</code> commands.</p>
+
+<p>These links can be included in the metadata section. The metadata is processed
+in order, so I generally break my directives into a group that need to go
+before my metadata, a group that goes after the metadata but before the
+document itself, and a separate group that goes at the end of the document,
+for example:</p>
+
+<pre><code>latex input:        mmd-memoir-header
+Title:              MultiMarkdown Example
+Base Header Level:  2
+latex mode:         memoir
+latex input:        mmd-memoir-begin-doc
+latex footer:       mmd-memoir-footer
+</code></pre>
+
+<p>You can download the <a href="https://github.com/fletcher/peg-multimarkdown-latex-support">LaTeX Support</a> files if you want to output documents
+using the default MultiMarkdown styles. You can then use these as examples to
+create your own customized LaTeX output.</p>
+
+<p>This function should allow you to do almost anything you could do using the
+XSLT features from MultiMarkdown 2.0. More importantly, it means that advanced
+LaTeX users do not have to learn XSLT to customize their code as desired.</p>
+
+<h4 id="latexmode">LaTeX Mode</h4>
+
+<p>When outputting a document to LaTeX, there are two special options that change
+the output slightly &#8212; <code>memoir</code> and <code>beamer</code>. These options are designed to
+be compatible with the LaTeX classes of the same names.</p>
+
+<h4 id="odfheader">ODF Header</h4>
+
+<p>You can include raw XML to be included in the header of a file output in
+OpenDocument format. It&#8217;s up to you to properly format your XML and get it
+working &#8212; MultiMarkdown just copies it verbatim to the output.</p>
+
+<h4 id="title">Title</h4>
+
+<p>Self-explanatory.</p>
+
+<h3 id="cross-references">Cross-References</h3>
+
+<p>An oft-requested feature was the ability to have Markdown automatically handle
+within-document links as easily as it handled external links. To this aim, I
+added the ability to interpret <code>[Some Text][]</code> as a cross-link, if a header
+named &#8220;Some Text&#8221; exists.</p>
+
+<p>As an example, <code>[Metadata][]</code> will take you to the
+<a href="#metadata">section describing metadata</a>.</p>
+
+<p>Alternatively, you can include an optional label of your choosing to help
+disambiguate cases where multiple headers have the same title:</p>
+
+<pre><code>### Overview [MultiMarkdownOverview] ##
+</code></pre>
+
+<p>This allows you to use <code>[MultiMarkdownOverview]</code> to refer to this section
+specifically, and not another section named <code>Overview</code>. This works with atx-
+or settext-style headers.</p>
+
+<p>If you have already defined an anchor using the same id that is used by a
+header, then the defined anchor takes precedence.</p>
+
+<p>In addition to headers within the document, you can provide labels for images
+and tables which can then be used for cross-references as well.</p>
+
+<h3 id="imageandlinkattributes">Image and Link Attributes</h3>
+
+<p>Adding attributes to links and images has been requested for a long time on
+the Markdown discussion list. I was fairly opposed to this, as most of the
+proposals really disrupted the readability of the syntax. I consider myself a
+&#8220;Markdown purist&#8221;, meaning that I took John&#8217;s introduction to heart:</p>
+
+<blockquote>
+<p>The overriding design goal for Markdown&#8217;s formatting syntax is to make
+it as readable as possible. The idea is that a Markdown-formatted
+document should be publishable as-is, as plain text, without looking
+like it&#8217;s been marked up with tags or formatting instructions. While
+Markdown&#8217;s syntax has been influenced by several existing text-to-HTML
+filters, the single biggest source of inspiration for Markdown&#8217;s
+syntax is the format of plain text email.</p>
+</blockquote>
+
+<p>Because there was not a syntax proposal that I felt fit this goal, I was generally opposed to the idea.</p>
+
+<p>Then, Choan C. Gálvez <a href="http://six.pairlist.net/pipermail/markdown-discuss/2005-October/001578.html">proposed</a> a brilliantly simple syntax that
+stayed out of the way. By simply appending the attributes to the link
+reference information, which is already removed from the text itself, it
+doesn&#8217;t disturb the readability.</p>
+
+<p>For example:</p>
+
+<pre><code>This is a formatted ![image][] and a [link][] with attributes.
+
+[image]: http://path.to/image &quot;Image title&quot; width=40px height=400px
+[link]:  http://path.to/link.html &quot;Some Link&quot; class=external
+         style=&quot;border: solid black 1px;&quot;
+</code></pre>
+
+<p>This will generate width and height attributes for the image, and a border
+around the link. And while it can be argued that it does look &#8220;like it&#8217;s been
+marked up with tags [and] formatting instructions&#8221;, even I can&#8217;t argue too
+strongly against it. The link and the title in quotes already look like some
+form of markup, and the the additional tags are hardly that intrusive, and
+they offer a great deal of functionality. They might even be useful in further
+functions (citations?).</p>
+
+<p>The attributes must continue after the other link/image data, and may contain
+newlines, but must start at the beginning of the line. The format is
+<code>attribute=value</code> or <code>attribute=&quot;multi word value&quot;</code>. Currently, MultiMarkdown
+does not attempt to interpret or make any use of any of these attributes.
+Also, you can&#8217;t have a multiword attribute span a newline.</p>
+
+<h3 id="tables">Tables</h3>
+
+<p>I have implemented a syntax for tables similar to that used by Michael
+Fortin&#8217;s <a href="http://www.michelf.com/projects/php-markdown/extra/">PHP Markdown Extra</a>.</p>
+
+<p>Basically, it allows you to turn:</p>
+
+<pre><code>|             |          Grouping           ||
+First Header  | Second Header | Third Header |
+ ------------ | :-----------: | -----------: |
+Content       |          *Long Cell*        ||
+Content       |   **Cell**    |         Cell |
+
+New section   |     More      |         Data |
+And more      |            And more          |
+[Prototype table]
+</code></pre>
+
+<p>into a <a href="#prototypetable">table</a>.</p>
+
+<table>
+<caption id="prototypetable">Prototype table</caption>
+<colgroup>
+<col style="text-align:left;"/>
+<col style="text-align:center;"/>
+<col style="text-align:right;"/>
+</colgroup>
+
+<thead>
+<tr>
+	<th style="text-align:left;"></th>
+	<th style="text-align:center;" colspan="2">Grouping</th>
+</tr>
+<tr>
+	<th style="text-align:left;">First Header</th>
+	<th style="text-align:center;">Second Header</th>
+	<th style="text-align:right;">Third Header</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+	<td style="text-align:left;">Content</td>
+	<td style="text-align:center;" colspan="2"><em>Long Cell</em></td>
+</tr>
+<tr>
+	<td style="text-align:left;">Content</td>
+	<td style="text-align:center;"><strong>Cell</strong></td>
+	<td style="text-align:right;">Cell</td>
+</tr>
+</tbody>
+
+<tbody>
+<tr>
+	<td style="text-align:left;">New section</td>
+	<td style="text-align:center;">More</td>
+	<td style="text-align:right;">Data</td>
+</tr>
+<tr>
+	<td style="text-align:left;">And more</td>
+	<td style="text-align:center;" colspan="2">And more</td>
+</tr>
+</tbody>
+</table>
+<p>The requirements are:</p>
+
+<ul>
+<li>There must be at least one <code>|</code> per line</li>
+<li>The second line must contain only <code>|</code>,<code>-</code>,<code>:</code>,<code>.</code>, or spaces</li>
+<li>Cell content must be on one line only</li>
+<li>Columns are separated by <code>|</code></li>
+<li>The first line of the table, and the alignment/divider line, must start at
+the beginning of the line</li>
+</ul>
+
+<p>Other notes:</p>
+
+<ul>
+<li><p>It is optional whether you have <code>|</code>&#8217;s at the beginning and end of lines.</p></li>
+<li><p>To set alignment, you can use a colon to designate left or right alignment,
+ or a colon at each end to designate center alignment, as above. If no colon
+ is present, the default alignment of your system is selected (left in most
+ cases). If you use a period character (<code>.</code>), then <code>char</code> alignment is used -
+ in the future this will allow columns of decimal formatted numbers to be
+ aligned on the decimal character. Browsers do not currently support this
+ feature, so it is somewhat useless at the moment. It could be used in an
+ XSLT stylesheet for other output formats (e.g. LaTeX).</p></li>
+<li><p>To indicate that a cell should span multiple columns, there simply add
+ additional pipes (<code>|</code>) at the end of the cell, as shown in the example. If
+ the cell in question is at the end of the row, then of course that means
+ that pipes are not optional at the end of that row&#8230;.</p></li>
+<li><p>You can use normal Markdown markup within the table cells.</p></li>
+<li><p>Captions are optional, but if present must be at the beginning of the line
+ immediately preceding or following the table, start with <code>[</code>, and end with
+ <code>]</code>. If you have a caption before and after the table, only the first match
+ will be used.</p></li>
+<li><p>If you have a caption, you can also have a label, allowing you to create
+ anchors pointing to the table. If there is no label, then the caption acts
+ as the label</p></li>
+<li><p>Cells can be empty.</p></li>
+<li><p>You can create multiple <code>&lt;tbody&gt;</code> tags within a table by having a <strong>single</strong>
+ empty line between rows of the table. This allows your CSS to place
+ horizontal borders to emphasize different sections of the table.</p></li>
+<li><p>If there is no header for the first column, then cells in that column will
+ be treated as headers, and formatted as such.</p></li>
+</ul>
+
+<h3 id="footnotes">Footnotes</h3>
+
+<p>I have added support for footnotes to MultiMarkdown, using the syntax proposed
+by John Gruber. Note that there is no official support for footnotes yet, so
+the output format may change, but the input format sounds fairly stable.</p>
+
+<p>To create a footnote, enter something like the following:</p>
+
+<pre><code>Here is some text containing a footnote.[^somesamplefootnote]
+
+[^somesamplefootnote]: Here is the text of the footnote itself.
+
+[somelink]:http://somelink.com
+</code></pre>
+
+<p>The footnote itself must be at the start of a line, just like links by
+reference. If you want a footnote to have multiple paragraphs, lists, etc.,
+then the subsequent paragraphs need an extra tab preceding them. You may have
+to experiment to get this just right, and please let me know of any issues you
+find.</p>
+
+<p>This is what the final result looks like:</p>
+
+<blockquote>
+<p>Here is some text containing a footnote.<a href="#fn:1" id="fnref:1" title="see footnote" class="footnote">[1]</a></p>
+</blockquote>
+
+<h3 id="citations">Citations</h3>
+
+<p>I have included support for <em>basic</em> bibliography features in this version of
+MultiMarkdown. Please give me feedback on ways to improve this but keep the
+following in mind:</p>
+
+<ol>
+<li><p>Bibliography support in MultiMarkdown is rudimentary. The goal is to offer
+a basic standalone feature, that can be changed using the tool of your choice
+to a more robust format (e.g. BibTeX, CiteProc). My XSLT files demonstrate how
+to make this format compatible with BibTeX, but I am not planning on
+personally providing compatibility with other tools. Feel free to post your
+ideas and tools to the wiki.</p></li>
+<li><p>Those needing more detailed function sets for their bibliographies may need
+customized tools to provide those services. This is a basic tool that should
+work for most people. Reference librarians will probably not be satisfied
+however.</p></li>
+</ol>
+
+<p>To use citations in MultiMarkdown, you use a syntax much like that for
+anchors:</p>
+
+<pre><code>This is a statement that should be attributed to
+its source[p. 23][#Doe:2006].
+
+And following is the description of the reference to be
+used in the bibliography.
+
+[#Doe:2006]: John Doe. *Some Big Fancy Book*.  Vanity Press, 2006.
+</code></pre>
+
+<p>The HTML that is generated is as follows:</p>
+
+<pre><code>&lt;p&gt;This is a statement that should be attributed to its source
+&lt;span class=&quot;markdowncitation&quot;&gt; (&lt;a href=&quot;#Doe:2006&quot;&gt;1&lt;/a&gt;, &lt;span 
+class=&quot;locator&quot;&gt;p. 23&lt;/span&gt;)&lt;/span&gt;.&lt;/p&gt;
+
+&lt;p&gt;And following is the description of the reference to be used
+in the bibliography.&lt;/p&gt;
+
+&lt;div class=&quot;bibliography&quot;&gt;
+&lt;hr /&gt;
+&lt;p&gt;Bibliography&lt;/p&gt;
+
+&lt;div id=&quot;Doe:2006&quot;&gt;&lt;p&gt;[1] John Doe. &lt;em&gt;Some Big Fancy Book&lt;/em&gt;.
+Vanity Press, 2006.&lt;/p&gt;&lt;/div&gt;
+
+&lt;/div&gt;
+</code></pre>
+
+<p>You are not required to use a locator (e.g. p. 23), and there are
+no special rules on what can be used as a locator if you choose
+to use one. If you prefer to omit the locator, just use an empty
+set of square brackets before the citation:</p>
+
+<pre><code>This is a statement that should be attributed to its 
+source[][#Doe:2006].
+</code></pre>
+
+<p>There are no rules on the citation key format that you use (e.g. <code>Doe:2006</code>),
+but it must be preceded by a <code>#</code>, just like footnotes use <code>^</code>.</p>
+
+<p>As for the reference description, you can use Markup code within this section,
+and I recommend leaving a blank line afterwards to prevent concatenation of
+several references. Note that there is no way to reformat these references in
+different bibliography styles; for this you need a program designed for that
+purpose (e.g. BibTeX).</p>
+
+<p>If you want to include a source in your bibliography that was not cited, you
+may use the following:</p>
+
+<pre><code>[Not cited][#citekey]
+</code></pre>
+
+<p>The <code>Not cited</code> bit is not case sensitive.</p>
+
+<p>If you are creating a LaTeX document, the citations will be included, and
+natbib will be used by default. If you are not using BibTeX and are getting
+errors about your citations not being compatible with &#8216;Author-Year&#8217;, you can
+add the following to your documents metadata:</p>
+
+<pre><code>latex input:        mmd-natbib-plain
+</code></pre>
+
+<p>This changes the citation style in natbib to avoid these errors, and is useful
+when you include your citations in the MultiMarkdown document itself.</p>
+
+<h3 id="bibtex">BibTeX</h3>
+
+<p>If you are creating a LaTeX document, and need a bibliography, then you should
+definitely look into <a href="http://www.bibtex.org/">BibTeX</a> and
+<a href="http://merkel.zoneo.net/Latex/natbib.php">natbib</a>. It is beyond the scope of
+this document to describe how these two packages work, but it is possible to
+combine them with MultiMarkdown.</p>
+
+<p>To use BibTeX in a MultiMarkdown document, you need to use the <a href="#bibtex"><code>BibTeX</code>
+metadata</a> to specify where your citations are stored.</p>
+
+<p>Since <code>natbib</code> is enabled by default, you have a choice between using the
+<code>\citep</code> and <code>\citet</code> commands. The following shows how this relates to the
+MultiMarkdown syntax used.</p>
+
+<pre><code>[#citekey]    =&gt; ~\citep{citekey}
+[#citekey][]  =&gt; ~\citep{citekey}
+
+[foo][#citekey] =&gt; ~\citep[foo]{citekey}
+
+[foo\]\[bar][#citekey] =&gt; ~\citep[foo][bar]{citekey}
+
+
+[#citekey;]    =&gt; \citet{citekey}
+[#citekey;][]  =&gt; \citet{citekey}
+
+[foo][#citekey;] =&gt; \citet[foo]{citekey}
+
+[foo\]\[bar][#citekey;] =&gt; \citet[foo][bar]{citekey}
+</code></pre>
+
+<h3 id="definitionlists">Definition Lists</h3>
+
+<p>MultiMarkdown has support for definition lists using the same syntax used in
+<a href="http://www.michelf.com/projects/php-markdown/extra/">PHP Markdown Extra</a>. Specifically:</p>
+
+<pre><code>Apple
+:   Pomaceous fruit of plants of the genus Malus in 
+    the family Rosaceae.
+:   An american computer company.
+
+Orange
+:   The fruit of an evergreen tree of the genus Citrus.
+</code></pre>
+
+<p>becomes:</p>
+
+<blockquote>
+<dl>
+<dt>Apple
+</dt>
+<dd>Pomaceous fruit of plants of the genus Malus in
+ the family Rosaceae.</dd>
+
+<dd>An american computer company.</dd>
+
+<dt>Orange
+</dt>
+<dd>The fruit of an evergreen tree of the genus Citrus.</dd>
+</dl>
+
+</blockquote>
+
+<p>You can have more than one term per definition by placing each term on a
+separate line. Each definition starts with a colon, and you can have more than
+one definition per term. You may optionally have a blank line between the last
+term and the first definition.</p>
+
+<p>Definitions may contain other block level elements, such as lists,
+blockquotes, or other definition lists.</p>
+
+<p>Unlike PHP Markdown Extra, all definitions are wrapped in <code>&lt;p&gt;</code> tags. First, I
+was unable to get Markdown <em>not</em> to create paragraphs. Second, I didn&#8217;t see
+where it mattered - the only difference seems to be aesthetic, and I actually
+prefer the <code>&lt;p&gt;</code> tags in place. Let me know if this is a problem.</p>
+
+<p>See the <a href="http://www.michelf.com/projects/php-markdown/extra/">PHP Markdown Extra</a> page for more information.</p>
+
+<h3 id="math">Math</h3>
+
+<p>MultiMarkdown 2.0 used <a href="http://www1.chapman.edu/~jipsen/mathml/asciimath.html">ASCIIMathML</a> to typeset mathematical equations. There
+were benefits to using ASCIIMathML, but also some disadvantages.</p>
+
+<p>When rewriting for MultiMarkdown 3.0, there was no straightforward way to
+implement ASCIIMathML which lead me to look for alternatives. I settled on
+using <a href="http://www.mathjax.org/">MathJax</a>. The advantage here is that the same syntax is supported by
+MathJax in browsers, and in LaTeX. </p>
+
+<p>This does mean that math will need to be entered into MultiMarkdown documents
+using the LaTeX syntax, rather than ASCIIMathML.</p>
+
+<p>To enable MathJax support in web pages, you have to include a link to an
+active MathJax installation &#8212; setting this up is beyond the scope of this
+document, but it&#8217;s not too hard.</p>
+
+<p>Here&#8217;s an example of the metadata setup, and some math:</p>
+
+<pre><code>latex input:    mmd-article-header  
+Title:          MultiMarkdown Math Example  
+latex input:    mmd-article-begin-doc  
+latex footer:   mmd-memoir-footer  
+HTML header:    &lt;script type=&quot;text/javascript&quot;
+    src=&quot;http://example.net/mathjax/MathJax.js&quot;&gt;
+    &lt;/script&gt;
+
+
+An example of math within a paragraph --- \\({e}^{i\pi }+1=0\\)
+--- easy enough.
+
+And an equation on it's own:
+
+\\[ {x}_{1,2}=\frac{-b\pm \sqrt{{b}^{2}-4ac}}{2a} \\]
+
+That's it.
+</code></pre>
+
+<p>Here&#8217;s what it looks like in action (if you&#8217;re viewing this document in a
+supported format):</p>
+
+<blockquote>
+<p>An example of math within a paragraph &#8212; <span class="math">\({e}^{i\pi }+1=0\)</span>
+&#8212; easy enough.</p>
+
+<p>And an equation on it&#8217;s own:</p>
+
+<p><span class="math">\[ {x}_{1,2}=\frac{-b\pm \sqrt{{b}^{2}-4ac}}{2a} \]</span></p>
+
+<p>That&#8217;s it.</p>
+</blockquote>
+
+<h3 id="glossary">Glossary</h3>
+
+<p>MultiMarkdown has a feature that allows footnotes to be specified as glossary
+terms. It doesn&#8217;t do much for XHTML documents, but the XSLT file that converts
+the document into LaTeX is designed to convert these special footnotes into
+glossary entries.</p>
+
+<p>The glossary format for the footnotes is:</p>
+
+<pre><code>[^glossaryfootnote]: glossary: term (optional sort key)
+    The actual definition belongs on a new line, and can continue on
+    just as other footnotes.
+</code></pre>
+
+<p>The <code>term</code> is the item that belongs in the glossary. The <code>sort key</code> is
+optional, and is used to specify that the term should appear somewhere else in
+the glossary (which is sorted in alphabetical order).</p>
+
+<p>Unfortunately, it takes an extra step to generate the glossary when creating a
+pdf from a latex file:</p>
+
+<ol>
+<li><p>You need to have the <code>basic.gst</code> file installed, which comes with the
+memoir class.</p></li>
+<li><p>You need to run a special makeindex command to generate the <code>.glo</code> file:
+ <code>makeindex -s `kpsewhich basic.gst` -o &quot;filename.gls&quot; &quot;filename.glo&quot;</code></p></li>
+<li><p>Then you run the usual pdflatex command again a few times.</p></li>
+</ol>
+
+<p>Alternatively, you can use the code below to create an engine file for TeXShop
+(it belongs in <code>~/Library/TeXShop/Engines</code>). You can name it something like
+<code>MemoirGlossary.engine</code>. Then, when processing a file that needs a glossary,
+you typeset your document once with this engine, and then continue to process
+it normally with the usual LaTeX engine. Your glossary should be compiled
+appropriately. If you use <a href="http://www.uoregon.edu/~koch/texshop/" title="TeXShop Homepage">TeXShop</a>, this is the way to go.</p>
+
+<p><strong>Note</strong>: <em>Getting glossaries to work is a slightly more advanced LaTeX
+feature, and might take some trial and error the first few times.</em></p>
+
+<pre><code>#!/bin/ 
+
+set path = ($path /usr/local/teTeX/bin/powerpc-apple-darwin-current 
+    /usr/local/bin) # This is actually a continuation of the line above
+
+set basefile = `basename &quot;$1&quot; .tex`
+
+makeindex -s `kpsewhich basic.gst` -o &quot;${basefile}.gls&quot; &quot;${basefile}.glo&quot;
+</code></pre>
+
+<h3 id="rawhtml">Raw HTML</h3>
+
+<p>You can include raw (X)HTML within your document. Exactly what happens with
+these portions depends on the output format. You can also use the <code>markdown</code>
+attribute to indicate that MultiMarkdown processing should be applied within
+the block level HTML tag. This is in addition to the <code>--process-html</code> command
+line option that causes MultiMarkdown processing to occur within <em>all</em> block
+level HTML tags.</p>
+
+<p>For example:</p>
+
+<pre><code>&lt;div&gt;This is *not* MultiMarkdown&lt;/div&gt;
+
+&lt;div markdown=1&gt;This *is* MultiMarkdown&lt;/div&gt;
+</code></pre>
+
+<p>will produce the following without <code>--process-html</code>:</p>
+
+<pre><code>&lt;div&gt;This is *not* MultiMarkdown&lt;/div&gt;
+
+&lt;div&gt;This &lt;em&gt;is&lt;/em&gt; MultiMarkdown&lt;/div&gt;
+</code></pre>
+
+<p>and with <code>--process-html</code>:</p>
+
+<pre><code>&lt;div&gt;This is &lt;em&gt;not&lt;/em&gt; MultiMarkdown&lt;/div&gt;
+
+&lt;div&gt;This &lt;em&gt;is&lt;/em&gt; MultiMarkdown&lt;/div&gt;
+</code></pre>
+
+<p>However, the results may be different than anticipated when outputting to
+LaTeX or other formats. Normally, block level HTML will be ignored when
+outputting to LaTeX or ODF. The example above would produce the following,
+leaving out the first <code>&lt;div&gt;</code> entirely:</p>
+
+<pre><code>This \emph{is} MultiMarkdown
+</code></pre>
+
+<p>And this with <code>--process-html</code>:</p>
+
+<pre><code>This is \emph{not} MultiMarkdown
+This \emph{is} MultiMarkdown
+</code></pre>
+
+<p>You will also notice that the line breaks are different when outputting to
+LaTeX or ODF, and this can cause the contents of two <code>&lt;div&gt;</code> tags to be placed
+into a single paragraph.</p>
+
+<h2 id="howdoicustomizemultimarkdownoutput">How do I customize MultiMarkdown Output?</h2>
+
+<p>By default, I believe MultiMarkdown does a good job with the default output
+for the various output formats. That said, it is often desirable to customize
+the output to your specific needs.</p>
+
+<h3 id="htmlcustomization">HTML Customization</h3>
+
+<p>The easiest way to customize HTML output is to apply style information using
+<a href="http://en.wikipedia.org/wiki/CSS">CSS</a>. You can do this by linking to a CSS
+file with the <a href="#css"><code>CSS</code> metadata</a>, or by manually including style
+information in the form of the <a href="#htmlheader"><code>HTML Header</code> metadata</a>.</p>
+
+<p>A more advanced approach is to use <a href="http://en.wikipedia.org/wiki/XSLT">XSLT</a> to post-process the HTML output and
+customize it. You can also write scripts in whatever language you are most
+familiar with to process the output as desired. You can include these
+functions in your workflow in whatever method works best for you.</p>
+
+<h3 id="latexcustomization">LaTeX Customization</h3>
+
+<p>Similarly, you can customize the appearance of your LaTeX output when using
+MultiMarkdown. The most straightforward way is through the use of <a href="#latexinput"><code>LaTeX
+Input</code> metadata</a>. You can include whatever valid LaTeX code in
+these files that you desire, and you are limited only by your creativity. You
+can redefine common commands as needed. You can include various packages, or
+add default metadata. I recommend examining the samples in the <a href="https://github.com/fletcher/MultiMarkdown-Gallery">MultiMarkdown
+Gallery</a> to see some of the customizations I have used so far.</p>
+
+<p>In addition to customizing the output, there are several different &#8220;modes&#8221; of
+operation when MultiMarkdown outputs LaTeX. These modes can create various
+types of documents and rely on common packages. These modes can be specified with the <a href="#latexmode"><code>LaTeX Mode</code> metadata</a>.</p>
+
+<h4 id="defaultlatexmode">Default LaTeX Mode</h4>
+
+<p>The default mode of operation outputs fairly standard LaTeX that should be
+compatible with most basic document types and packages.</p>
+
+<h4 id="memoirlatexmode">Memoir LaTeX Mode</h4>
+
+<p>The <code>memoir</code> mode generates output designed to be compatible with the <a href="http://www.tex.ac.uk/ctan/macros/latex/contrib/memoir/">memoir
+package</a>. This package offers several advantages, and can be used to create
+books, reports, and other basic document formats.</p>
+
+<p>By default, this User&#8217;s Guide is processed into a PDF using the memoir class.</p>
+
+<h4 id="beamerlatexmode">Beamer LaTeX Mode</h4>
+
+<p>The <code>beamer</code> mode generates output designed to be compatible with the <a href="https://bitbucket.org/rivanvx/beamer/wiki/Home">beamer
+package</a>. This package allows you to easily create PDF slideshows (similar to
+Apple&#8217;s Keynote or Microsoft&#8217;s PowerPoint). I used it to create the &#8220;What is
+MultiMarkdown?&#8221; <a href="https://github.com/fletcher/MultiMarkdown-Gallery/raw/master/What-Is-MMD/what_is_mmd.pdf">slideshow</a>.</p>
+
+<h3 id="opmlcustomization">OPML Customization</h3>
+
+<p>There really isn&#8217;t anything to customize when creating an OPML document, since
+it&#8217;s really just a different way of formatting a MultiMarkdown text document.</p>
+
+<h3 id="opendocumentcustomization">OpenDocument Customization</h3>
+
+<p>OpenDocument files use style information in a way that&#8217;s similar to CSS for
+HTML. To embed custom style information, you can use the <a href="#odfheader"><code>ODF Header</code>
+metadata</a>. This will embed your XML into the header of the
+document. You&#8217;ll have to figure out the syntax of what to include on your own,
+but it&#8217;s not too difficult if you examine the source of the documents you are
+interested in emulating.</p>
+
+<p>Since the OpenDocument Flat Text file is an XML file, you could also use
+<a href="http://en.wikipedia.org/wiki/XSLT">XSLT</a> to customize the file as desired.</p>
+
+<h3 id="tipsandtricks">Tips and Tricks</h3>
+
+<p>There are some creative ways to tailor the output you get based on which
+format type you are exporting, particularly with HTML and LaTeX. These tricks
+make use of <a href="#multimarkdownandlatex">raw LaTeX</a>, and <a href="#rawhtml">raw HTML</a>.</p>
+
+<p>Experiment and you can come up with some creative things!</p>
+
+<h2 id="multimarkdownoutputformats">MultiMarkdown Output Formats</h2>
+
+<p>MultiMarkdown can output to various formats. The default behavior for each
+format should be pretty good, but each format does have it&#8217;s own unique
+characteristics that sometimes need adjustment.</p>
+
+<h3 id="html">HTML</h3>
+
+<p>HTML is the &#8220;default&#8221; format for outputting MultiMarkdown documents, so it&#8217;s
+behavior is generally the most predictable.</p>
+
+<h3 id="latex">LaTeX</h3>
+
+<p>LaTeX is the second oldest output format for MultiMarkdown, so many issues
+have been worked out.</p>
+
+<h3 id="opendocument">OpenDocument</h3>
+
+<p>OpenDocument Text, or more specifically Flat XML or <code>.fodt</code>, is a newer format
+for MultiMarkdown, so there may still be a few kinks to be worked out.</p>
+
+<h4 id="images">Images</h4>
+
+<p>When outputting to OpenDocument, images are &#8220;linked&#8221; to in much the same way
+as when creating HTML. The images are not actually embedded in the document
+itself by default. This means, that if you wanted to share the document with
+someone else, you would also have to share the images.</p>
+
+<p>The advantage is that the images will automatically be updated if the original
+is changed.</p>
+
+<p>If you want to embed the images into the document, then you can use the
+<code>Edit:Links:Break Link</code> menu item (or something similar depending on your
+application) to embed each image as desired.</p>
+
+<h4 id="imagesize">Image size</h4>
+
+<p>Images work best in OpenDocument when both a height and width attribute are
+specified. If only a width or height is specified, then things will work, but
+the image might not look correct. If you specify a dimension as a percentage,
+you may have to manually adjust the image to fit the guidelines provided in
+the document.</p>
+
+<h3 id="opml">OPML</h3>
+
+<p>OPML, or Outline Processor Markup Language, is a basic format that is useful
+for importing and exporting from various outlining programs (e.g
+<a href="http://www.omnigroup.com/applications/omnioutliner/">OmniOutliner</a>). When
+used with MultiMarkdown, you can switch back and forth from an outliner and
+text editor as necessary to work on a document. The text editor will likely be
+easier for writing your prose, and the outliner may be easier when rearranging
+the structure of your document.</p>
+
+<h4 id="irregularhierarchyissues">&#8220;Irregular&#8221; hierarchy issues</h4>
+
+<p>When using an Outliner, each level in the document (e.g. <code>h1</code>, <code>h2</code>, etc.) is
+a child of a parent that is one level &#8220;higher&#8221; than the child. For example:</p>
+
+<pre><code>## Second Level ##
+
+### Third level ###
+
+This is a child of the level 2 parent, &quot;Second Level&quot;
+</code></pre>
+
+<p>It causes problems if you were to try and &#8220;skip&#8221; a level:</p>
+
+<pre><code>## Second Level ##
+
+#### Fourth level ####
+
+This is *not* a child of the level 2 parent, &quot;Second Level&quot;
+</code></pre>
+
+<p>If you use <code>multimarkdown</code> to process a text file containing such &#8220;skips&#8221; into
+an OPML, any &#8220;orphaned&#8221; levels will not be included in the output. This can be
+seen as a feature, or a limitation depending on your needs.</p>
+
+<h2 id="whatsdifferentinmultimarkdown3.0">What&#8217;s different in MultiMarkdown 3.0?</h2>
+
+<h3 id="whycreateanotherversionofmultimarkdown">Why create another version of MultiMarkdown?</h3>
+
+<ul>
+<li><p>Maintaining a growing collection of nested regular expressions was going to
+ become increasingly difficult. I don&#8217;t plan on adding much (if any) in the
+ way of new syntax features, but it was a mess.</p></li>
+<li><p>Performance on longer documents was poor. The nested perl regular
+ expressions was slow, even on a relatively fast computer. Performance on
+ something like an iPhone would probably have been miserable.</p></li>
+<li><p>The reliance on Perl made installation fairly complex on Windows. That
+ didn&#8217;t bother me too much, but it is a factor.</p></li>
+<li><p>Perl can&#8217;t be run on an iPhone/iPad, and I would like to be able to have
+ MultiMarkdown on an iOS device, and not just regular Markdown (which exists
+ in C versions).</p></li>
+<li><p>I was interested in learning about PEG&#8217;s and revisiting C programming.</p></li>
+<li><p>The syntax has been fairly stable, and it would be nice to be able to
+ formalize it a bit &#8212; which happens by definition when using a PEG.</p></li>
+<li><p>I wanted to revisit the syntax and features and clean things up a bit.</p></li>
+<li><p>Did I mention how much faster this is? And that it could (eventually) run on
+ an iPhone?</p></li>
+</ul>
+
+<h3 id="completedocumentsvs.snippets">&#8220;Complete&#8221; documents vs. &#8220;snippets&#8221;</h3>
+
+<p>A &#8220;snippet&#8221; is a section of HTML (or LaTeX) that is not a complete,
+fully-formed document. It doesn&#8217;t contain the header information to make it a
+valid XML document. It can&#8217;t be compiled with LaTeX into a PDF without further
+commands.</p>
+
+<p>For example:</p>
+
+<pre><code># This is a header #
+
+And a paragraph.
+</code></pre>
+
+<p>becomes the following HTML snippet:</p>
+
+<pre><code>&lt;h1 id=&quot;thisisaheader&quot;&gt;This is a header&lt;/h1&gt;
+
+&lt;p&gt;And a paragraph.&lt;/p&gt;
+</code></pre>
+
+<p>and the following LaTeX snippet:</p>
+
+<pre><code>\part{This is a header}
+\label{thisisaheader}
+
+
+And a paragraph.
+</code></pre>
+
+<p>It was not possible to create a LaTeX snippet with the original MultiMarkdown,
+because it relied on having a complete XHTML document that was then converted
+to LaTeX via an XSLT document (requiring a whole separate program). This was
+powerful, but complicated.</p>
+
+<p>Now, I have come full-circle. peg-multimarkdown will now output LaTeX
+directly, without requiring XSLT. This allows the creation of LaTeX snippets,
+or complete documents, as necessary.</p>
+
+<p>To create a complete document, simply include metadata. You can include a
+title, author, date, or whatever you like. If you don&#8217;t want to include any
+real metadata, including &#8220;format: complete&#8221; will still trigger a complete
+document, just like it used to.</p>
+
+<p><strong>NOTE</strong>: If the <em>only</em> metadata present is <code>Base Header Level</code> then a
+complete document will not be triggered. This can be useful when combining
+various documents together.</p>
+
+<p>The old approach (even though it was hidden from most users) was a bit of a
+kludge, and this should be more elegant, and more flexible.</p>
+
+<h3 id="metadatadifferences">Metadata Differences</h3>
+
+<p>When metadata was repeated in MultiMarkdown 2.0, the second instance
+&#8220;overwrote&#8221; the first instance. In MultiMarkdown 3.0, each instance of a
+repeated metadata key is used. This is necessary for something like <code>LaTeX
+Input</code> which can require multiple instances.</p>
+
+<p>This means you can&#8217;t &#8220;erase&#8221; an unnecessary metadata value by including a
+second, empty, copy. This was a trick used, for example, to erase undesired
+style information inserted into the document by older versions of Scrivener.</p>
+
+<h3 id="creatinglatexdocuments">Creating LaTeX Documents</h3>
+
+<p>LaTeX documents are created a bit differently than under the old system. You
+no longer have to use an XSLT file to convert from XHTML to LaTeX. You can go
+straight from MultiMarkdown to LaTeX, which is faster and more flexible.</p>
+
+<p>To create a complete LaTeX document, you can process your file as a snippet,
+and then place it in a LaTeX template that you already have. Alternatively,
+you can use metadata to trigger the creation of a complete document. You can
+use the <code>LaTeX Input</code> metadata to insert a <code>\input{file}</code> command. You can
+then store various template files in your texmf directory and call them with
+metadata, or with embedded raw LaTeX commands in your document. For example:</p>
+
+<pre><code>LaTeX Input:        mmd-memoir-header  
+Title:              Sample MultiMarkdown Document  
+Author:             Fletcher T. Penney  
+LaTeX Mode:         memoir  
+LaTeX Input:        mmd-memoir-begin-doc  
+LaTeX Footer:       mmd-memoir-footer  
+</code></pre>
+
+<p>This would include several template files in the order that you see. The
+<code>LaTeX Footer</code> metadata inserts a template at the end of your document. Note
+that the order and placement of the <code>LaTeX Include</code> statements is important.</p>
+
+<p>The <code>LaTeX Mode</code> metadata allows you to specify that MultiMarkdown should use
+the <code>memoir</code> or <code>beamer</code> output format. This places subtle differences in the
+output document for compatibility with those respective classes.</p>
+
+<p>This system isn&#8217;t quite as powerful as the XSLT approach, since it doesn&#8217;t
+alter the actual MultiMarkdown to LaTeX conversion process. But it is probably
+much more familiar to LaTeX users who are accustomed to using <code>\input{}</code>
+commands and doesn&#8217;t require knowledge of XSLT programming.</p>
+
+<p>I recommend checking out the default <a href="https://github.com/fletcher/peg-multimarkdown-latex-support">LaTeX Support Files</a> that are available
+on github. They are designed to serve as a starting point for your own needs.</p>
+
+<p><strong>Note</strong>: You can still use this version of MultiMarkdown to convert text into
+XHTML, and then process the XHTML using XSLT to create a LaTeX document, just
+like you used to in MMD 2.0.</p>
+
+<h3 id="images">Images</h3>
+
+<p>In HTML, images have three pieces of &#8220;metadata&#8221; relevant to MMD &#8212; <code>alt</code>,
+<code>title</code>, and <code>id</code>. In Markdown and MultiMarkdown 2.0, these were structured in
+the following manner:</p>
+
+<pre><code>This is an image ![alt text](file.png &quot;This is a title&quot;)
+</code></pre>
+
+<p>In MultiMarkdown 2.0, the &#8220;alt text&#8221; was processed to &#8220;alttext&#8221; and used as an
+<code>id</code> attribute.</p>
+
+<p>The problem was that LaTeX, and later on ODF, didn&#8217;t really need the <code>alt</code> or
+<code>title</code> metadata &#8212; those formats really needed a <em>caption</em> instead. Using a
+caption in some formats, but not others, leads to strange inconsistencies in
+the documents created from the same MultiMarkdown source. And while I
+understand the differences between the <code>alt</code> and <code>title</code> attributes, it really
+doesn&#8217;t make a lot of sense.</p>
+
+<p>So instead, in MultiMarkdown 3.0, the following is used instead:</p>
+
+<pre><code>This is an image ![This is alt text](file.png &quot;This is a title&quot;)
+
+or
+
+This is an image ![Another *alt*][fig]
+
+![This is a *caption*][fig2]
+
+The following image has no `alt` or `caption`:
+
+![][fig2]
+
+[fig]: file2.png &quot;This is another title&quot;
+[fig2]: file3.png &quot;This is another title&quot;
+</code></pre>
+
+<p>The <code>id</code> attribute comes into play when an image is specified as a reference.
+This allows you to link to the image from elsewhere in your document.</p>
+
+<p>When an image is the only thing constituting a paragraph, it is becomes
+wrapped in a <code>&lt;figure&gt;</code> tag, and instead of an <code>alt</code> attribute, it has a
+caption. This is demonstrated by <code>fig2</code> above. This caption is used regardless
+of output format, providing consistency between HTML, LaTeX, and ODF. When
+this happens, the alt tag is a stripped down version of the caption, since it
+can&#8217;t have any markup applied.</p>
+
+<p>So, in MultiMarkdown 3.0, there are now 4 pieces of metadata &#8212; <code>alt</code>,
+<code>title</code>, <code>id</code>, and an optional <code>caption</code>. There are only three places to
+describe this metadata, so one piece has to be duplicated. Currently, the
+<code>alt</code> is a duplicate of the <code>caption</code>, sans any markup. If an image is
+contained within a paragraph, an <code>alt</code> attribute is created, but no <code>caption</code>.</p>
+
+<p>An alternative plan I am considering is to use what currently generates the
+<code>title</code> attribute to instead generate the <code>alt</code> attribute in all instances,
+and the caption can be ignored if an image is not considered a figure.</p>
+
+<h3 id="footnotes">Footnotes</h3>
+
+<p>Footnotes work slightly differently than before. This is partially on purpose,
+and partly out of necessity. Specifically:</p>
+
+<ul>
+<li><p>Footnotes are anchored based on number, rather than the label used in the
+ MMD source. This won&#8217;t show a visible difference to the reader, but the
+ XHTML source will be different.</p></li>
+<li><p>Footnotes can be used more than once. Each reference will link to the same
+ numbered note, but the &#8220;return&#8221; link will only link to the first instance.</p></li>
+<li><p>Footnote &#8220;return&#8221; links are a separate paragraph after the footnote. This is
+ due to the way peg-markdown works, and it&#8217;s not worth the effort to me to
+ change it. You can always use CSS to change the appearance however you like.</p></li>
+<li><p>Footnote numbers are surrounded by &#8220;[]&#8221; in the text.</p></li>
+</ul>
+
+<h3 id="rawhtml">Raw HTML</h3>
+
+<p>Because the original MultiMarkdown processed the text document into XHTML
+first, and then processed the entire XHTML document into LaTeX, it couldn&#8217;t
+tell the difference between raw HTML and HTML that was created from plaintext.
+This version, however, uses the original plain text to create the LaTeX
+document. This means that any raw HTML inside your MultiMarkdown document is
+<strong>not</strong> converted into LaTeX.</p>
+
+<p>The benefit of this is that you can embed one piece of the document in two
+formats &#8212; one for XHTML, and one for LaTeX:</p>
+
+<pre><code>&lt;blockquote&gt;
+&lt;p&gt;Release early, release often!&lt;/p&gt;
+&lt;blockquote&gt;&lt;p&gt;Linus Torvalds&lt;/p&gt;&lt;/blockquote&gt;
+&lt;/blockquote&gt;
+
+&lt;!-- \epigraph{Release early, release often!}{Linus Torvalds} --&gt;
+</code></pre>
+
+<p>In this section, when the document is converted into XHTML, the <code>blockquote</code>
+sections will be used as expected, and the <code>epigraph</code> will be ignored since it
+is inside a comment. Conversely, when processed into LaTeX, the raw HTML will
+be ignored, and the comment will be processed as raw LaTeX.</p>
+
+<p>You shouldn&#8217;t need to use this feature, but if you want to specify exactly how
+a certain part of your document is processed into LaTeX, it&#8217;s a neat trick.</p>
+
+<h3 id="mathsupport">Math Support</h3>
+
+<p>MultiMarkdown 2.0 supported <a href="http://www1.chapman.edu/~jipsen/mathml/asciimath.html">ASCIIMathML</a> embedded with MultiMarkdown
+documents. This syntax was then converted to MathML for XHTML output, and then
+further processed into LaTeX when creating LaTeX output. The benefit of this
+was that the ASCIIMathML syntax was pretty straightforward. The downside was
+that only a handful of browsers actually support MathML, so most of the time
+it was only useful for LaTeX. Many MMD users who are interested in LaTeX
+output already knew LaTeX, so they sometimes preferred native math syntax,
+which led to several hacks.</p>
+
+<p>MultiMarkdown 3.0 does not have built in support for ASCIIMathML. In fact, I
+would probably have to write a parser from scratch to do anything useful with
+it, which I have little desire to do. So I came up with a compromise.</p>
+
+<p>ASCIIMathML is no longer supported by MultiMarkdown. Instead, you <em>can</em> use
+LaTeX to code for math within your document. When creating a LaTeX document,
+the source is simply passed through, and LaTeX handles it as usual. <em>If</em> you
+desire, you can add a line to your header when creating XHTML documents that
+will allow <a href="http://www.mathjax.org/">MathJax</a> to appropriately display your math.</p>
+
+<p>Normally, MathJax <em>and</em> LaTeX supported using <code>\[ math \]</code> or <code>\( math \)</code> to
+indicate that math was included. MMD stumbled on this due to some issues with
+escaping, so instead we use <code>\\[ math \\]</code> and <code>\\( math \\)</code>. See an
+example:</p>
+
+<pre><code>latex input:    mmd-article-header  
+Title:          MultiMarkdown Math Example  
+latex input:    mmd-article-begin-doc  
+latex footer:   mmd-memoir-footer  
+xhtml header:   &lt;script type=&quot;text/javascript&quot;
+    src=&quot;http://localhost/~fletcher/math/mathjax/MathJax.js&quot;&gt;
+    &lt;/script&gt;
+
+
+An example of math within a paragraph --- \\({e}^{i\pi }+1=0\\)
+--- easy enough.
+
+And an equation on it's own:
+
+\\[ {x}_{1,2}=\frac{-b\pm \sqrt{{b}^{2}-4ac}}{2a} \\]
+
+That's it.
+</code></pre>
+
+<p>You would, of course, need to change the <code>xhtml header</code> metadata to point to
+your own installation of MathJax.</p>
+
+<p><strong>Note</strong>: MultiMarkdown doesn&#8217;t actually <em>do</em> anything with the code inside
+the brackets. It simply strips away the extra backslash and passes the LaTeX
+source unchanged, where it is handled by MathJax <em>if</em> it&#8217;s properly installed,
+or by LaTeX. If you&#8217;re having trouble, you can certainly email the
+<a href="http://groups.google.com/group/multimarkdown/">MultiMarkdown Discussion List</a>, but I do not provide support for LaTeX code.</p>
+
+<h2 id="knownissues">Known Issues</h2>
+
+<h3 id="non-asciicharactersrequirecompletehtmldocument">Non-ASCII characters require complete HTML document</h3>
+
+<p>In order for Non-ASCII characters to display properly in most browsers, there
+needs to be some indication of the character set being used. Without getting
+into too many technical details, the easiest way to get HTML output to
+display properly is to include metadata that will trigger a complete document,
+e.g. a <code>Title</code>.</p>
+
+<h3 id="opendocumentdoesntproperlysupportimagedimensions">OpenDocument doesn&#8217;t properly support image dimensions</h3>
+
+<p>It&#8217;s relatively easy to insert an image into ODF using fixed dimensions, but
+harder to get a scaled image without knowing the exact aspect ratio of the
+image.</p>
+
+<p>For example, in LaTeX or HTML, one can specify that image should be scaled to
+50% of the width, and have it automatically calculate the proper height. This
+does not work in ODF, at least not that I can find.</p>
+
+<p>You have to manually adjust the image to fit your desired constraint. It&#8217;s
+easy to do, simply hold down the shift key while adjusting the image size, and
+it will likely snap to match the specified dimension.</p>
+
+<p>I welcome suggestions on a better way to do this.</p>
+
+<h3 id="mathsupportlackinginopendocument">Math Support lacking in OpenDocument</h3>
+
+<p>I figured out how to embed MathML in an OpenDocument file. There are several
+tools to convert LaTeX to MathML, including blahtex.</p>
+
+<p>I&#8217;ll probably start by writing a perl utility that can take a MMD-created ODF,
+and then parse the math &#8220;bits&#8221; out and put them back in as MathML.</p>
+
+<p>Even better would be if I could figure out how to compile blahtex into
+multimarkdown as a library to do the processing internally&#8230;. Not sure how
+long that will take to get around to. Anyone with any particular skills in
+that area who wants to help - let me know!</p>
+
+<h3 id="bibliographysupportlackinginopendocument">Bibliography support lacking in OpenDocument</h3>
+
+<p>There is no automatic processing of citations when creating an OpenDocument
+file. Suggestions are welcome, as I would like to come up with a reasonable
+solution, if possible.</p>
+
+<h3 id="opmldoesnthandleskippedlevels">OPML doesn&#8217;t handle &#8220;skipped&#8221; levels</h3>
+
+<p>When converting a MMD text file to OPML with the mmd binary, each level only
+contains it&#8217;s direct children. For example:</p>
+
+<pre><code># First Level #
+
+## Second Level  ##
+
+### Third Level ###
+
+## Another Second Level ##
+
+#### Fourth Level ####
+</code></pre>
+
+<p>When this is converted to OPML, the &#8220;Fourth Level&#8221; item will be deleted, since it skips a level from its parent, &#8220;Another Second Level&#8221;.</p>
+
+<p>It&#8217;s possible to fix this, but it&#8217;s going to take a more complicated algorithm than what I currently have and it&#8217;s not a high priority for me to fix at the moment.</p>
+
+<p>As always, suggestions welcome.</p>
+
+<h2 id="faq">FAQ</h2>
+
+<p>Answers to common questions about MultiMarkdown. Contributions welcome!</p>
+
+<p><strong>NOTE</strong>: This section of the documentation is still quite a mess. Please feel
+free to contribute to fixing it up on the <a href="https://github.com/fletcher/peg-multimarkdown/wiki/User's-Manual">wiki</a>.</p>
+
+<h3 id="macosxfaq">Mac OS X FAQ</h3>
+
+<h4 id="textmate-prefs">MultiMarkdown won&#8217;t work with TextMate</h4>
+
+<p>If you get this error:</p>
+
+<pre><code>/bin/bash: line 2: multimarkdown: command not found
+</code></pre>
+
+<p>then you need to set the path properly in your preferences to include <code>/usr/local/bin</code> as shown in the <a href="#prefs">screenshot</a>.</p>
+
+<figure>
+<img src="TextMate-prefs.png" alt="This is a screenshot of the relevant preferences" id="prefs" style="height:402px;width:450px;" />
+<figcaption>This is a screenshot of the relevant preferences</figcaption></figure>
+
+
+
+<h3 id="windowsfaq">Windows FAQ</h3>
+
+<h4 id="howdoicreateadraganddropappforwindows">How do I create a Drag and Drop app for Windows?</h4>
+
+<p>Under Windows XP, go to the location where you would like to place the
+shortcut, and then:</p>
+
+<ul>
+<li>right-click</li>
+<li>select &#8220;New-&gt;Shortcut&#8221;</li>
+<li>enter &#8220;multimarkdown&#8221; as the location of the item</li>
+<li>choose the desired name for the shortcut</li>
+<li>right-click on the new shortcut and select &#8220;Properties&#8221;</li>
+<li>you can then add any desired command-line options at the end of the &#8220;Target&#8221;
+ property &#8212; you should definitely include &#8220;-b&#8221; to enable batch mode. The
+ others are up to you.</li>
+</ul>
+
+<h3 id="linuxfaq">Linux FAQ</h3>
+
+<h3 id="htmlfaq">HTML FAQ</h3>
+
+<h4 id="whenitrytoconverttohtmlmydocumentendsupinthemetadata">When I try to convert to HTML, my document ends up in the metadata</h4>
+
+<p>You are using an automated tool to create &#8220;complete&#8221; content. The tool is
+adding the <code>format: complete</code> metadata for you, but you don&#8217;t have any other
+metadata in your document.</p>
+
+<p>Start your document with a blank line to indicate that there is no more
+metadata.</p>
+
+<p>This should only happen with tools designed for MultiMarkdown 2.0</p>
+
+<h3 id="latexfaq">LaTeX FAQ</h3>
+
+<h4 id="process-latex">What is LaTeX and how do I use it?</h4>
+
+<p><a href="http://en.wikipedia.org/wiki/LaTeX">LaTeX</a> is a syntax for describing how to
+convert marked up plain text into high-quality, typeset documents.
+MultiMarkdown uses LaTeX to generate PDF&#8217;s from your MMD document.</p>
+
+<p>Of note, MultiMarkdown does not process LaTeX files for you. It generates
+them, and relies on you to convert the LaTeX into a PDF. The exact commands
+you need may vary, but I use the following sequence in my helper script to
+include all the features I use.</p>
+
+<pre><code>latexmk file.tex            # This command will do most of the work
+makeglossaries file.tex     # process glossary entries if they exist
+pdflatex file.tex           # I found that sometimes an extra run
+pdflatex file.tex           # or two is needed
+latexmk -c file.tex         # clean up a bunch of the temp files
+</code></pre>
+
+<h4 id="raw">How can I use raw LaTeX (or other code) with MultiMarkdown?</h4>
+
+<p>Anything placed in an HTML comment will be passed along unaltered - this can
+include raw LaTeX code. For example:</p>
+
+<pre><code>This is raw LaTeX: &lt;!-- e^{i \cdot \pi} = -1 --&gt;
+</code></pre>
+
+<p>will generate:</p>
+
+<pre><code>This is raw LaTeX: e^{i \cdot \pi} = -1 
+</code></pre>
+
+<p>See the section on <a href="#multimarkdownandlatex">MultiMarkdown and LaTeX</a> for more information.</p>
+
+<h4 id="latexwontcompile">My LaTeX won&#8217;t compile &#8212; what&#8217;s wrong?</h4>
+
+<p>First - the vast majority of the time, this is not really a MMD problem, but
+rather a LaTeX problem, or (honestly) user error. Very occasionally, there are
+instances where MMD produces invalid LaTeX output when given unusual input,
+but these are rare.</p>
+
+<p>Check to make sure you have proper metadata configured to allow your LaTeX to
+compile. See sample documents from the <a href="https://github.com/fletcher/MultiMarkdown-Gallery">MultiMarkdown Gallery</a> for some
+examples of what metadata is required for various document types/</p>
+
+<p>If you are having problems with a more &#8220;complicated&#8221; MMD tool (such as the
+TextMate bundle, or the Drag and Drop versions), use the command line approach
+when you are really having difficulties. See if your document will compile to
+HTML using the <code>MultiMarkdown.pl</code> utility. Once you&#8217;ve got that working, try
+moving on to LaTeX, and then a PDF (if that&#8217;s your goal).</p>
+
+<p>If that doesn&#8217;t work, you need to track down the source of the error. The best
+approach is similar to the old program Conflict Catcher. Keep dividing your
+document into halves, and test each half. One half will likely compile without
+complaint, and the other won&#8217;t. Take the problem half, and repeat this process
+until you are able to find the paragraph, sentence, word that causes the
+error.</p>
+
+<p>Using a real text editor (e.g. <a href="http://macromates.com/">TextMate</a>), examine
+the trouble section and make sure to view the invisible characters, and look
+for something odd. If you can&#8217;t do that, you can also delete the faulty
+sentence and retype it (<em>don&#8217;t</em> copy and paste &#8212; you&#8217;ll simply replicate the
+problem).</p>
+
+<p>If none of that fixes your problem, post the problem section to the
+<a href="http://groups.google.com/group/multimarkdown">MultiMarkdown Discussion List</a>
+and you will likely find out what you&#8217;re doing wrong. Or perhaps you found an
+error and I will fix it. ;)</p>
+
+<h4 id="mate-pdf">TextMate won&#8217;t produce a PDF</h4>
+
+<p>MultiMarkdown 2.0 included a command to create a PDF &#8220;automagically&#8221; from a
+MultiMarkdown file. This led to a lot of confusion and questions from users
+who didn&#8217;t understand what was going (e.g. that MMD creates a LaTeX file, and
+that pdflatex then creates the PDF).</p>
+
+<p>MultiMarkdown 3.0 does not <em>officially</em> support the creation of a PDF. It
+supports the creation of a <em>LaTeX</em> file. You are then responsible for creating
+the PDF.</p>
+
+<p>That said, there is a script <code>mmd2pdf</code> that runs some of those commands for
+you. If you have trouble with it, you&#8217;re on your own. Try running the
+appropriate LaTeX commands in the Terminal by hand to create your PDF.</p>
+
+<h3 id="opmlfaq">OPML FAQ</h3>
+
+<h3 id="opendocumentfaq">OpenDocument FAQ</h3>
+
+<h3 id="syntaxfaq">Syntax FAQ</h3>
+
+<h4 id="howdoisplitamultimarkdowndocumentintoseveralparts">How do I split a MultiMarkdown document into several parts?</h4>
+
+<p>MultiMarkdown is designed to process a single document at a time, but
+sometimes it can be useful to split a longer document into multiple parts. For
+example, this User&#8217;s Guide is split into multiple pages on a wiki, and then
+combined for processing with MultiMarkdown.</p>
+
+<p>In the <a href="https://github.com/fletcher/MMD-Support">MMD-Support</a> package, there
+is a utility script <code>mmd_merge</code> that can stitch multiple text files together.
+It reads an input file that describes which files need to be combined, in what
+order, and at what &#8220;level&#8221;. This allows you to ensure that header levels are
+adjusted appropriately when the document is combined.</p>
+
+<p>For example, the <code>index.txt</code> file used to combine this User&#8217;s Guide is:</p>
+
+<pre><code># User's guide #
+
+metadata.txt
+
+Introduction.md
+
+How-do-I-install-MultiMarkdown?.md
+
+How-do-I-use-MultiMarkdown?.md
+
+How-do-I-create-a-MultiMarkdown-document?.md
+
+How-do-I-customize-MultiMarkdown-Output?.md
+
+MultiMarkdown-Output-Formats.md
+
+What's-different-in-MultiMarkdown-3.0?.md
+
+Known-Issues.md
+
+FAQ.md
+
+Acknowledgments.md
+</code></pre>
+
+<p>As you see above, I use a separate text file for storing metadata. Lines that
+begin with <code>#</code> are considered comments.</p>
+
+<p>If you want to indicate that a certain file should have it&#8217;s header levels
+increased, you can insert one or more tab characters before the filename. This
+is analogous to changing the <code>Base Header Level</code> metadata for that file.</p>
+
+<p><strong>NOTE</strong>: <code>mmd_merge</code> is a Perl script, so it requires that you have Perl
+installed in order to use it.</p>
+
+<h4 id="howdoilinktoanimage">How do I link to an image?</h4>
+
+<p>If you want to link to an image included in your document, you should define
+the image using the reference syntax:</p>
+
+<pre><code>This is an image ![Alt Text][image label].
+
+[image label]: /path/to/image.png &quot;This is a title&quot;
+
+And now a link the desired [image](#imagelabel).
+</code></pre>
+
+<h4 id="referenceidsdontworkwithhyphens">Reference id&#8217;s don&#8217;t work with hyphens</h4>
+
+<p>Without getting too technical, you have to be careful when including multiple
+hyphens and specifying links or images by reference.</p>
+
+<pre><code>This is an ![image-1].
+
+This is the same image, but looks different --- ![image--1].
+
+This is a different image ![image---1].
+
+[image-1]: file.png     &quot;This is used&quot;
+[image--1]: file2.png   &quot;This is ignored&quot;
+[image---1]: file3.png  &quot;This is used&quot;
+</code></pre>
+
+<p>This is because <code>-</code> and <code>--</code> are both converted to <code>en-dash</code>, whereas <code>---</code> is
+an <code>em-dash</code>.</p>
+
+<h3 id="generalfaq">General FAQ</h3>
+
+<h4 id="howdoiinstallmmd">How do I install MMD?</h4>
+
+<p>Please see <a href="#howdoiinstallmultimarkdown">How do I install MultiMarkdown?</a>.</p>
+
+<h4 id="howcanibetterlearnthemultimarkdownsyntax">How can I better learn the MultiMarkdown Syntax?</h4>
+
+<p>The syntax of MultiMarkdown can be a challenge for beginners especially when
+it comes to using Table and Link syntax. The challenge comes in understanding
+how it looks <em>after</em> the conversion.</p>
+
+<p>For Mac users, you can download a free program NValt
+(<a href="http://brettterpstra.com/code/">http://brettterpstra.com/code/</a>) that contains a preview mode. Thus, you can
+enter your markdown with a dynamic preview window to show how the formatting
+appears. I&#8217;ve found this useful until I was comfortable with the syntax.</p>
+
+<p>Note also that MultiMarkdown can also be installed to MarsEdit
+(<a href="http://red-sweater.com/marsedit/">http://red-sweater.com/marsedit/</a>) which also has a preview mode. This is
+even more effective for for bloggers as it will handle inline image upload to
+most popular blog software and display the interpreted output of your MMD
+syntax.</p>
+
+<p>If you&#8217;re interested in web based learning, you may want to try
+<a href="http://peg.gd/">http://peg.gd/</a> which provides a web site for writing in Markdown syntax and
+display. You can also save the pages for forwarding to other people.</p>
+
+<p>For the reverse requirement, you can visit <a href="http://heckyesmarkdown.com/">http://heckyesmarkdown.com/</a> which
+will attempt to take a given HTML Page and convert it into Markdown, usually
+with good accuracy.</p>
+
+<h4 id="caniusemultimarkdownonaniphoneipad">Can I use MultiMarkdown on an iPhone/iPad?</h4>
+
+<p>There are a number of programs available for use on the iPhone and iPad that
+support regular Markdown, but not MultiMarkdown (yet!).</p>
+
+<p><a href="http://www.secondgearsoftware.com/elements/">Elements</a> is a iPhone / iPad app
+that also has a markdown preview mode. Second Gear has also made
+<a href="http://www.secondgearsoftware.com/markdownmail/">MarkdownMail</a> which is
+simpler, but also very usable for learning Markdown.</p>
+
+<p><a href="http://www.textasticapp.com/">Textastic</a> is a syntax highlighting text editor
+for the iPad that includes a preview mode for Markdown. It will even preview
+MathJax equations if you include the proper metadata and a working MathJax
+installation!</p>
+
+<p>Now that MultiMarkdown is available in C (as of version 3.0), I would like to
+work on modifying it to work with iOS.</p>
+
+<h4 id="howdoitroubleshootanerror">How do I troubleshoot an error?</h4>
+
+<p>First, check some basics:</p>
+
+<ul>
+<li>are you using MultiMarkdown 2.0, or 3.0?</li>
+<li>are you using the latest release of your version?</li>
+<li>if you are using an application (Scrivener, TextMate, etc) does
+ MultiMarkdown work from the command line?</li>
+<li>if you&#8217;re using LaTeX, did you install the proper support files?</li>
+<li>did you read the User&#8217;s Manual? (Yes &#8212; I hate manuals too, but some
+ aspects of MultiMarkdown can be rather complex, and that&#8217;s where most
+ questions come up)</li>
+<li>is this a known issue on <a href="https://github.com/fletcher/peg-multimarkdown/issues">github</a>, or the <a href="http://groups.google.com/group/multimarkdown/">discussion
+ list</a>?</li>
+</ul>
+
+<p>If you&#8217;re still having a problem, you first have to figure out what sort of
+error you&#8217;re having:</p>
+
+<ul>
+<li><p>The source document crashes multimarkdown &#8212; this is <em>very</em> rare and can be
+ confirmed by trying to convert text to HTML. Use the &#8220;[Divide and Conquer]&#8221;
+ approach to find the problem portion of the document and send it to the
+ discussion list.</p></li>
+<li><p>You successfully generate LaTeX, but can&#8217;t compile it &#8212; see the section on
+ troubleshooting [LaTeX][LaTeX won&#8217;t compile] above.</p></li>
+<li><p>You successfully generate a document, but it won&#8217;t open properly (this
+ generally happens with OpenDocument, but could be other formats) &#8212; use the
+ &#8220;[Divide and Conquer]&#8221; approach to find the problem portion, and send it to
+ the discussion list.</p></li>
+<li><p>The output you get doesn&#8217;t match what you were expecting &#8212; read the
+ pertinent section of the manual, and compare your results against some of
+ the sample documents. Make sure your syntax usage is correct. If you&#8217;re
+ still having trouble, send an email to the discussion list.</p></li>
+</ul>
+
+<p>If you are sending an error report to the discussion list, please be sure to
+do the following:</p>
+
+<ul>
+<li>narrow down the problem to the smallest example that replicates the issue</li>
+<li>be sure to include your input, the output you received, and the output you
+ expected to get</li>
+<li>if you&#8217;re convinced this is an issue with MultiMarkdown, use the issue
+ tracker on <a href="https://github.com/fletcher/peg-multimarkdown/issues">github</a>,
+ otherwise the <a href="http://groups.google.com/group/multimarkdown/">discussion list</a>.</li>
+</ul>
+
+<h4 id="divideandconquer">How do I find the source of an error?</h4>
+
+<p>When you have a longer document that MultiMarkdown can&#8217;t successfully process,
+it is helpful to narrow down the actual source of the problem. I recommend
+that you recursively split the document into halves until you reach the source
+of the issue. I also call this technique &#8220;Divide and Conquer&#8221;.</p>
+
+<p>Basically, divide your document into two halves and try to process each one
+separately. If one half works, and the other doesn&#8217;t, the problem is likely in
+the half that won&#8217;t compile. Continue recursively dividing the problem piece
+in half, until you narrow in on the actual problem.</p>
+
+<p>Keep in mind that some parts of the document would potentially need to be
+included in both halves for proper testing &#8212; the metadata, and the
+definition of any images or links by reference, for example.</p>
+
+<p>Obviously, if an error requires two pieces of the document to occur, and one
+piece is in the beginning and the other is at the end, this approach might
+fail to localize the problem. So, it&#8217;s not perfect, but is quite useful.</p>
+
+<h4 id="howdoigetmorehelp">How do I get more help?</h4>
+
+<p>The MultiMarkdown <a href="http://fletcherpenney.net/multimarkdown/help/">web site</a>
+describes various ways to get help.</p>
+
+<h4 id="howcanicontributetomultimarkdown">How can I contribute to MultiMarkdown?</h4>
+
+<p>The MultiMarkdown <a href="http://fletcherpenney.net/support/">web site</a> describes
+various ways you support or contribute to the MultiMarkdown project.</p>
+
+<p>Thanks for thinking about it!!</p>
+
+<h4 id="whatideasarethereforthefutureofmultimarkdown">What ideas are there for the future of MultiMarkdown?</h4>
+
+<h5 id="morecomplexsyntaxfortables">More complex syntax for tables</h5>
+
+<p>Several users have written with suggestions for additional syntax for tables
+in order to allow cells to span multiple rows, to allow the MMD source for a
+single table row to span multiple text rows, etc.</p>
+
+<p>My concern here is that the table should be easily understood in plain text,
+without too much markup. Ideally, there would be no markup, but it&#8217;s just too
+complicated to have MMD figure out what the layout means.</p>
+
+<p>I welcome suggestions, but I plan to be somewhat strict on this one&#8230;. And
+remember, for complex tables you can always enter the raw HTML.</p>
+
+<h5 id="asyntaxforaddingforms">A syntax for adding forms?</h5>
+
+<p>This is less likely to happen, but it seems that adding some sort of basic
+syntax to manage forms would be pretty easy, and not very intrusive. Something
+like:</p>
+
+<pre><code>Please check all that apply:
+
+[ ] Option A
+[ ] Option B
+[ ] Option C
+
+Please choose one of the following:
+
+( ) Option A
+( ) Option B
+( ) Option C
+
+Please enter your first name:
+
+[_______________________]
+</code></pre>
+
+<p>The idea would be to allow you to easily enter the necessary fields for a
+form, but not have to be concerned with the HTML nonsense&#8230;. As always,
+input welcome.</p>
+
+<h5 id="howdoisubmitanideaformultimarkdown">How do I submit an idea for MultiMarkdown?</h5>
+
+<p>First, my goal with MultiMarkdown is <em>not</em> to continue to add scores of
+features. More is not always better.</p>
+
+<p>If there is a feature that you can&#8217;t live without, and you are interested in
+submitting your idea, think through the following:</p>
+
+<ul>
+<li><p>Can your idea be done with the existing setup &#8212; for example, using XSLT or
+ a quick post-processing script to convert the default output to the output
+ you desire?</p></li>
+<li><p>Does the raw source you are proposing look natural to a human reader? The
+ less markup the better &#8212; the raw MultiMarkdown should look like something
+ written by and for people, not for a computer.</p></li>
+<li><p>How many people need this feature? MultiMarkdown has now been around for
+ quite a while &#8212; why hasn&#8217;t someone else already requested this feature if
+ it&#8217;s so important?</p></li>
+</ul>
+
+<p>If you feel your idea should be included in MultiMarkdown, then send it to the
+discussion list and I will certainly review it.</p>
+
+<h5 id="whatisapeg">What is a PEG?</h5>
+
+<p>A PEG, or <a href="http://en.wikipedia.org/wiki/Parsing_expression_grammar">Parsing Expression Grammar</a> is a method of
+describing a formal grammar to parse an input language. John MacFarlane used a
+PEG to create his <a href="https://github.com/jgm/peg-markdown">peg-markdown</a>. I then
+modified his work to create MultiMarkdown 3.0.</p>
+
+<h4 id="rtf">What happened to RTF output?</h4>
+
+<p>First &#8212; RTF is really an inferior document format. A given RTF document will
+give very different appearances when opened with different applications, or
+even in the same application on different operating systems. Apple&#8217;s
+implementation of RTF is very different from Microsoft&#8217;s, which is different
+from that of everyone else. It&#8217;s hard to take RTF seriously as a document
+format when it seems to be handled differently everywhere you look.</p>
+
+<p>Ironically, MultiMarkdown never <em>really</em> had RTF support to begin with. The
+initial approach to generating RTF output was to convert to HTML, and then use
+Apple&#8217;s <code>textutil</code> command to convert to RTF. This can still be done via the
+terminal, or simply use TextEdit to open the HTML and then save as RTF &#8212;
+this effectively does the same thing, except that this approach can also
+handle images.</p>
+
+<p>A second approach was started, but never completed &#8212; the <code>xhtml2rtf.xslt</code>
+file was used to convert HTML to RTF via an XSL stylesheet. This approach was
+never finished, but could also be updated to work with MMD 3 generated HTML
+output.</p>
+
+<p>Because of all this, RTF &#8220;support&#8221; is no longer included with MMD. You can
+easily modify a shell script to pipe the HTML command through the <code>textutil
+-convert rtf -stdout</code> command and save to the desired filename, just like in
+MMD 2.0. But an approach that gives better results is to use the Flat
+OpenDocument format instead. This can be opened in LibreOffice or OpenOffice,
+and then saved to a large variety of document formats.</p>
+
+<p>But even better might be to stick with the <code>.fodt</code> format, or the more common
+version &#8212; <code>.odt</code>. But that&#8217;s more of a &#8220;political&#8221; opinion than a technical
+one.</p>
+
+<h2 id="acknowledgments">Acknowledgments</h2>
+
+<p>Thanks to the individuals and groups below for their contributions to
+improving Markdown and MultiMarkdown:</p>
+
+<ul>
+<li>John Gruber</li>
+<li>Michel Fortin</li>
+<li>Jonathan Weber</li>
+<li>Mark Eli Kalderon</li>
+<li>Choan C. Gálvez</li>
+<li>Dr. Drang</li>
+<li>Robert McGonegal</li>
+<li>David Green</li>
+<li>Trey Pickard</li>
+<li>Saleem</li>
+<li>Melinda Norris</li>
+<li>Sean Wallace</li>
+<li>Allan Odgaard</li>
+<li>Stefan Brantschen</li>
+<li>Keith Blount</li>
+<li>Amber Vaesca</li>
+<li>Gerd Knops</li>
+<li>John Purnell</li>
+<li>Jonathan Coulombe (special thanks for helping troubleshoot MMD 3.0!)</li>
+<li>Jason Bandlow</li>
+<li>Joakim Hertze</li>
+<li>Kee-Lin Steven Chan</li>
+<li>Vasil Yaroshevich</li>
+<li>Matt Neuburg</li>
+<li>James Howison</li>
+<li>Edward Nixon</li>
+<li>etherean</li>
+<li>Özgür Gökmen</li>
+<li>Chad Schmidt</li>
+<li>Greg (gr)</li>
+<li>Ben Jennings</li>
+<li>Silvan Kaiser</li>
+<li>Tomas Doran</li>
+<li>Rob Walton</li>
+<li>Dan Rolander</li>
+<li>Duoyi wu</li>
+<li>Dan Dascalescu</li>
+<li>Ingolf Schäfer</li>
+<li>Chris Bunch</li>
+<li>Oblomov</li>
+<li>Alex Melhuish</li>
+<li>Stephan Mueller</li>
+<li>Josh Brown</li>
+<li>Rob Person</li>
+<li>Matthew D. Rankin</li>
+<li>Dawid Ciężarkiewicz</li>
+<li>Joonas Pulakka</li>
+<li>ipetraka</li>
+<li>John MacFarlane (special thanks for creating
+<a href="https://github.com/jgm/peg-markdown">peg-markdown</a> and helping me get
+started on MMD 3.0!)</li>
+<li>David Sparks</li>
+<li>Katie Floyd</li>
+</ul>
+
+<p>and others I have surely forgotten&#8230;.</p>
+
+<p>In addition to the core <code>peg-markdown</code> code, MultiMarkdown 3.0 makes use of
+the <code>glib2</code> and <code>intl</code> libraries that are a part of <a href="http://www.gtk.org/">GTK+</a> and licensed under
+the GNU LGPL 2.1. Also, it relies on <a href="http://piumarta.com/software/peg/"><code>peg</code> and
+<code>leg</code></a> to create the actual parser.</p>
+
+<div class="footnotes">
+<hr />
+<ol>
+
+<li id="fn:1">
+<p>Here is the text of the footnote itself.</p> <a href="#fnref:1" title="return to article" class="reversefootnote">&#160;&#8617;</a>
+</li>
+
+</ol>
+</div>
+
+</body>
+</html>
