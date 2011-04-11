@@ -317,7 +317,7 @@ it yourself. You need to have <code>glib2</code> installed. For example, on ubun
 <p>Once you have the libraries installed, you can either download the source from
 the <a href="http://github.com/fletcher/peg-multimarkdown/downloads">downloads</a> page, or (preferentially) you can use git:</p>
 
-<pre><code>git clone git://github.com/fletcher/peg-multimarkdown.git
+<pre><code>git clone --recursive git://github.com/fletcher/peg-multimarkdown.git
 </code></pre>
 
 <p>At this point you can compile with:</p>
@@ -327,24 +327,13 @@ the <a href="http://github.com/fletcher/peg-multimarkdown/downloads">downloads</
 
 <h4 id="advancedcompiling">Advanced compiling</h4>
 
-<p>One additional step to include if you use git to clone the source, and if you
-have Perl installed is to run the <code>update_submodules.sh</code> script to ensure that
-the submodule configurations in <code>.git/config</code> have the proper URL format,
-e.g.:</p>
+<p>One additional step to include if you use git to clone the source, is to run
+the <code>update_submodules.sh</code> script. This script basically runs two commands,
+that you can also run by hand:</p>
 
-<pre><code>[submodule &quot;Support&quot;]
-    url = git://github.com/fletcher/MMD-Support.git
+<pre><code>git submodule init
+git submodule update
 </code></pre>
-
-<p>instead of:</p>
-
-<pre><code>[submodule &quot;Support&quot;]
-    url = git@github.com:fletcher/MMD-Support.git
-</code></pre>
-
-<p>If the <code>update_submodules.sh</code> script won&#8217;t run you can make the changes by
-hand, and then run <code>git submodule update</code> to ensure you have the latest
-submodule source.</p>
 
 <p>Then, simply run <code>make</code> to compile the source. You can also run some test
 commands to verify that everything is working properly. Of note, it is normal
@@ -542,7 +531,7 @@ batch script or perl script to implement this feature on Windows.</p>
 LaTeX in MultiMarkdown 3.0, you can do a great deal of customization without
 needing to use an XSLT file.</p>
 
-<p>The <code>mmd2xslt</code> script will convert a plain text file into LaTeX that is
+<p>The <code>mmd2tex-xslt</code> script will convert a plain text file into LaTeX that is
 virtually identical with that created by the regular LaTeX approach.</p>
 
 <p>There are a few differences in the two approaches, however:</p>
@@ -2121,7 +2110,7 @@ examples of what metadata is required for various document types/</p>
 <p>If you are having problems with a more &#8220;complicated&#8221; MMD tool (such as the
 TextMate bundle, or the Drag and Drop versions), use the command line approach
 when you are really having difficulties. See if your document will compile to
-HTML using the <code>MultiMarkdown.pl</code> utility. Once you&#8217;ve got that working, try
+HTML using the <code>multimarkdown</code> command. Once you&#8217;ve got that working, try
 moving on to LaTeX, and then a PDF (if that&#8217;s your goal).</p>
 
 <p>If that doesn&#8217;t work, you need to track down the source of the error. The best
@@ -2474,9 +2463,9 @@ MMD 2.0. But an approach that gives better results is to use the Flat
 OpenDocument format instead. This can be opened in LibreOffice or OpenOffice,
 and then saved to a large variety of document formats.</p>
 
-<p>But even better might be to stick with the <code>.fodt</code> format, or the more common
-version &#8212; <code>.odt</code>. But that&#8217;s more of a &#8220;political&#8221; opinion than a technical
-one.</p>
+<p>A better approach might be to stick with the <code>.fodt</code> format, or the more
+common version &#8212; <code>.odt</code>. But that&#8217;s more of a &#8220;political&#8221; opinion than a
+technical one.</p>
 
 <h2 id="acknowledgments">Acknowledgments</h2>
 
