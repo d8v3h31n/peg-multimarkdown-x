@@ -22,6 +22,8 @@
 #include "markdown_peg.h"
 #include "utility_functions.c"
 
+#define YY_DEBUG_OFF
+
 /**********************************************************************
 
   PEG grammar and parser actions for markdown syntax.
@@ -1119,10 +1121,12 @@ RightAlign = '-'+ ':' &(!'-' !':')
 
 CellDivider = '|'
 
-TableCaption = a:Label ( b:Label { b->key = TABLELABEL})? Sp Newline
-{ $$ = a;
+TableCaption = b:StartList a:Label
+( c:Label { b = c; b->key = TABLELABEL;})? Sp Newline
+{
+    $$ = a;
     $$->key = TABLECAPTION;
-    if ( (b != NULL) && (b->key == TABLELABEL)) {
+    if ( (b != NULL) && (b->key == TABLELABEL) ) {
         b->next = $$->children;
         $$->children = b;
     }

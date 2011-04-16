@@ -1,6 +1,6 @@
 ALL : multimarkdown
 
-VERSION=3.0
+VERSION=3.0.1
 
 PROGRAM=multimarkdown
 
@@ -116,5 +116,12 @@ drop:
 
 docs: $(PROGRAM)
 	cd documentation; \
-	../Support/Utilities/mmd_merge.pl index.txt > ../manual.txt; \
-	cd ../; ./multimarkdown -b manual.txt
+	../Support/Utilities/mmd_merge.pl index.txt > manual.txt; \
+	../multimarkdown manual.txt > ../manual/index.html; \
+	../multimarkdown -b -t latex manual.txt; \
+	latexmk manual.tex; \
+	latexmk -c manual.tex; \
+	mv manual.pdf ../manual/mmd-manual.pdf; \
+	cd ../manual; git add mmd-manual.pdf index.html; \
+	git commit -m "update manual"; git push origin gh-pages; \
+	rm ../documentation/manual.t*;
