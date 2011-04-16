@@ -44,7 +44,8 @@ DocWithMetaData = a:StartList b:StartList
         parse_result = reverse(a);
     }
 
-MetaData =  a:StartList (MetaDataKeyValue { a = cons($$, a); })+
+MetaData =  a:StartList !([A-Za-z]+ "://")
+            (MetaDataKeyValue { a = cons($$, a); })+
             { $$ = mk_list(LIST, a);
                 $$->key = METADATA;
             }
