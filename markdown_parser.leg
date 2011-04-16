@@ -988,7 +988,11 @@ AutoLabels = a:StartList ( b:Heading
                 GString *label = g_string_new("");
                 char *lab;
                 print_raw_element_list(label, b->children);
-                lab = label_from_string(label->str,0);
+                if (b->children->key == AUTOLABEL) {
+                    lab = label_from_string(b->children->contents.str,0);
+                } else {
+                    lab = label_from_string(label->str,0);
+                }
                 a = cons(mk_str(lab), a);
                 free(lab);
                 g_string_free(label,true);
