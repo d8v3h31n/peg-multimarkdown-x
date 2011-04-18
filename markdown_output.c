@@ -1727,6 +1727,13 @@ void print_odf_element(GString *out, element *elt) {
         g_string_append_printf(out, "</text:span>");
         break;
     case HTML:
+        /* don't print HTML */
+        /* but do print HTML comments for raw ODF */
+        if (strncmp(elt->contents.str,"<!--",4) == 0) {
+            /* trim "-->" from end */
+            elt->contents.str[strlen(elt->contents.str)-3] = '\0';
+            g_string_append_printf(out, "%s", &elt->contents.str[4]);
+        }
         break;
     case LINK:
         if (elt->contents.link->url[0] == '#') {
@@ -1863,7 +1870,7 @@ void print_odf_element(GString *out, element *elt) {
         if (strncmp(elt->contents.str,"<!--",4) == 0) {
             /* trim "-->" from end */
             elt->contents.str[strlen(elt->contents.str)-3] = '\0';
-            g_string_append_printf(out, "%s", &elt->contents.str[4]);
+            g_string_append_printf(out, "<text:p text:style-name=\"Standard\">%s</text:p>", &elt->contents.str[4]);
         }
         break;
     case VERBATIM:
