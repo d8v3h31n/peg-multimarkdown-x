@@ -612,11 +612,13 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
            if ( strncmp(&table_alignment[table_column],"r",1) == 0) {
                 g_string_append_printf(out, "<col style=\"text-align:right;\"/>\n");
             } else if ( strncmp(&table_alignment[table_column],"R",1) == 0) {
-                g_string_append_printf(out, "<col style=\"text-align:right;\"/>\n");
+                g_string_append_printf(out, "<col style=\"text-align:right;\" class=\"extended\"/>\n");
             } else if ( strncmp(&table_alignment[table_column],"c",1) == 0) {
                 g_string_append_printf(out, "<col style=\"text-align:center;\"/>\n");
             } else if ( strncmp(&table_alignment[table_column],"C",1) == 0) {
-                g_string_append_printf(out, "<col style=\"text-align:center;\"/>\n");
+                g_string_append_printf(out, "<col style=\"text-align:center;\" class=\"extended\"/>\n");
+            } else if ( strncmp(&table_alignment[table_column],"L",1) == 0) {
+                g_string_append_printf(out, "<col style=\"text-align:left;\" class=\"extended\"/>\n");
             } else {
                 g_string_append_printf(out, "<col style=\"text-align:left;\"/>\n");
             }
