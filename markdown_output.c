@@ -2229,7 +2229,7 @@ void print_latex_footer(GString *out) {
         pad(out,2);
         g_string_append_printf(out, "\\input{%s}\n", latex_footer);
     }
-	g_string_append_printf(out, "\n\\end{document}");
+    g_string_append_printf(out, "\n\\end{document}");
 }
 
 
