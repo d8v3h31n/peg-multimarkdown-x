@@ -611,7 +611,11 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
         for (table_column=0;table_column<strlen(table_alignment);table_column++) {
            if ( strncmp(&table_alignment[table_column],"r",1) == 0) {
                 g_string_append_printf(out, "<col style=\"text-align:right;\"/>\n");
+            } else if ( strncmp(&table_alignment[table_column],"R",1) == 0) {
+                g_string_append_printf(out, "<col style=\"text-align:right;\"/>\n");
             } else if ( strncmp(&table_alignment[table_column],"c",1) == 0) {
+                g_string_append_printf(out, "<col style=\"text-align:center;\"/>\n");
+            } else if ( strncmp(&table_alignment[table_column],"C",1) == 0) {
                 g_string_append_printf(out, "<col style=\"text-align:center;\"/>\n");
             } else {
                 g_string_append_printf(out, "<col style=\"text-align:left;\"/>\n");
@@ -1281,11 +1285,11 @@ static void print_latex_element(GString *out, element *elt) {
         pad(out, 2);
         g_string_append_printf(out, "\\begin{table}[htbp]\n\\begin{minipage}{\\linewidth}\n\\setlength{\\tymax}{0.5\\linewidth}\n\\centering\n\\small\n");
         print_latex_element_list(out, elt->children);
-        g_string_append_printf(out, "\n\\end{tabular}\n\\end{minipage}\n\\end{table}\n");
+        g_string_append_printf(out, "\n\\end{tabulary}\n\\end{minipage}\n\\end{table}\n");
         padded = 0;
         break;
     case TABLESEPARATOR:
-        g_string_append_printf(out, "\\begin{tabular}{@{}%s@{}} \\toprule\n", elt->contents.str);
+        g_string_append_printf(out, "\\begin{tabulary}{\\textwidth}{@{}%s@{}} \\toprule\n", elt->contents.str);
         break;
     case TABLECAPTION:
         if (elt->children->key == TABLELABEL) {
@@ -2093,7 +2097,11 @@ void print_odf_element(GString *out, element *elt) {
         } else {
             if ( strncmp(&table_alignment[table_column],"r",1) == 0) {
                 g_string_append_printf(out, " text:style-name=\"MMD-Table-Right\"");
+            } else if ( strncmp(&table_alignment[table_column],"R",1) == 0) {
+                g_string_append_printf(out, " text:style-name=\"MMD-Table-Right\"");
             } else if ( strncmp(&table_alignment[table_column],"c",1) == 0) {
+                g_string_append_printf(out, " text:style-name=\"MMD-Table-Center\"");
+            } else if ( strncmp(&table_alignment[table_column],"C",1) == 0) {
                 g_string_append_printf(out, " text:style-name=\"MMD-Table-Center\"");
             } else {
                 g_string_append_printf(out, " text:style-name=\"MMD-Table\"");

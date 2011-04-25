@@ -1112,14 +1112,23 @@ SeparatorLine = a:StartList
         $$->key = TABLESEPARATOR;
     }
 
-AlignmentCell = Sp (!CellDivider ( LeftAlign | CenterAlign | RightAlign))
+AlignmentCell = Sp (!CellDivider ( LeftAlignWrap | CenterAlignWrap | RightAlignWrap | LeftAlign | CenterAlign | RightAlign))
     Sp ( CellDivider )?
+
+LeftAlignWrap = ':'? '-'+ '+' &(!'-' !':')
+    { $$ = mk_str("L");}
 
 LeftAlign = ':'? '-'+ &(!'-' !':')
     { $$ = mk_str("l");}
 
+CenterAlignWrap = ':' '-'* '+' ':' &(!'-' !':')
+    { $$ = mk_str("C");}
+
 CenterAlign = ':' '-'* ':' &(!'-' !':')
     { $$ = mk_str("c");}
+
+RightAlignWrap = '-'+ ':' '+' &(!'-' !':')
+    { $$ = mk_str("R");}
 
 RightAlign = '-'+ ':' &(!'-' !':')
     { $$ = mk_str("r");}
