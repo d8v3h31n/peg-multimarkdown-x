@@ -644,7 +644,11 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
     case TABLECELL:
         if ( strncmp(&table_alignment[table_column],"r",1) == 0) {
             g_string_append_printf(out, "\t<t%c style=\"text-align:right;\"", cell_type);
+        } else if ( strncmp(&table_alignment[table_column],"R",1) == 0) {
+            g_string_append_printf(out, "\t<t%c style=\"text-align:right;\"", cell_type);
         } else if ( strncmp(&table_alignment[table_column],"c",1) == 0) {
+            g_string_append_printf(out, "\t<t%c style=\"text-align:center;\"", cell_type);
+        } else if ( strncmp(&table_alignment[table_column],"C",1) == 0) {
             g_string_append_printf(out, "\t<t%c style=\"text-align:center;\"", cell_type);
         } else {
             g_string_append_printf(out, "\t<t%c style=\"text-align:left;\"", cell_type);
