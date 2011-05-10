@@ -1233,6 +1233,7 @@ static void print_latex_element(GString *out, element *elt) {
     case METADATA:
         /* Metadata is present, so this should be a "complete" document */
         print_latex_header(out, elt);
+        html_footer = is_html_complete_doc(elt);
         break;
     case METAKEY:
         if (strcmp(elt->contents.str, "title") == 0) {
@@ -2268,7 +2269,9 @@ void print_latex_footer(GString *out) {
         pad(out,2);
         g_string_append_printf(out, "\\input{%s}\n", latex_footer);
     }
-    g_string_append_printf(out, "\n\\end{document}");
+    if (html_footer) {
+        g_string_append_printf(out, "\n\\end{document}");
+    }
 }
 
 
