@@ -1011,7 +1011,7 @@ AutoLabels = a:StartList ( b:Heading
                 free(lab);
                 g_string_free(label,true);
                 free_element_list(c);} TableBody
-            | (TableBody)+ c:TableCaption {
+            | (TableBody|SeparatorLine)+ c:TableCaption {
                 GString *label = g_string_new("");
                 char *lab;
                 if (c->children->key == TABLELABEL) {
