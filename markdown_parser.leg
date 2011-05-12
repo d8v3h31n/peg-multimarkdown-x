@@ -1036,10 +1036,10 @@ DefinitionList =  a:StartList (
                     $$->key = DEFLIST;
                 }
 
-Term =  a:StartList 
-        (!BlankLine !':' Line { a = cons($$, a);})
-        { $$ = mk_str_from_list(a, false);
-            $$->key = TERM;
+Term =  a:StartList !BlankLine !':'
+        (!Newline !Endline Inline {a = cons($$, a);} )+ Newline
+        {
+            $$ = mk_list(TERM,a);
         }
 
 Definition = (a:StartList b:StartList

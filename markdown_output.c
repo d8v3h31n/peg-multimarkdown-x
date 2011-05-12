@@ -521,7 +521,7 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
     case TERM:
         pad(out,1);
         g_string_append_printf(out, "<dt>");
-        print_html_string(out, elt->contents.str, obfuscate);
+        print_html_element_list(out, elt->children, obfuscate);
         g_string_append_printf(out, "</dt>\n");
         padded = 1;
         break;
@@ -1221,7 +1221,9 @@ static void print_latex_element(GString *out, element *elt) {
         break;
     case TERM:
         pad(out,2);
-        g_string_append_printf(out, "\\item[%s]", elt->contents.str);
+        g_string_append_printf(out, "\\item[");
+        print_latex_element_list(out, elt->children);
+        g_string_append_printf(out, "]");
         padded = 0;
         break;
     case DEFINITION:
@@ -2020,7 +2022,7 @@ void print_odf_element(GString *out, element *elt) {
         break;
     case TERM:
         g_string_append_printf(out, "<text:p><text:span text:style-name=\"MMD-Bold\">");
-        print_odf_string(out, elt->contents.str);
+        print_odf_element_list(out, elt->children);
         g_string_append_printf(out, "</text:span></text:p>");
         break;
     case DEFINITION:
