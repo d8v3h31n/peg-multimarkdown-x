@@ -21,11 +21,14 @@ system.
 
 ## Mac OS X ##
 
-On the Mac, you can [download an installer][downloads] to install the program and
-required library for you, or using a package manager to compile it from scratch
-for you. Using [MacPorts], you can install the program with the following command:
+On the Mac, you can choose from using an installer to install the program and
+required library for you, or you can compile it yourself from scratch. If you
+know what that means, follow the instructions below in the Linux section.
+Otherwise, definitely go for the installer!
 
-    sudo port install multimarkdown
+You can also install MultiMarkdown with the package manager [MacPorts] with the following command:
+
+	sudo port install multimarkdown
 
 If you don't know what any of that means, just [grab the installer][downloads].
 
