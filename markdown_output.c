@@ -254,7 +254,8 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
         print_html_string(out, elt->contents.link->url, obfuscate);
         g_string_append_printf(out, "\" alt=\"");
         print_raw_element_list(out,elt->contents.link->label);
-        if ( extension(EXT_COMPATIBILITY) ) {
+        if ( (extension(EXT_COMPATIBILITY)) || 
+            (strcmp(elt->contents.link->identifier, "") == 0) ) {
             g_string_append_printf(out, "\"");
         } else {
             g_string_append_printf(out, "\" id=\"%s\"",elt->contents.link->identifier);
