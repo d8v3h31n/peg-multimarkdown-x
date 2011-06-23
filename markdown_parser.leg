@@ -827,7 +827,7 @@ EmDash = ( <"---"> )
          }
 
 
-SingleQuoteStart = '\''
+SingleQuoteStart = '\'' !(Spacechar | Newline)
 
 SingleQuoteEnd = '\'' !Alphanumeric
 
