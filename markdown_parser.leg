@@ -35,7 +35,7 @@
 Doc =       BOM? a:StartList ( Block { a = cons($$, a); } )*
             { parse_result = reverse(a); }
 
-DocWithMetaData = a:StartList b:StartList 
+DocWithMetaData = BOM? a:StartList b:StartList 
     ( &{ !extension(EXT_COMPATIBILITY) }
         &( MetaDataKey Sp ':' Sp (!Newline)) MetaData
             { a = cons($$, a); b = mk_element(FOOTER);})?
