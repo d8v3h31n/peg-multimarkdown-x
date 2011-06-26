@@ -85,6 +85,7 @@ char * metavalue_for_key(char *key, element *list);
 element * element_for_attribute(char *querystring, element *list);
 char * dimension_for_attribute(char *querystring, element *list);
 
+element * locator_for_citation(element *elt);
 
 /**********************************************************************
 
@@ -184,6 +185,7 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
     int lev;
     char *label;
     element *attribute;
+    element *locator;
     char *height;
     char *width;
     switch (elt->key) {
@@ -252,7 +254,8 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
         print_html_string(out, elt->contents.link->url, obfuscate);
         g_string_append_printf(out, "\" alt=\"");
         print_raw_element_list(out,elt->contents.link->label);
-        if ( extension(EXT_COMPATIBILITY) ) {
+        if ( (extension(EXT_COMPATIBILITY)) || 
+            (strcmp(elt->contents.link->identifier, "") == 0) ) {
             g_string_append_printf(out, "\"");
         } else {
             g_string_append_printf(out, "\" id=\"%s\"",elt->contents.link->identifier);
@@ -447,62 +450,63 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
         break;
     case NOCITATION:
     case CITATION:
-        if ((elt->children != NULL) && (elt->children->key == LOCATOR)) {
-            GString *temp = g_string_new("");
-            print_html_element(temp,elt->children,obfuscate);
-            label = strdup(temp->str);
-            g_string_free(temp,true);
-            elt->children = elt->children->next;
-        } else {
-            label = NULL;
-        }
+        /* Get locator, if present */
+        locator = locator_for_citation(elt);
+
         if (strncmp(elt->contents.str,"[#",2) == 0) {
             /* reference specified externally */
             if ( elt->key == NOCITATION ) {
+                /* work not cited, but used in bibliography for LaTeX */
                 g_string_append_printf(out, "<span class=\"notcited\" id=\"%s\"/>", elt->contents.str);
             } else {
+                /* work was cited, so output normally */
                 g_string_append_printf(out, "<span class=\"externalcitation\">");
-                if (label != NULL) g_string_append_printf(out, "[%s]", label);
+                if (locator != NULL) {
+                    g_string_append_printf(out, "[");
+                    print_html_element(out,locator,obfuscate);
+                    g_string_append_printf(out, "]");
+                }
                 g_string_append_printf(out, "%s",elt->contents.str);
                 g_string_append_printf(out, "</span>");
             }
         } else {
-            /* reference specified within the MMD document */
+            /* reference specified within the MMD document,
+               so will output as footnote */
             if (elt->children->contents.str == NULL) {
+                /* Work not previously cited in this document,
+                   so create "endnote" */
                 elt->children->key = CITATION;
                 add_endnote(elt->children);
                 ++notenumber;
                 char buf[5];
                 sprintf(buf,"%d",notenumber);
-                
+                /* Store the number for future reference */
                 elt->children->contents.str = strdup(buf);
             }
-            if (label != NULL) {
+            if (locator != NULL) {
                 if ( elt->key == NOCITATION ) {
                     g_string_append_printf(out, "<span class=\"notcited\" id=\"%s\">",
                         elt->children->contents.str);
                 } else {
-                    g_string_append_printf(out, "<a class=\"citation\" href=\"#fn:%s\" title=\"Jump to citation\">[<span class=\"locator\">%s</span>, %s]",
-                        elt->children->contents.str, label, elt->children->contents.str);
+                    g_string_append_printf(out, "<a class=\"citation\" href=\"#fn:%s\" title=\"Jump to citation\">[<span class=\"locator\">", elt->children->contents.str);
+                    print_html_element(out,locator,obfuscate);
+                    g_string_append_printf(out,"</span>, %s]",
+                        elt->children->contents.str);
                 }
-                elt->children = NULL;               
             } else {
                 g_string_append_printf(out, "<a class=\"citation\" href=\"#fn:%s\" title=\"Jump to citation\">[%s]",
                     elt->children->contents.str, elt->children->contents.str);
-                elt->children = NULL;
             }
+            /* Now prune children since will likely be shared elsewhere */
+            elt->children = NULL;
+
             g_string_append_printf(out, "<span class=\"citekey\" style=\"display:none\">%s</span>", elt->contents.str);
-            if (label != NULL) {
-                if ( elt->key == NOCITATION ) {
+            if ((locator != NULL) && (elt->key == NOCITATION)) {
                     g_string_append_printf(out,"</span>");
-                } else {
-                    g_string_append_printf(out,"</a>");
-                }
             } else {
                 g_string_append_printf(out,"</a>");
             }
         }
-        free(label);
         break;
     case LOCATOR:
         print_html_element_list(out, elt->children, obfuscate);
@@ -518,7 +522,7 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
     case TERM:
         pad(out,1);
         g_string_append_printf(out, "<dt>");
-        print_html_string(out, elt->contents.str, obfuscate);
+        print_html_element_list(out, elt->children, obfuscate);
         g_string_append_printf(out, "</dt>\n");
         padded = 1;
         break;
@@ -611,8 +615,14 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
         for (table_column=0;table_column<strlen(table_alignment);table_column++) {
            if ( strncmp(&table_alignment[table_column],"r",1) == 0) {
                 g_string_append_printf(out, "<col style=\"text-align:right;\"/>\n");
+            } else if ( strncmp(&table_alignment[table_column],"R",1) == 0) {
+                g_string_append_printf(out, "<col style=\"text-align:right;\" class=\"extended\"/>\n");
             } else if ( strncmp(&table_alignment[table_column],"c",1) == 0) {
                 g_string_append_printf(out, "<col style=\"text-align:center;\"/>\n");
+            } else if ( strncmp(&table_alignment[table_column],"C",1) == 0) {
+                g_string_append_printf(out, "<col style=\"text-align:center;\" class=\"extended\"/>\n");
+            } else if ( strncmp(&table_alignment[table_column],"L",1) == 0) {
+                g_string_append_printf(out, "<col style=\"text-align:left;\" class=\"extended\"/>\n");
             } else {
                 g_string_append_printf(out, "<col style=\"text-align:left;\"/>\n");
             }
@@ -638,7 +648,11 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
     case TABLECELL:
         if ( strncmp(&table_alignment[table_column],"r",1) == 0) {
             g_string_append_printf(out, "\t<t%c style=\"text-align:right;\"", cell_type);
+        } else if ( strncmp(&table_alignment[table_column],"R",1) == 0) {
+            g_string_append_printf(out, "\t<t%c style=\"text-align:right;\"", cell_type);
         } else if ( strncmp(&table_alignment[table_column],"c",1) == 0) {
+            g_string_append_printf(out, "\t<t%c style=\"text-align:center;\"", cell_type);
+        } else if ( strncmp(&table_alignment[table_column],"C",1) == 0) {
             g_string_append_printf(out, "\t<t%c style=\"text-align:center;\"", cell_type);
         } else {
             g_string_append_printf(out, "\t<t%c style=\"text-align:left;\"", cell_type);
@@ -1208,7 +1222,9 @@ static void print_latex_element(GString *out, element *elt) {
         break;
     case TERM:
         pad(out,2);
-        g_string_append_printf(out, "\\item[%s]", elt->contents.str);
+        g_string_append_printf(out, "\\item[");
+        print_latex_element_list(out, elt->children);
+        g_string_append_printf(out, "]");
         padded = 0;
         break;
     case DEFINITION:
@@ -1220,6 +1236,7 @@ static void print_latex_element(GString *out, element *elt) {
     case METADATA:
         /* Metadata is present, so this should be a "complete" document */
         print_latex_header(out, elt);
+        html_footer = is_html_complete_doc(elt);
         break;
     case METAKEY:
         if (strcmp(elt->contents.str, "title") == 0) {
@@ -1281,11 +1298,11 @@ static void print_latex_element(GString *out, element *elt) {
         pad(out, 2);
         g_string_append_printf(out, "\\begin{table}[htbp]\n\\begin{minipage}{\\linewidth}\n\\setlength{\\tymax}{0.5\\linewidth}\n\\centering\n\\small\n");
         print_latex_element_list(out, elt->children);
-        g_string_append_printf(out, "\n\\end{tabular}\n\\end{minipage}\n\\end{table}\n");
+        g_string_append_printf(out, "\n\\end{tabulary}\n\\end{minipage}\n\\end{table}\n");
         padded = 0;
         break;
     case TABLESEPARATOR:
-        g_string_append_printf(out, "\\begin{tabular}{@{}%s@{}} \\toprule\n", elt->contents.str);
+        g_string_append_printf(out, "\\begin{tabulary}{\\textwidth}{@{}%s@{}} \\toprule\n", elt->contents.str);
         break;
     case TABLECAPTION:
         if (elt->children->key == TABLELABEL) {
@@ -1688,6 +1705,7 @@ void print_odf_element(GString *out, element *elt) {
     char *label;
     char *height;
     char *width;
+    element *locator;
     int old_type = 0;
     switch (elt->key) {
     case SPACE:
@@ -1727,6 +1745,13 @@ void print_odf_element(GString *out, element *elt) {
         g_string_append_printf(out, "</text:span>");
         break;
     case HTML:
+        /* don't print HTML */
+        /* but do print HTML comments for raw ODF */
+        if (strncmp(elt->contents.str,"<!--",4) == 0) {
+            /* trim "-->" from end */
+            elt->contents.str[strlen(elt->contents.str)-3] = '\0';
+            g_string_append_printf(out, "%s", &elt->contents.str[4]);
+        }
         break;
     case LINK:
         if (elt->contents.link->url[0] == '#') {
@@ -1863,7 +1888,7 @@ void print_odf_element(GString *out, element *elt) {
         if (strncmp(elt->contents.str,"<!--",4) == 0) {
             /* trim "-->" from end */
             elt->contents.str[strlen(elt->contents.str)-3] = '\0';
-            g_string_append_printf(out, "%s", &elt->contents.str[4]);
+            g_string_append_printf(out, "<text:p text:style-name=\"Standard\">%s</text:p>", &elt->contents.str[4]);
         }
         break;
     case VERBATIM:
@@ -1956,20 +1981,49 @@ void print_odf_element(GString *out, element *elt) {
         break;
     case NOCITATION:
     case CITATION:
+        /* Get locator, if present */
+        locator = locator_for_citation(elt);
+
         if (strncmp(elt->contents.str,"[#",2) == 0) {
-            /* bibtex citation key */
+            /* reference specified externally, so just display it */
             g_string_append_printf(out, "%s", elt->contents.str);
         } else {
-            g_string_append_printf(out, "[#%s]", elt->contents.str);
+            /* reference specified within the MMD document,
+               so will output as footnote */
+            if (elt->children->contents.str == NULL) {
+                /* First use of this citation */
+                ++notenumber;
+                char buf[5];
+                sprintf(buf, "%d",notenumber);
+                /* Store the number for future reference */
+                elt->children->contents.str = strdup(buf);
+                
+                /* Insert the footnote here */
+                old_type = odf_type;
+                odf_type = NOTE;
+                g_string_append_printf(out, "<text:note text:id=\"cite%s\" text:note-class=\"footnote\"><text:note-body>\n", buf);
+                print_odf_element_list(out, elt->children);
+                g_string_append_printf(out, "</text:note-body>\n</text:note>\n");
+                odf_type = old_type;
+
+                elt->children->key = CITATION;
+            } else {
+                /* Additional reference to prior citation,
+                   and therefore must link to another footnote */
+                g_string_append_printf(out, "<text:span text:style-name=\"Footnote_20_anchor\"><text:note-ref text:note-class=\"footnote\" text:reference-format=\"text\" text:ref-name=\"cite%s\">%s</text:note-ref></text:span>", elt->children->contents.str, elt->children->contents.str);
+            }
+            elt->children = NULL;
         }
-        elt->children = NULL;
+        break;
+    case LOCATOR:
+        print_odf_element_list(out, elt->children);
         break;
     case DEFLIST:
         print_odf_element_list(out, elt->children);
         break;
     case TERM:
         g_string_append_printf(out, "<text:p><text:span text:style-name=\"MMD-Bold\">");
-        print_odf_string(out, elt->contents.str);
+        print_odf_element_list(out, elt->children);
         g_string_append_printf(out, "</text:span></text:p>");
         break;
     case DEFINITION:
@@ -2086,7 +2140,11 @@ void print_odf_element(GString *out, element *elt) {
         } else {
             if ( strncmp(&table_alignment[table_column],"r",1) == 0) {
                 g_string_append_printf(out, " text:style-name=\"MMD-Table-Right\"");
+            } else if ( strncmp(&table_alignment[table_column],"R",1) == 0) {
+                g_string_append_printf(out, " text:style-name=\"MMD-Table-Right\"");
             } else if ( strncmp(&table_alignment[table_column],"c",1) == 0) {
+                g_string_append_printf(out, " text:style-name=\"MMD-Table-Center\"");
+            } else if ( strncmp(&table_alignment[table_column],"C",1) == 0) {
                 g_string_append_printf(out, " text:style-name=\"MMD-Table-Center\"");
             } else {
                 g_string_append_printf(out, " text:style-name=\"MMD-Table\"");
@@ -2214,7 +2272,9 @@ void print_latex_footer(GString *out) {
         pad(out,2);
         g_string_append_printf(out, "\\input{%s}\n", latex_footer);
     }
-	g_string_append_printf(out, "\n\\end{document}");
+    if (html_footer) {
+        g_string_append_printf(out, "\n\\end{document}");
+    }
 }
 
 
@@ -2556,6 +2616,20 @@ static bool is_html_complete_doc(element *meta) {
     return FALSE;
 }
 
+/* if citation has a locator, return as element and "prune", else NULL */
+element * locator_for_citation(element *elt) {
+    element *result;
+    
+    if ((elt->children != NULL) && (elt->children->key == LOCATOR)) {
+        /* Locator is present */
+        result = elt->children;
+        elt->children = elt->children->next;
+        return result;
+    } else {
+        /* no locator exists */
+        return NULL;
+    }
+}
 
 /* print_opml_element_list - print an element list as OPML */
 void print_opml_element_list(GString *out, element *list) {

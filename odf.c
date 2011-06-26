@@ -130,6 +130,10 @@ void print_odf_header(GString *out){
     "                               style:join-border=\"false\"/>\n" \
     "   <style:text-properties fo:font-size=\"6pt\" style:font-size-asian=\"6pt\" style:font-size-complex=\"6pt\"/>\n" \
     "</style:style>\n" \
+	"<style:style style:name=\"Footnote_20_anchor\" style:display-name=\"Footnote anchor\"" \
+	"              style:family=\"text\">" \
+	"    <style:text-properties style:text-position=\"super 58%\"/>" \
+	" </style:style>" \
     "</office:styles>\n");
 
     /* Automatic style information */
