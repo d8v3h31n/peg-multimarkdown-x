@@ -60,7 +60,7 @@ MetaDataKeyValue = a:MetaDataKey
                 $$->children = b;
             }
 
-MetaDataKey = < AlphanumericAscii ( Sp ( AlphanumericAscii | '_' | ' ' | '-')+)* >
+MetaDataKey = < !([A-Za-z]+ "://")  AlphanumericAscii ( Sp ( AlphanumericAscii | '_' | ' ' | '-')+)* >
 {
     char *label = label_from_string(yytext,0);
     $$ = mk_str(label);
