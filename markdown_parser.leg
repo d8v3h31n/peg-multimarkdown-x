@@ -68,11 +68,13 @@ MetaDataKey = < !([A-Za-z]+ "://")  AlphanumericAscii ( Sp ( AlphanumericAscii |
     $$->key = METAKEY;
 }
 
+SingleLineMetaKeyValue = MetaDataKey Sp ':' Sp (!Newline .)*
+
 MetaDataValue = a:StartList
                 ((< (!Newline .)* > { a = cons(mk_str(yytext), a); })
-                ((Newline &(!BlankLine !MetaDataKeyValue Sp RawLine))
+                ((Newline &(!BlankLine !SingleLineMetaKeyValue Sp RawLine))
                     { a = cons(mk_str("\n"), a);} | Newline)
-                (!BlankLine !MetaDataKeyValue Sp RawLine
+                (!BlankLine !SingleLineMetaKeyValue Sp RawLine
                     { a = cons(mk_str(yytext), a);} )* )
                 { $$ = mk_str_from_list(a,false);
                     trim_trailing_whitespace($$->contents.str);
