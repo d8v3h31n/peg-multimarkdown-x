@@ -37,14 +37,13 @@ void g_string_prepend(GString* baseString, char* prependedString);
 
 // GSList declarations
 
+// Don't know yet how to tackle the problem of GSList bridging. It's a little tougher than
+// GString because it strongly embraces a standard linked list paradigm. It might make most
+// sense to just implement the simple linked list functionality, unless there's some CoreFoundation
+// or POSIX library that is omni-present on Macs to support this.
+
 typedef struct _GSList
 {
-	// Data is all managed by a real array
-	NSMutableArray* cocoaArray;
-	
-	// Each "linked list item" (GSList) knows its own object from the array
-	id thisArrayItem;
-
 	// And caches a reference to the data itself
 	void* data;	
 	struct _GSList* next;

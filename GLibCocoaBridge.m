@@ -89,7 +89,6 @@ GSList* g_slist_reverse(GSList* theList)
 
 GSList* g_slist_prepend(GSList* targetElement, void* newElementData)
 {
-	GSList* newItem = malloc(sizeof(GSList));
-	newItem->cocoaArray = [targetElement->cocoaArray retain];
+	NSLog(@"Can't prepend lists yet");
 }
 
