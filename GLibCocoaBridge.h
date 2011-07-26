@@ -33,7 +33,7 @@ void g_string_append(GString* baseString, char *appendedString);
 
 void g_string_prepend(GString* baseString, char* prependedString);
 
-#define g_string_append_printf(baseString, appendedFormat, ...)	g_string_append(baseString, (char*)[[NSString stringWithFormat:[NSString stringWithUTF8String:appendedFormat], ## __VA_ARGS__] UTF8String])
+void g_string_append_printf(GString* baseString, char* format, ...);
 
 // GSList declarations
 
