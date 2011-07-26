@@ -42,7 +42,7 @@
 			isa = PBXContainerItemProxy;
 			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 8DD76FA90486AB0100D96B5E /* MultiMarkdown */;
+			remoteGlobalIDString = 8DD76FA90486AB0100D96B5E;
 			remoteInfo = MultiMarkdown;
 		};
 /* End PBXContainerItemProxy section */
@@ -90,7 +90,7 @@
 		65F0B78C13DF573600D0980C /* GLibCocoaBridge.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GLibCocoaBridge.m; sourceTree = "<group>"; };
 		65F0B7B613DF5BEF00D0980C /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		65F0B8B113DF6D4000D0980C /* markdown_parser.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = markdown_parser.c; sourceTree = "<group>"; };
-		8DD76FB20486AB0100D96B5E /* MultiMarkdown */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = MultiMarkdown; sourceTree = BUILT_PRODUCTS_DIR; };
+		8DD76FB20486AB0100D96B5E /* multimarkdown */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = multimarkdown; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -143,7 +143,7 @@
 		1AB674ADFE9D54B511CA2CBB /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				8DD76FB20486AB0100D96B5E /* MultiMarkdown */,
+				8DD76FB20486AB0100D96B5E /* multimarkdown */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -220,7 +220,7 @@
 			name = MultiMarkdown;
 			productInstallPath = "$(HOME)/bin";
 			productName = MultiMarkdown;
-			productReference = 8DD76FB20486AB0100D96B5E /* MultiMarkdown */;
+			productReference = 8DD76FB20486AB0100D96B5E /* multimarkdown */;
 			productType = "com.apple.product-type.tool";
 		};
 /* End PBXNativeTarget section */
@@ -321,7 +321,7 @@
 				GCC_PREFIX_HEADER = MarkdownMacPrefix.h;
 				HEADER_SEARCH_PATHS = .;
 				INSTALL_PATH = /usr/local/bin;
-				PRODUCT_NAME = MultiMarkdown;
+				PRODUCT_NAME = multimarkdown;
 			};
 			name = Debug;
 		};
@@ -334,7 +334,7 @@
 				GCC_PREFIX_HEADER = MarkdownMacPrefix.h;
 				HEADER_SEARCH_PATHS = .;
 				INSTALL_PATH = /usr/local/bin;
-				PRODUCT_NAME = MultiMarkdown;
+				PRODUCT_NAME = multimarkdown;
 			};
 			name = Release;
 		};
