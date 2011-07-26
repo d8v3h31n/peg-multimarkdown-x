@@ -51,6 +51,11 @@ void version(const char *progname)
 }
 
 int main(int argc, char * argv[]) {
+
+#if TARGET_OS_MAC
+	NSAutoreleasePool* toolPool = [[NSAutoreleasePool alloc] init];
+#endif
+	
     int numargs;            /* number of filename arguments */
     int i;
 
@@ -83,6 +88,8 @@ int main(int argc, char * argv[]) {
     static gboolean opt_batchmode = FALSE;
     static gchar *opt_extract_meta = FALSE;
 
+#warning disabling command line parsing for now
+#if 0
     static GOptionEntry entries[] =
     {
       { "version", 'v', 0, G_OPTION_ARG_NONE, &opt_version, "print version and exit", NULL },
@@ -175,7 +182,7 @@ int main(int argc, char * argv[]) {
         fprintf(stderr, "%s: Unknown output format '%s'\n", progname, opt_to);
         exit(EXIT_FAILURE);
     }
-
+#endif
 
     numargs = argc - 1;
 
@@ -280,6 +287,10 @@ int main(int argc, char * argv[]) {
         g_string_free(inputbuf, true);
         
     }
+
+#if TARGET_OS_MAC
+	[toolPool release];
+#endif
 
     return(EXIT_SUCCESS);
 }
