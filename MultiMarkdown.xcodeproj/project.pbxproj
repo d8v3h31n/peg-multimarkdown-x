@@ -6,6 +6,21 @@
 	objectVersion = 45;
 	objects = {
 
+/* Begin PBXAggregateTarget section */
+		65F0B8EA13DF714E00D0980C /* Run Tests */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = 65F0B8ED13DF716D00D0980C /* Build configuration list for PBXAggregateTarget "Run Tests" */;
+			buildPhases = (
+				65F0B8E913DF714E00D0980C /* Run Tests */,
+			);
+			dependencies = (
+				65F0B8FD13DF724D00D0980C /* PBXTargetDependency */,
+			);
+			name = "Run Tests";
+			productName = "MultiMarkdown Tests";
+		};
+/* End PBXAggregateTarget section */
+
 /* Begin PBXBuildFile section */
 		65F0B69B13DF47CC00D0980C /* markdown_lib.c in Sources */ = {isa = PBXBuildFile; fileRef = 65F0B66113DF47CC00D0980C /* markdown_lib.c */; };
 		65F0B69C13DF47CC00D0980C /* markdown_output.c in Sources */ = {isa = PBXBuildFile; fileRef = 65F0B66313DF47CC00D0980C /* markdown_output.c */; };
@@ -20,8 +35,15 @@
 			isa = PBXContainerItemProxy;
 			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 65F0B88813DF6C0D00D0980C /* Peg */;
+			remoteGlobalIDString = 65F0B88813DF6C0D00D0980C;
 			remoteInfo = Peg;
+		};
+		65F0B8FC13DF724D00D0980C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 8DD76FA90486AB0100D96B5E /* MultiMarkdown */;
+			remoteInfo = MultiMarkdown;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -222,6 +244,7 @@
 			targets = (
 				8DD76FA90486AB0100D96B5E /* MultiMarkdown */,
 				65F0B88813DF6C0D00D0980C /* Peg */,
+				65F0B8EA13DF714E00D0980C /* Run Tests */,
 			);
 		};
 /* End PBXProject section */
@@ -240,6 +263,20 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "./peg-0.1.4/leg -o markdown_parser.c markdown_parser.leg";
+		};
+		65F0B8E913DF714E00D0980C /* Run Tests */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Run Tests";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# shell script goes here\ncd ${PROJECT_DIR}/MarkdownTest\n\n# Basic Markdown Tests\n./MarkdownTest.pl --Script=\"${BUILT_PRODUCTS_DIR}/MultiMarkdown\" --testdir=\"${PROJECT_DIR}/MarkdownTest/Tests\"\n\n# MultiMarkdown extensions\n./MarkdownTest.pl --Script=\"${BUILT_PRODUCTS_DIR}/MultiMarkdown\" --testdir=\"${PROJECT_DIR}/MarkdownTest/MultiMarkdownTests\"\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -263,6 +300,11 @@
 			isa = PBXTargetDependency;
 			target = 65F0B88813DF6C0D00D0980C /* Peg */;
 			targetProxy = 65F0B88B13DF6C1200D0980C /* PBXContainerItemProxy */;
+		};
+		65F0B8FD13DF724D00D0980C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 8DD76FA90486AB0100D96B5E /* MultiMarkdown */;
+			targetProxy = 65F0B8FC13DF724D00D0980C /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -343,6 +385,27 @@
 			};
 			name = Release;
 		};
+		65F0B8EB13DF714F00D0980C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				PRODUCT_NAME = "MultiMarkdown Tests";
+			};
+			name = Debug;
+		};
+		65F0B8EC13DF714F00D0980C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				PRODUCT_NAME = "MultiMarkdown Tests";
+				ZERO_LINK = NO;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -369,6 +432,15 @@
 			buildConfigurations = (
 				65F0B88913DF6C0D00D0980C /* Debug */,
 				65F0B88A13DF6C0D00D0980C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		65F0B8ED13DF716D00D0980C /* Build configuration list for PBXAggregateTarget "Run Tests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				65F0B8EB13DF714F00D0980C /* Debug */,
+				65F0B8EC13DF714F00D0980C /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
