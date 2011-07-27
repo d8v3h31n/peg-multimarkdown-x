@@ -84,8 +84,8 @@ MetaDataValue = a:StartList
 Block =     BlankLine*
             ( BlockQuote
             | Verbatim
-            | DefinitionList
-            | Glossary
+            | &{ !extension(EXT_COMPATIBILITY) } DefinitionList
+            | &{ !extension(EXT_COMPATIBILITY) } Glossary
             | Note
             | Reference
             | HorizontalRule
@@ -94,7 +94,7 @@ Block =     BlankLine*
             | BulletList
             | HtmlBlock
             | StyleBlock
-            | Table
+            | &{ !extension(EXT_COMPATIBILITY) } Table
             | &{ !extension(EXT_COMPATIBILITY) } ImageBlock
             | !(Sp? HtmlBlockOpenDiv) Para
             | Plain )
@@ -104,8 +104,8 @@ HeadingSectionBlock =
             !Heading
             ( BlockQuote
             | Verbatim
-            | DefinitionList
-            | Glossary
+            | &{ !extension(EXT_COMPATIBILITY) } DefinitionList
+            | &{ !extension(EXT_COMPATIBILITY) } Glossary
             | Note
             | Reference
             | HorizontalRule
@@ -113,7 +113,7 @@ HeadingSectionBlock =
             | BulletList
             | HtmlBlock
             | StyleBlock
-            | Table
+            | &{ !extension(EXT_COMPATIBILITY) } Table
             | &{ !extension(EXT_COMPATIBILITY) } ImageBlock
             | !(Sp? HtmlBlockOpenDiv) Para
             | Plain )
@@ -462,17 +462,17 @@ Inlines  =  a:StartList ( !Endline Inline { a = cons($$, a); }
             { $$ = mk_list(LIST, a); }
 
 Inline  = Str
-        | MathSpan
+        | &{ !extension(EXT_COMPATIBILITY) } MathSpan
         | Endline
         | UlOrStarLine
         | Space
         | Strong
         | Emph
-        | CitationReference
+        | &{ !extension(EXT_COMPATIBILITY) } CitationReference
         | Image
         | Link
         | NoteReference
- #       | InlineNote           # Not used in MultiMarkdown
+ #      | InlineNote           # Not used in Markdown/MultiMarkdown
         | Code
         | MarkdownHtmlTagOpen
         | RawHtml
@@ -665,7 +665,10 @@ AutoLinkEmail = '<' ( "mailto:" )? < [-A-Za-z0-9+_]+ '@' ( !Newline !'>' . )+ > 
                 }
 
 Reference = a:StartList NonindentSpace !"[]" l:Label ':' Spnl s:RefSrc
-        t:RefTitle (Attributes { a = cons($$,a);})? BlankLine+
+        t:RefTitle
+		( &{ !extension(EXT_COMPATIBILITY) } 
+			(Attributes { a = cons($$,a);})? )?
+		BlankLine+
         { 
             char *label;
             GString *text = g_string_new("");
@@ -730,11 +733,14 @@ RefTitle =  ( RefTitleSingle | RefTitleDouble | RefTitleParens | EmptyTitle )
 
 EmptyTitle = < "" >
 
-RefTitleSingle = Spnl '\'' < ( !( '\'' Sp Newline | Newline | '\'' Sp AlphanumericAscii+ '=' ) . )* > '\''
+RefTitleSingle = Spnl '\'' < ( !( '\'' Sp Newline | Newline |
+	&{ !extension(EXT_COMPATIBILITY) } '\'' Sp AlphanumericAscii+ '=' ) . )* > '\''
 
-RefTitleDouble = Spnl '"' < ( !('"' Sp Newline | Newline | '"' Sp AlphanumericAscii+ '=' ) . )* > '"'
+RefTitleDouble = Spnl '"' < ( !('"' Sp Newline | Newline |
+	&{ !extension(EXT_COMPATIBILITY) } '"' Sp AlphanumericAscii+ '=' ) . )* > '"'
 
-RefTitleParens = Spnl '(' < ( !(')' Sp Newline | Newline | ')' Sp AlphanumericAscii+ '=' ) . )* > ')'
+RefTitleParens = Spnl '(' < ( !(')' Sp Newline | Newline |
+	&{ !extension(EXT_COMPATIBILITY) } ')' Sp AlphanumericAscii+ '=' ) . )* > ')'
 
 References = a:StartList
              ( b:Reference { a = cons(b, a); } | SkipBlock )*
@@ -987,7 +993,8 @@ RawCitationReference = "[#" < ( !Newline !']' . )+ > ']'
                    { $$ = mk_str(yytext); }
 
 
-AutoLabels = a:StartList ( b:Heading
+AutoLabels = ( &{ !extension(EXT_COMPATIBILITY) }
+	a:StartList ( b:Heading
             { 
                 GString *label = g_string_new("");
                 char *lab;
@@ -1028,7 +1035,7 @@ AutoLabels = a:StartList ( b:Heading
                 g_string_free(label,true);
                 free_element_list(c);}
             | SkipBlock )*
-            { labels = a; }
+            { labels = a; })
 
 DefinitionList =  a:StartList (
                     (Term { a = cons($$, a); } )+
