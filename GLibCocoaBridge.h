@@ -20,6 +20,10 @@ typedef struct
 {
 	NSMutableString* cocoaString;
 	
+	// While we are buildign the string, we may receive UTF8 fragment bytes that can't be processed on their own,
+	// so we queue them up.
+	char utf8Fragments[5];
+	
 	// Compatibility entries for GString clients
 	// Updated whenever the GString is manipulated
 	char* str;

@@ -34,6 +34,9 @@ GString* g_string_new(char *startingString)
 
 	newString->cocoaString = [[NSMutableString stringWithUTF8String:startingString] retain];
 	newString->str = NULL;
+
+	// Clear the UTF fragments
+	newString->utf8Fragments[0] = '\0';
 	
 	recacheUTF8String(newString);
 	
@@ -59,9 +62,32 @@ char* g_string_free(GString* ripString, bool freeCharacterData)
 }
 
 void g_string_append_c(GString* baseString, char appendedCharacter)
-{
-	[baseString->cocoaString appendString:[NSString stringWithFormat:@"%c", appendedCharacter]];
-	recacheUTF8String(baseString);
+{	
+	int thisUTFIndex = 0;
+	while (baseString->utf8Fragments[thisUTFIndex] != '\0')
+	{
+		thisUTFIndex++;
+	}
+	
+	if (thisUTFIndex > 3)
+	{
+		NSLog(@"Got too many contiguous non-parseable characters. Starting over!");
+		baseString->utf8Fragments[0] = '\0';
+		thisUTFIndex = 0;
+	}
+	
+	baseString->utf8Fragments[thisUTFIndex] = appendedCharacter;
+	baseString->utf8Fragments[thisUTFIndex+1] = '\0';
+	
+	NSString* newString = [NSString stringWithUTF8String:baseString->utf8Fragments];
+	if (newString != nil)
+	{
+		[baseString->cocoaString appendString:newString];	
+		recacheUTF8String(baseString);
+		
+		// Clear the UTF fragments
+		baseString->utf8Fragments[0] = '\0';
+	}
 }
 
 void g_string_append(GString* baseString, char* appendedString)
