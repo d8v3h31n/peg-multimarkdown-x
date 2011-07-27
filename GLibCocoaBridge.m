@@ -23,12 +23,14 @@ void recacheUTF8String(GString* theGString)
 	char* utf8String = (char*) [theGString->cocoaString UTF8String];
 	NSUInteger stringLength = strlen(utf8String);
 	theGString->str = malloc(stringLength + 1);
-	strncpy(theGString->str, utf8String, stringLength);
+	strncpy(theGString->str, utf8String, stringLength+1);
 }
 
 GString* g_string_new(char *startingString)
 {
 	GString* newString = malloc(sizeof(GString));
+
+	if (startingString == NULL) startingString = "";
 
 	newString->cocoaString = [[NSMutableString stringWithUTF8String:startingString] retain];
 	newString->str = NULL;
@@ -63,8 +65,11 @@ void g_string_append_c(GString* baseString, char appendedCharacter)
 
 void g_string_append(GString* baseString, char* appendedString)
 {
-	[baseString->cocoaString appendString:[NSString stringWithUTF8String:appendedString]];
-	recacheUTF8String(baseString);
+	if ((appendedString != NULL) && (strlen(appendedString) > 0))
+	{
+		[baseString->cocoaString appendString:[NSString stringWithUTF8String:appendedString]];
+		recacheUTF8String(baseString);
+	}
 }
 
 void g_string_append_printf(GString* baseString, char* format, ...)
