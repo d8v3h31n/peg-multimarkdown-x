@@ -50,9 +50,61 @@ void version(const char *progname)
          COPYRIGHT);
 }
 
+// We like to use getopt on the standalone Mac version, because 
+// it rids us of dependency on GLib's GOptions parser. But you 
+// might want to use this on other platforms that support getopt, too.
+#ifndef MD_USE_GET_OPT
+#if STANDALONE_MAC_VERSION
+#define MD_USE_GET_OPT	1
+#else
+#define MD_USE_GET_OPT	0
+#endif
+#endif
+
+// These are a bit hacky - note that the supplied arguments are not used to the fullest in the getopt case. For 
+// example we aren't able to use the specified description or in the case of strings, any specified output
+// variables for the resulting string, we have to just catch those at processing time and create the strings.
+#if MD_USE_GET_OPT
+#include <getopt.h>
+#define MD_ARGUMENT_FLAG(name, flagChar, flagValue, outPointer, desc, argPlaceholder)	{ name, no_argument, outPointer, outPointer ? flagValue : flagChar }
+#define MD_ARGUMENT_STRING(name, flagChar, outPointer, desc, argPlaceholder)	{ name, required_argument, NULL, flagChar }
+#else
+#define MD_ARGUMENT_FLAG(name, flagChar, outPointer, desc, argPlaceholder)	{ name, flagChar, 0, G_OPTION_ARG_NONE, outPointer, desc, argPlaceholder }
+#define MD_ARGUMENT_STRING(name, flagChar, outPointer, desc, argPlaceholder)	{ name, flagChar, 0, G_OPTION_ARG_STRING, outPointer, desc, argPlaceholder }
+#endif
+
+// With getopt we don't get the same fancy automatic usage (I don't think?) so for 
+// now we're faking it ...
+static void printUsage() {
+	printf("Usage:\
+  multimarkdown [OPTION...] [FILE...]\n\
+\n\
+Help Options:\n\
+  -h, --help              Show help options\n\
+\n\
+Application Options:\n\
+  -v, --version           print version and exit\n\
+  -o, --output=FILE       send output to FILE (default is stdout)\n\
+  -t, --to=FORMAT         convert to FORMAT (default is html)\n\
+  -x, --extensions        use all syntax extensions\n\
+  --filter-html           filter out raw HTML (except styles)\n\
+  --filter-styles         filter out HTML styles\n\
+  -c, --compatibility     markdown compatibility mode\n\
+  -b, --batch             process multiple files automatically\n\
+  -e, --extract           extract and display specified metadata\n\
+\n\
+Syntax extensions\n\
+  --smart --nosmart       toggle smart typography extension\n\
+  --notes --nonotes       toggle notes extension\n\
+  --process-html          process MultiMarkdown inside of raw HTML\n\
+\n\
+Converts text in specified files (or stdin) from markdown to FORMAT.\n\
+Available FORMATs:  html, latex, memoir, beamer, odf, opml\n");
+}
+
 int main(int argc, char * argv[]) {
 
-#if TARGET_OS_MAC
+#if STANDALONE_MAC_VERSION
 	NSAutoreleasePool* toolPool = [[NSAutoreleasePool alloc] init];
 #endif
 	
@@ -88,33 +140,72 @@ int main(int argc, char * argv[]) {
     static gboolean opt_batchmode = FALSE;
     static gchar *opt_extract_meta = FALSE;
 
-#warning disabling command line parsing for now
-#if 0
-    static GOptionEntry entries[] =
-    {
-      { "version", 'v', 0, G_OPTION_ARG_NONE, &opt_version, "print version and exit", NULL },
-      { "output", 'o', 0, G_OPTION_ARG_STRING, &opt_output, "send output to FILE (default is stdout)", "FILE" },
-      { "to", 't', 0, G_OPTION_ARG_STRING, &opt_to, "convert to FORMAT (default is html)", "FORMAT" },
-      { "extensions", 'x', 0, G_OPTION_ARG_NONE, &opt_allext, "use all syntax extensions", NULL },
-      { "filter-html", 0, 0, G_OPTION_ARG_NONE, &opt_filter_html, "filter out raw HTML (except styles)", NULL },
-      { "filter-styles", 0, 0, G_OPTION_ARG_NONE, &opt_filter_styles, "filter out HTML styles", NULL },
-      { "compatibility", 'c', 0, G_OPTION_ARG_NONE, &opt_compatibility, "markdown compatibility mode", NULL },
-      { "batch", 'b', 0, G_OPTION_ARG_NONE, &opt_batchmode, "process multiple files automatically", NULL },
-      { "extract", 'e', 0, G_OPTION_ARG_STRING, &opt_extract_meta, "extract and display specified metadata", NULL },
-      { NULL }
-    };
-
+#if MD_USE_GET_OPT
+	static struct option entries[] =
+	{
+	  MD_ARGUMENT_FLAG( "help", 'h', 1, NULL, "Show help options", NULL ),
+#else
+	static GOptionEntry entries[] =
+	{	
+#endif	
+	  MD_ARGUMENT_FLAG( "version", 'v', 1, &opt_version, "print version and exit", NULL ),
+      MD_ARGUMENT_STRING( "output", 'o', &opt_output, "send output to FILE (default is stdout)", "FILE" ),
+      MD_ARGUMENT_STRING( "to", 't', &opt_to, "convert to FORMAT (default is html)", "FORMAT" ),
+      MD_ARGUMENT_FLAG( "extensions", 'x', 1, &opt_allext, "use all syntax extensions", NULL ),
+      MD_ARGUMENT_FLAG( "filter-html", 0, 1, &opt_filter_html, "filter out raw HTML (except styles)", NULL ),
+      MD_ARGUMENT_FLAG( "filter-styles", 0, 1, &opt_filter_styles, "filter out HTML styles", NULL ),
+      MD_ARGUMENT_FLAG( "compatibility", 'c', 1, &opt_compatibility, "markdown compatibility mode", NULL ),
+      MD_ARGUMENT_FLAG( "batch", 'b', 1, &opt_batchmode, "process multiple files automatically", NULL ),
+      MD_ARGUMENT_STRING( "extract", 'e', &opt_extract_meta, "extract and display specified metadata", NULL ),
+// For GOptions, the arguments are split into two groups
+#if !MD_USE_GET_OPT
+      { NULL }	
+	};
+	
     /* Options to active syntax extensions.  These appear separately in --help. */
     static GOptionEntry ext_entries[] =
     {
-      { "smart", 0, 0, G_OPTION_ARG_NONE, &opt_smart, "use smart typography extension (on by default)", NULL },
-      { "nosmart", 0, 0, G_OPTION_ARG_NONE, &opt_no_smart, "do not use smart typography extension", NULL },
-      { "notes", 0, 0, G_OPTION_ARG_NONE, &opt_notes, "use notes extension (on by default)", NULL },
-      { "nonotes", 0, 0, G_OPTION_ARG_NONE, &opt_no_notes, "do not use notes extension", NULL },
-      { "process-html", 0, 0, G_OPTION_ARG_NONE, &opt_process_html, "process MultiMarkdown inside of raw HTML", NULL },
+#endif
+      MD_ARGUMENT_FLAG( "smart", 0, 1, &opt_smart, "use smart typography extension (on by default)", NULL ),
+      MD_ARGUMENT_FLAG( "nosmart", 0, 1, &opt_no_smart, "do not use smart typography extension", NULL ),
+      MD_ARGUMENT_FLAG( "notes", 0, 1, &opt_notes, "use notes extension (on by default)", NULL ),
+      MD_ARGUMENT_FLAG( "nonotes", 0, 1, &opt_no_notes, "do not use notes extension", NULL ),
+      MD_ARGUMENT_FLAG( "process-html", 0, 1, &opt_process_html, "process MultiMarkdown inside of raw HTML", NULL ),
       { NULL }
     };
 
+#if MD_USE_GET_OPT
+	char ch;
+	while ((ch = getopt_long(argc, argv, "hvo:t:xcbe:", entries, NULL)) != -1) {
+		printf("Got option %c/%s\n", ch, optarg);
+		 switch (ch) {
+			case 'h':
+				printUsage();
+				return EXIT_SUCCESS;
+				break;
+			case 'o':
+				opt_output = malloc(strlen(optarg) + 1);
+				strcpy(opt_output, optarg);
+				break;
+			case 't':
+				opt_to = malloc(strlen(optarg) + 1);
+				strcpy(opt_to, optarg);
+				break;
+			case 'e':
+				opt_extract_meta = malloc(strlen(optarg) + 1);
+				strcpy(opt_extract_meta, optarg);
+				break;
+		 }
+	}
+
+	 argc -= optind;
+	 argv += optind;		 
+	
+	// We expect argc and argv to still point just one below the start of remaining args
+	argc++;
+	argv--;
+	
+#else
     GError *error = NULL;
     GOptionContext *context;
     GOptionGroup *ext_group;
@@ -289,7 +380,7 @@ int main(int argc, char * argv[]) {
         
     }
 
-#if TARGET_OS_MAC
+#if STANDALONE_MAC_VERSION
 	[toolPool release];
 #endif
 

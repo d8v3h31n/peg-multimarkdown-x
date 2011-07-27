@@ -42,13 +42,14 @@ GString* g_string_new(char *startingString)
 
 char* g_string_free(GString* ripString, bool freeCharacterData)
 {	
-	char* returnedString = NULL;
+	char* returnedString = ripString->str;
 	if (freeCharacterData)
 	{
 		if (ripString->str != NULL)
 		{
 			free(ripString->str);
 		}
+		returnedString = NULL;
 	}
 	
 	[ripString->cocoaString release];
