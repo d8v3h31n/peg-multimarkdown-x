@@ -49,6 +49,10 @@ mmdtest: $(PROGRAM)
 	cd MarkdownTest; \
 	./MarkdownTest.pl --Script=../$(PROGRAM) --testdir=MultiMarkdownTests
 
+compattest: $(PROGRAM)
+	cd MarkdownTest; \
+	./MarkdownTest.pl --Script=../$(PROGRAM) --testdir=CompatibilityTests --Flags="-c"
+
 latextest: $(PROGRAM)
 	cd MarkdownTest; \
 	./MarkdownTest.pl --Script=../$(PROGRAM) --testdir=MultiMarkdownTests --Flags="-t latex" --ext=".tex"; \
