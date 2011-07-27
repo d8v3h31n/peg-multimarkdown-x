@@ -20,7 +20,7 @@ void recacheUTF8String(GString* theGString)
 	{
 		free(theGString->str);
 	}
-	char* utf8String = [theGString->cocoaString UTF8String];
+	char* utf8String = (char*) [theGString->cocoaString UTF8String];
 	NSUInteger stringLength = strlen(utf8String);
 	theGString->str = malloc(stringLength + 1);
 	strncpy(theGString->str, utf8String, stringLength);
@@ -96,10 +96,13 @@ GSList* g_slist_reverse(GSList* theList)
 {
 #warning not implemented
 	NSLog(@"Can't reverse lists yet");
+	return NULL;
 }
 
 GSList* g_slist_prepend(GSList* targetElement, void* newElementData)
 {
+#warning not implemented
 	NSLog(@"Can't prepend lists yet");
+	return NULL;	
 }
 
