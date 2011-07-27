@@ -49,4 +49,6 @@ typedef struct _GSList
 	struct _GSList* next;
 } GSList;
 
+void g_slist_free(GSList* ripList);
 GSList* g_slist_prepend(GSList* targetElement, void* newElementData);
+GSList* g_slist_reverse(GSList* theList);
