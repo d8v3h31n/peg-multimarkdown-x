@@ -258,7 +258,9 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
             (strcmp(elt->contents.link->identifier, "") == 0) ) {
             g_string_append_printf(out, "\"");
         } else {
-            g_string_append_printf(out, "\" id=\"%s\"",elt->contents.link->identifier);
+            if (!(extension(EXT_COMPATIBILITY))) {
+				g_string_append_printf(out, "\" id=\"%s\"",elt->contents.link->identifier);
+			}
         }
         if (strlen(elt->contents.link->title) > 0) {
             g_string_append_printf(out, " title=\"");
