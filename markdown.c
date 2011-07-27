@@ -177,7 +177,6 @@ int main(int argc, char * argv[]) {
 #if MD_USE_GET_OPT
 	char ch;
 	while ((ch = getopt_long(argc, argv, "hvo:t:xcbe:", entries, NULL)) != -1) {
-		printf("Got option %c/%s\n", ch, optarg);
 		 switch (ch) {
 			case 'h':
 				printUsage();
