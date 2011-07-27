@@ -88,21 +88,41 @@ void g_string_prepend(GString* baseString, char* prependedString)
 
 void g_slist_free(GSList* ripList)
 {
-#warning not implemented
-	NSLog(@"Can't free lists yet");
+	GSList* thisListItem = ripList;
+	while (thisListItem != NULL)
+	{
+		GSList* nextItem = thisListItem->next;
+		
+		// I guess we don't release the data? Non-retained memory management is hard... let's figure it out later.
+		free(thisListItem);
+		
+		thisListItem = nextItem;
+	}
 }
 
+// Currently only used for markdown_output.c endnotes printing
 GSList* g_slist_reverse(GSList* theList)
-{
-#warning not implemented
-	NSLog(@"Can't reverse lists yet");
-	return NULL;
+{	
+	GSList* lastNodeSeen = NULL;
+	
+	// Iterate the list items, tacking them on to our new reversed List as we find them
+	GSList* listWalker = theList;
+	while (listWalker != NULL)
+	{
+		GSList* nextNode = listWalker->next;
+		listWalker->next = lastNodeSeen;
+		lastNodeSeen = listWalker;
+		listWalker = nextNode;
+	}
+	
+	return lastNodeSeen;
 }
 
 GSList* g_slist_prepend(GSList* targetElement, void* newElementData)
 {
-#warning not implemented
-	NSLog(@"Can't prepend lists yet");
-	return NULL;	
+	GSList* newElement = malloc(sizeof(GSList));
+	newElement->data = newElementData;
+	newElement->next = targetElement;
+	return newElement;
 }
 

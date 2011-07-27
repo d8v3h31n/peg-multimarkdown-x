@@ -132,6 +132,8 @@ int main(int argc, char * argv[]) {
     }
     g_option_context_free(context);
 
+#endif
+
     /* Process command-line options and arguments. */
 
     if (opt_version) {
@@ -182,7 +184,6 @@ int main(int argc, char * argv[]) {
         fprintf(stderr, "%s: Unknown output format '%s'\n", progname, opt_to);
         exit(EXIT_FAILURE);
     }
-#endif
 
     numargs = argc - 1;
 
