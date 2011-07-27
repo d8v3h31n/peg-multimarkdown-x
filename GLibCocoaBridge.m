@@ -11,20 +11,7 @@
 
 // GString
 
-void recacheUTF8String(GString* theGString)
-{
-	// We always keep a complete copy ... potentially expensive, yes, but it
-	// is necessary in case the client has grabbed theGString->str just before
-	// freeing us without freeing the str representation.
-	if (theGString->str != NULL)
-	{
-		free(theGString->str);
-	}
-	char* utf8String = (char*) [theGString->cocoaString UTF8String];
-	NSUInteger stringLength = strlen(utf8String);
-	theGString->str = malloc(stringLength + 1);
-	strncpy(theGString->str, utf8String, stringLength+1);
-}
+#define kStringBufferGrowthSize 1024
 
 GString* g_string_new(char *startingString)
 {
@@ -32,13 +19,18 @@ GString* g_string_new(char *startingString)
 
 	if (startingString == NULL) startingString = "";
 
-	newString->cocoaString = [[NSMutableString stringWithUTF8String:startingString] retain];
-	newString->str = NULL;
-
-	// Clear the UTF fragments
-	newString->utf8Fragments[0] = '\0';
+	size_t startingBufferSize = kStringBufferGrowthSize;
+	size_t startingStringSize = strlen(startingString);
+	while (startingBufferSize < (startingStringSize + 1))
+	{
+		startingBufferSize += kStringBufferGrowthSize;
+	}
 	
-	recacheUTF8String(newString);
+	newString->str = malloc(startingBufferSize);
+	newString->currentStringBufferSize = startingBufferSize;
+	strncpy(newString->str, startingString, startingStringSize);
+	newString->str[startingStringSize] = '\0';
+	newString->currentStringLength = startingStringSize;
 	
 	return newString;
 }
@@ -55,38 +47,25 @@ char* g_string_free(GString* ripString, bool freeCharacterData)
 		returnedString = NULL;
 	}
 	
-	[ripString->cocoaString release];
 	free(ripString);
 	
 	return returnedString;
 }
 
-void g_string_append_c(GString* baseString, char appendedCharacter)
-{	
-	int thisUTFIndex = 0;
-	while (baseString->utf8Fragments[thisUTFIndex] != '\0')
+static void ensureStringBufferCanHold(GString* baseString, size_t newStringSize)
+{
+	size_t newBufferSizeNeeded = newStringSize + 1;
+	if (newBufferSizeNeeded > baseString->currentStringBufferSize)
 	{
-		thisUTFIndex++;
-	}
-	
-	if (thisUTFIndex > 3)
-	{
-		NSLog(@"Got too many contiguous non-parseable characters. Starting over!");
-		baseString->utf8Fragments[0] = '\0';
-		thisUTFIndex = 0;
-	}
-	
-	baseString->utf8Fragments[thisUTFIndex] = appendedCharacter;
-	baseString->utf8Fragments[thisUTFIndex+1] = '\0';
-	
-	NSString* newString = [NSString stringWithUTF8String:baseString->utf8Fragments];
-	if (newString != nil)
-	{
-		[baseString->cocoaString appendString:newString];	
-		recacheUTF8String(baseString);
+		size_t newBufferSize = baseString->currentStringBufferSize;	
+
+		while (newBufferSizeNeeded > newBufferSize)
+		{
+			newBufferSize += kStringBufferGrowthSize;
+		}
 		
-		// Clear the UTF fragments
-		baseString->utf8Fragments[0] = '\0';
+		baseString->str = realloc(baseString->str, newBufferSize);
+		baseString->currentStringBufferSize = newBufferSize;
 	}
 }
 
@@ -94,9 +73,23 @@ void g_string_append(GString* baseString, char* appendedString)
 {
 	if ((appendedString != NULL) && (strlen(appendedString) > 0))
 	{
-		[baseString->cocoaString appendString:[NSString stringWithUTF8String:appendedString]];
-		recacheUTF8String(baseString);
+		size_t appendedStringLength = strlen(appendedString);
+		size_t newStringLength = baseString->currentStringLength + appendedStringLength;
+		ensureStringBufferCanHold(baseString, newStringLength);
+
+		strncat(baseString->str, appendedString, appendedStringLength);
+		baseString->currentStringLength = newStringLength;
 	}
+}
+
+void g_string_append_c(GString* baseString, char appendedCharacter)
+{	
+	size_t newSizeNeeded = baseString->currentStringLength + 1;
+	ensureStringBufferCanHold(baseString, newSizeNeeded);
+	
+	baseString->str[baseString->currentStringLength] = appendedCharacter;
+	baseString->currentStringLength++;	
+	baseString->str[baseString->currentStringLength] = '\0';
 }
 
 void g_string_append_printf(GString* baseString, char* format, ...)
@@ -112,8 +105,17 @@ void g_string_append_printf(GString* baseString, char* format, ...)
 
 void g_string_prepend(GString* baseString, char* prependedString)
 {
-	[baseString->cocoaString insertString:[NSString stringWithUTF8String:prependedString] atIndex:0];
-	recacheUTF8String(baseString);
+	if ((prependedString != NULL) && (strlen(prependedString) > 0))
+	{
+		size_t prependedStringLength = strlen(prependedString);
+		size_t newStringLength = baseString->currentStringLength + prependedStringLength;
+		ensureStringBufferCanHold(baseString, newStringLength);
+
+		memmove(baseString->str + prependedStringLength, baseString->str, baseString->currentStringLength);
+		strncpy(baseString->str, prependedString, prependedStringLength);
+		baseString->currentStringLength = newStringLength;
+		baseString->str[baseString->currentStringLength] = '\0';
+	}
 }
 
 // GSList

@@ -17,16 +17,13 @@ typedef char gchar;
 // GString declarations
 
 typedef struct 
-{
-	NSMutableString* cocoaString;
-	
-	// While we are buildign the string, we may receive UTF8 fragment bytes that can't be processed on their own,
-	// so we queue them up.
-	char utf8Fragments[5];
-	
-	// Compatibility entries for GString clients
-	// Updated whenever the GString is manipulated
+{	
+	// Current UTF8 byte stream this string represents
 	char* str;
+	
+	// Where in the str buffer will we add new cahracters?
+	int currentStringBufferSize;
+	int currentStringLength;
 } GString;
 
 GString* g_string_new(char *startingString);
