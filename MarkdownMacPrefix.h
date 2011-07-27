@@ -5,6 +5,7 @@
 #import "markdown_lib.h"
 
 #define link PEG_link
+#define STR PEG_STR
 #import "markdown_peg.h"
 
 // peg
