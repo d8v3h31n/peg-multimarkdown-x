@@ -11,7 +11,8 @@
 
 // GString
 
-#define kStringBufferGrowthSize 1024
+#define kStringBufferStartingSize 1024
+#define kStringBufferGrowthMultiplier 2
 
 GString* g_string_new(char *startingString)
 {
@@ -19,11 +20,11 @@ GString* g_string_new(char *startingString)
 
 	if (startingString == NULL) startingString = "";
 
-	size_t startingBufferSize = kStringBufferGrowthSize;
+	size_t startingBufferSize = kStringBufferStartingSize;
 	size_t startingStringSize = strlen(startingString);
 	while (startingBufferSize < (startingStringSize + 1))
 	{
-		startingBufferSize += kStringBufferGrowthSize;
+		startingBufferSize *= kStringBufferGrowthMultiplier;
 	}
 	
 	newString->str = malloc(startingBufferSize);
@@ -61,7 +62,7 @@ static void ensureStringBufferCanHold(GString* baseString, size_t newStringSize)
 
 		while (newBufferSizeNeeded > newBufferSize)
 		{
-			newBufferSize += kStringBufferGrowthSize;
+			newBufferSize *= kStringBufferGrowthMultiplier;
 		}
 		
 		baseString->str = realloc(baseString->str, newBufferSize);

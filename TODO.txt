@@ -1,0 +1,9 @@
+Notes for myself while pulling together the remaining lose ends in MultiMarkdown standalone for Mac.
+
+? Performance tests - compare with a very large markdown file vs. e.g. multimarkdown based on GLib.
+
+? Garbage output e.g. when processing unicode within tags:
+	<p>←</p>
+
+? Fix short options parsing in markdown.c
+

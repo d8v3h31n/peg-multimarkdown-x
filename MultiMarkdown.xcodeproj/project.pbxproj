@@ -60,6 +60,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		651A525B13E1BEFE00BCB02A /* TODO.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = TODO.txt; sourceTree = "<group>"; };
 		65F0B66113DF47CC00D0980C /* markdown_lib.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = markdown_lib.c; sourceTree = "<group>"; };
 		65F0B66213DF47CC00D0980C /* markdown_lib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = markdown_lib.h; sourceTree = "<group>"; };
 		65F0B66313DF47CC00D0980C /* markdown_output.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = markdown_output.c; sourceTree = "<group>"; };
@@ -108,6 +109,7 @@
 		08FB7794FE84155DC02AAC07 /* MultiMarkdown */ = {
 			isa = PBXGroup;
 			children = (
+				651A525B13E1BEFE00BCB02A /* TODO.txt */,
 				65F0B6D713DF4C6B00D0980C /* MarkdownMacPrefix.h */,
 				65F0B78B13DF573600D0980C /* GLibCocoaBridge.h */,
 				65F0B78C13DF573600D0980C /* GLibCocoaBridge.m */,
