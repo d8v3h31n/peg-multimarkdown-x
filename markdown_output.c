@@ -2775,3 +2775,12 @@ void print_odf_body_element_list(GString *out, element *list) {
         list = list->next;
     }
 }
+
+/* bogus function just references a couple globals defined in utility_functions.c but not used in this source file */
+static void bogus_function()
+{
+	static char* bogus;
+	bogus = charbuf;
+	static element* bogus2;
+	bogus2 = parse_result;
+}
