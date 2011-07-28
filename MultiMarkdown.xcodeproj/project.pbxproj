@@ -393,6 +393,69 @@
 			};
 			name = Release;
 		};
+		651A542813E20D2400BCB02A /* Release10.6+ */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = (
+					i386,
+					ppc,
+					x86_64,
+				);
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.4;
+				PREBINDING = NO;
+				SDKROOT = macosx10.6;
+			};
+			name = "Release10.6+";
+		};
+		651A542913E20D2400BCB02A /* Release10.6+ */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = (
+					i386,
+					x86_64,
+				);
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEPLOYMENT_POSTPROCESSING = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_PREFIX_HEADER = MarkdownMacPrefix.h;
+				"GCC_VERSION[arch=x86_64]" = com.apple.compilers.llvm.clang.1_0;
+				HEADER_SEARCH_PATHS = .;
+				INSTALL_PATH = /usr/local/bin;
+				MACOSX_DEPLOYMENT_TARGET = 10.6;
+				OTHER_CFLAGS = "-DSTANDALONE_MAC_VERSION=1";
+				PRODUCT_NAME = multimarkdown;
+				SEPARATE_STRIP = YES;
+				STRIP_INSTALLED_PRODUCT = YES;
+			};
+			name = "Release10.6+";
+		};
+		651A542A13E20D2400BCB02A /* Release10.6+ */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				PRODUCT_NAME = Peg;
+				ZERO_LINK = NO;
+			};
+			name = "Release10.6+";
+		};
+		651A542B13E20D2400BCB02A /* Release10.6+ */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				PRODUCT_NAME = "MultiMarkdown Tests";
+				ZERO_LINK = NO;
+			};
+			name = "Release10.6+";
+		};
 		65F0B88913DF6C0D00D0980C /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -443,6 +506,7 @@
 			buildConfigurations = (
 				1DEB928608733DD80010E9CD /* Debug */,
 				1DEB928708733DD80010E9CD /* Release */,
+				651A542913E20D2400BCB02A /* Release10.6+ */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -452,6 +516,7 @@
 			buildConfigurations = (
 				1DEB928A08733DD80010E9CD /* Debug */,
 				1DEB928B08733DD80010E9CD /* Release */,
+				651A542813E20D2400BCB02A /* Release10.6+ */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -461,6 +526,7 @@
 			buildConfigurations = (
 				65F0B88913DF6C0D00D0980C /* Debug */,
 				65F0B88A13DF6C0D00D0980C /* Release */,
+				651A542A13E20D2400BCB02A /* Release10.6+ */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -470,6 +536,7 @@
 			buildConfigurations = (
 				65F0B8EB13DF714F00D0980C /* Debug */,
 				65F0B8EC13DF714F00D0980C /* Release */,
+				651A542B13E20D2400BCB02A /* Release10.6+ */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
