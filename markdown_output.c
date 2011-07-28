@@ -184,7 +184,7 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
     int lev;
     char *label;
     element *attribute;
-    element *locator;
+    element *locator = NULL;
     char *height;
     char *width;
     switch (elt->key) {
@@ -451,9 +451,6 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
         break;
     case NOCITATION:
     case CITATION:
-        /* Get locator, if present */
-        locator = locator_for_citation(elt);
-
         if (strncmp(elt->contents.str,"[#",2) == 0) {
             /* reference specified externally */
             if ( elt->key == NOCITATION ) {
@@ -1203,7 +1200,7 @@ static void print_latex_element(GString *out, element *elt) {
                     }
                 }
             }
-            if (elt->children->contents.str == NULL) {
+            if ((elt->children != NULL) && (elt->children->contents.str == NULL)) {
                 elt->children->contents.str = strdup(elt->contents.str);
                 add_endnote(elt->children);
             }
@@ -1706,7 +1703,6 @@ void print_odf_element(GString *out, element *elt) {
     char *label;
     char *height;
     char *width;
-    element *locator;
     int old_type = 0;
     switch (elt->key) {
     case SPACE:
@@ -1982,9 +1978,6 @@ void print_odf_element(GString *out, element *elt) {
         break;
     case NOCITATION:
     case CITATION:
-        /* Get locator, if present */
-        locator = locator_for_citation(elt);
-
         if (strncmp(elt->contents.str,"[#",2) == 0) {
             /* reference specified externally, so just display it */
             g_string_append_printf(out, "%s", elt->contents.str);
