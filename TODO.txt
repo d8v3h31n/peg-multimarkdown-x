@@ -5,4 +5,5 @@ Notes for myself while pulling together the remaining lose ends in MultiMarkdown
 ? Garbage output e.g. when processing unicode within tags:
 	<p>←</p>
 
+? Fix short options parsing in markdown.c
 
