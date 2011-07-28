@@ -22,10 +22,10 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
+		651A528313E1C30100BCB02A /* GLibFacade.m in Sources */ = {isa = PBXBuildFile; fileRef = 651A528213E1C30100BCB02A /* GLibFacade.m */; };
 		65F0B69B13DF47CC00D0980C /* markdown_lib.c in Sources */ = {isa = PBXBuildFile; fileRef = 65F0B66113DF47CC00D0980C /* markdown_lib.c */; };
 		65F0B69C13DF47CC00D0980C /* markdown_output.c in Sources */ = {isa = PBXBuildFile; fileRef = 65F0B66313DF47CC00D0980C /* markdown_output.c */; };
 		65F0B69E13DF47CC00D0980C /* markdown.c in Sources */ = {isa = PBXBuildFile; fileRef = 65F0B66713DF47CC00D0980C /* markdown.c */; };
-		65F0B78D13DF573600D0980C /* GLibCocoaBridge.m in Sources */ = {isa = PBXBuildFile; fileRef = 65F0B78C13DF573600D0980C /* GLibCocoaBridge.m */; };
 		65F0B7B713DF5BEF00D0980C /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 65F0B7B613DF5BEF00D0980C /* Foundation.framework */; };
 		65F0B8B213DF6D4000D0980C /* markdown_parser.c in Sources */ = {isa = PBXBuildFile; fileRef = 65F0B8B113DF6D4000D0980C /* markdown_parser.c */; };
 /* End PBXBuildFile section */
@@ -61,6 +61,8 @@
 
 /* Begin PBXFileReference section */
 		651A525B13E1BEFE00BCB02A /* TODO.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = TODO.txt; sourceTree = "<group>"; };
+		651A528113E1C30100BCB02A /* GLibFacade.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GLibFacade.h; sourceTree = "<group>"; };
+		651A528213E1C30100BCB02A /* GLibFacade.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GLibFacade.m; sourceTree = "<group>"; };
 		65F0B66113DF47CC00D0980C /* markdown_lib.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = markdown_lib.c; sourceTree = "<group>"; };
 		65F0B66213DF47CC00D0980C /* markdown_lib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = markdown_lib.h; sourceTree = "<group>"; };
 		65F0B66313DF47CC00D0980C /* markdown_output.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = markdown_output.c; sourceTree = "<group>"; };
@@ -87,8 +89,6 @@
 		65F0B6C513DF485F00D0980C /* Makefile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
 		65F0B6D713DF4C6B00D0980C /* MarkdownMacPrefix.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MarkdownMacPrefix.h; sourceTree = "<group>"; };
 		65F0B6F313DF4D9800D0980C /* glib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = glib.h; sourceTree = "<group>"; };
-		65F0B78B13DF573600D0980C /* GLibCocoaBridge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GLibCocoaBridge.h; sourceTree = "<group>"; };
-		65F0B78C13DF573600D0980C /* GLibCocoaBridge.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GLibCocoaBridge.m; sourceTree = "<group>"; };
 		65F0B7B613DF5BEF00D0980C /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		65F0B8B113DF6D4000D0980C /* markdown_parser.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = markdown_parser.c; sourceTree = "<group>"; };
 		8DD76FB20486AB0100D96B5E /* multimarkdown */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = multimarkdown; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -110,9 +110,9 @@
 			isa = PBXGroup;
 			children = (
 				651A525B13E1BEFE00BCB02A /* TODO.txt */,
+				651A528113E1C30100BCB02A /* GLibFacade.h */,
+				651A528213E1C30100BCB02A /* GLibFacade.m */,
 				65F0B6D713DF4C6B00D0980C /* MarkdownMacPrefix.h */,
-				65F0B78B13DF573600D0980C /* GLibCocoaBridge.h */,
-				65F0B78C13DF573600D0980C /* GLibCocoaBridge.m */,
 				65F0B6F313DF4D9800D0980C /* glib.h */,
 				65F0B8B513DF6D4700D0980C /* Generated Sources */,
 				08FB7795FE84155DC02AAC07 /* Source */,
@@ -290,8 +290,8 @@
 				65F0B69B13DF47CC00D0980C /* markdown_lib.c in Sources */,
 				65F0B69C13DF47CC00D0980C /* markdown_output.c in Sources */,
 				65F0B69E13DF47CC00D0980C /* markdown.c in Sources */,
-				65F0B78D13DF573600D0980C /* GLibCocoaBridge.m in Sources */,
 				65F0B8B213DF6D4000D0980C /* markdown_parser.c in Sources */,
+				651A528313E1C30100BCB02A /* GLibFacade.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

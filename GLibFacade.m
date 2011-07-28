@@ -1,5 +1,5 @@
 //
-//  GLibCocoaBridge.m
+//  GLibFacade.m
 //  MultiMarkdown
 //
 //  Created by Daniel Jalkut on 7/26/11.
@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "GLibCocoaBridge.h"
+#import "GLibFacade.h"
 
 // GString
 
