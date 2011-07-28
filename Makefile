@@ -8,7 +8,7 @@ PROGRAM=multimarkdown
 # the i386 architecture, causing an error.  Can try adding -arch i686 to 
 # CFLAGS
 
-CFLAGS ?= -Wall -O3 -ansi
+CFLAGS ?= -Wall -O3 -ansi -arch i686
 
 OBJS=markdown_parser.o markdown_output.o markdown_lib.o
 PEGDIR=peg-0.1.4
@@ -51,7 +51,7 @@ mmdtest: $(PROGRAM)
 
 compattest: $(PROGRAM)
 	cd MarkdownTest; \
-	./MarkdownTest.pl --Script=../$(PROGRAM) --testdir=CompatibilityTests --Flags="-c"
+	./MarkdownTest.pl --Script=../$(PROGRAM) --Tidy --testdir=CompatibilityTests --Flags="-c"
 
 latextest: $(PROGRAM)
 	cd MarkdownTest; \
