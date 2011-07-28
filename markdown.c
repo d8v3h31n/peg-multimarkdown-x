@@ -4,7 +4,8 @@
   (c) 2008 John MacFarlane (jgm at berkeley dot edu).
   
   portions Copyright (c) 2010-2011 Fletcher T. Penney
-
+  portions Copyright (c) 2011 Daniel Jalkut
+  
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License or the MIT
   license.  See LICENSE for details.
@@ -179,6 +180,9 @@ int main(int argc, char * argv[]) {
 				printUsage();
 				return EXIT_SUCCESS;
 				break;
+			case 'v':
+				opt_version = true;
+				break;
 			case 'o':
 				opt_output = malloc(strlen(optarg) + 1);
 				strcpy(opt_output, optarg);
@@ -186,6 +190,15 @@ int main(int argc, char * argv[]) {
 			case 't':
 				opt_to = malloc(strlen(optarg) + 1);
 				strcpy(opt_to, optarg);
+				break;
+			case 'x':
+				opt_allext = true;
+				break;
+			case 'c':
+				opt_compatibility = true;
+				break;
+			case 'b':
+				opt_batchmode = true;
 				break;
 			case 'e':
 				opt_extract_meta = malloc(strlen(optarg) + 1);
