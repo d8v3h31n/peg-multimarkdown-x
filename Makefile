@@ -43,7 +43,7 @@ distclean: clean
 
 test: $(PROGRAM)
 	cd MarkdownTest; \
-	./MarkdownTest.pl --Script=../$(PROGRAM) --Tidy  --Flags="-c"
+	./MarkdownTest.pl --Script=../$(PROGRAM) --Tidy  --Flags="--compatibility"
 
 mmdtest: $(PROGRAM)
 	cd MarkdownTest; \
@@ -51,7 +51,7 @@ mmdtest: $(PROGRAM)
 
 compattest: $(PROGRAM)
 	cd MarkdownTest; \
-	./MarkdownTest.pl --Script=../$(PROGRAM) --testdir=CompatibilityTests --Flags="-c"
+	./MarkdownTest.pl --Script=../$(PROGRAM) --testdir=CompatibilityTests --Flags="--compatibility"
 
 latextest: $(PROGRAM)
 	cd MarkdownTest; \
