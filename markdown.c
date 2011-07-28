@@ -104,10 +104,6 @@ Available FORMATs:  html, latex, memoir, beamer, odf, opml\n");
 }
 
 int main(int argc, char * argv[]) {
-
-#if STANDALONE_MAC_VERSION
-	NSAutoreleasePool* toolPool = [[NSAutoreleasePool alloc] init];
-#endif
 	
     int numargs;            /* number of filename arguments */
     int i;
@@ -379,10 +375,6 @@ int main(int argc, char * argv[]) {
         g_string_free(inputbuf, true);
         
     }
-
-#if STANDALONE_MAC_VERSION
-	[toolPool release];
-#endif
 
     return(EXIT_SUCCESS);
 }

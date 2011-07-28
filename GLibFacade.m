@@ -1,5 +1,5 @@
 //
-//  GLibCocoaBridge.m
+//  GLibFacade.m
 //  MultiMarkdown
 //
 //  Created by Daniel Jalkut on 7/26/11.
@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "GLibCocoaBridge.h"
+#import "GLibFacade.h"
 
 // GString
 
@@ -78,7 +78,8 @@ void g_string_append(GString* baseString, char* appendedString)
 		size_t newStringLength = baseString->currentStringLength + appendedStringLength;
 		ensureStringBufferCanHold(baseString, newStringLength);
 
-		strncat(baseString->str, appendedString, appendedStringLength);
+		// We already know where the current string ends, so pass that as the starting address for strncat
+		strncat(baseString->str + baseString->currentStringLength, appendedString, appendedStringLength);
 		baseString->currentStringLength = newStringLength;
 	}
 }
@@ -98,10 +99,13 @@ void g_string_append_printf(GString* baseString, char* format, ...)
 	va_list args;
 	va_start(args, format);
 	
-	// Thanks to Mike Ash for the tip about using initWithFormat:arguments: to work around warnings
-	// when the caller doesn't provide any varargs.
-	NSString* appendedString = [[NSString alloc] initWithFormat:[NSString stringWithUTF8String:format] arguments:args];
-	g_string_append(baseString, (char*)[appendedString UTF8String]);
+	char* formattedString = NULL;
+	vasprintf(&formattedString, format, args);
+	if (formattedString != NULL)
+	{
+		g_string_append(baseString, formattedString);
+		free(formattedString);
+	}
 } 
 
 void g_string_prepend(GString* baseString, char* prependedString)

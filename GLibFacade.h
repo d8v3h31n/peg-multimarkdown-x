@@ -1,5 +1,5 @@
 //
-//  GLibCocoaBridge.h
+//  GLibFacade.h
 //  MultiMarkdown
 //
 //  Created by Daniel Jalkut on 7/26/11.
@@ -11,17 +11,20 @@
 typedef int gboolean;
 typedef char gchar;
 
-// WE implement minimal cover structs and associated call-through functions to implement
-// glib's GString and GSList as NSMutableString and NSMutableArray, respectively.
-
-// GString declarations
+// WE implement minimal mirror implementations of GLib's GString and GSList 
+// sufficient to cover the functionality required by MultiMarkdown.
+//
+// NOTE: THese are 100% clean, from-scratch implementations using only the 
+// GLib function prototype as guide for behavior.
+//
 
 typedef struct 
 {	
 	// Current UTF8 byte stream this string represents
 	char* str;
-	
-	// Where in the str buffer will we add new cahracters?
+
+	// Where in the str buffer will we add new characters
+	// or append new strings?
 	int currentStringBufferSize;
 	int currentStringLength;
 } GString;
@@ -36,16 +39,10 @@ void g_string_prepend(GString* baseString, char* prependedString);
 
 void g_string_append_printf(GString* baseString, char* format, ...);
 
-// GSList declarations
-
-// Don't know yet how to tackle the problem of GSList bridging. It's a little tougher than
-// GString because it strongly embraces a standard linked list paradigm. It might make most
-// sense to just implement the simple linked list functionality, unless there's some CoreFoundation
-// or POSIX library that is omni-present on Macs to support this.
+// Just implement a very simple singly linked list.
 
 typedef struct _GSList
 {
-	// And caches a reference to the data itself
 	void* data;	
 	struct _GSList* next;
 } GSList;

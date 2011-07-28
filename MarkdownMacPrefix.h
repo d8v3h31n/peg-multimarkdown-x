@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#import "GLibCocoaBridge.h"
+#import "GLibFacade.h"
 #import "markdown_lib.h"
 
 #define link PEG_link
