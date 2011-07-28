@@ -136,6 +136,7 @@ int main(int argc, char * argv[]) {
     static gboolean opt_compatibility = FALSE;
     static gboolean opt_batchmode = FALSE;
     static gchar *opt_extract_meta = FALSE;
+    static gboolean opt_no_labels = FALSE;
 
 #if MD_USE_GET_OPT
 	static struct option entries[] =
@@ -168,6 +169,7 @@ int main(int argc, char * argv[]) {
       MD_ARGUMENT_FLAG( "notes", 0, 1, &opt_notes, "use notes extension (on by default)", NULL ),
       MD_ARGUMENT_FLAG( "nonotes", 0, 1, &opt_no_notes, "do not use notes extension", NULL ),
       MD_ARGUMENT_FLAG( "process-html", 0, 1, &opt_process_html, "process MultiMarkdown inside of raw HTML", NULL ),
+      MD_ARGUMENT_FLAG( "nolabels", 0, 1, &opt_no_labels, "do not look for possible cross-references - improves speed", NULL ),
       { NULL }
     };
 
@@ -245,13 +247,16 @@ int main(int argc, char * argv[]) {
         extensions = extensions | EXT_FILTER_HTML;
     if (opt_filter_styles)
         extensions = extensions | EXT_FILTER_STYLES;
+    if (opt_no_labels)
+        extensions = extensions | EXT_NO_LABELS;
 
     /* Compatibility mode turns off extensions and most 
         MultiMarkdown-specific features */
-    if (opt_compatibility)
+    if (opt_compatibility) {
         extensions = 0x000000;
-    if (opt_compatibility)
         extensions = extensions | EXT_COMPATIBILITY;
+        extensions = extensions | EXT_NO_LABELS;
+    }
 
     if (opt_to == NULL)
         output_format = HTML_FORMAT;
