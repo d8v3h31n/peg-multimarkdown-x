@@ -325,6 +325,7 @@
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREFIX_HEADER = MarkdownMacPrefix.h;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				HEADER_SEARCH_PATHS = .;
 				INSTALL_PATH = /usr/local/bin;
 				OTHER_CFLAGS = "-DSTANDALONE_MAC_VERSION=1";
@@ -344,6 +345,7 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_MODEL_TUNING = G5;
 				GCC_PREFIX_HEADER = MarkdownMacPrefix.h;
+				"GCC_VERSION[arch=x86_64]" = com.apple.compilers.llvm.clang.1_0;
 				HEADER_SEARCH_PATHS = .;
 				INSTALL_PATH = /usr/local/bin;
 				"MACOSX_DEPLOYMENT_TARGET[arch=x86_64]" = 10.6;
