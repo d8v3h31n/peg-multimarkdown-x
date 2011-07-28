@@ -78,7 +78,8 @@ void g_string_append(GString* baseString, char* appendedString)
 		size_t newStringLength = baseString->currentStringLength + appendedStringLength;
 		ensureStringBufferCanHold(baseString, newStringLength);
 
-		strncat(baseString->str, appendedString, appendedStringLength);
+		// We already know where the current string ends, so pass that as the starting address for strncat
+		strncat(baseString->str + baseString->currentStringLength, appendedString, appendedStringLength);
 		baseString->currentStringLength = newStringLength;
 	}
 }
