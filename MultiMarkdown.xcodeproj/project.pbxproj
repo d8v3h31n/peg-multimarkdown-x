@@ -106,6 +106,7 @@
 		65F0B6D713DF4C6B00D0980C /* MarkdownMacPrefix.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MarkdownMacPrefix.h; sourceTree = "<group>"; };
 		65F0B6F313DF4D9800D0980C /* glib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = glib.h; sourceTree = "<group>"; };
 		65F0B8B113DF6D4000D0980C /* markdown_parser.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = markdown_parser.c; sourceTree = "<group>"; };
+		65F89E8113E379ED006A34B8 /* Release10.6+.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = "Release10.6+.xcconfig"; sourceTree = "<group>"; };
 		8DD76FB20486AB0100D96B5E /* multimarkdown */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = multimarkdown; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -136,6 +137,7 @@
 				651A528213E1C30100BCB02A /* GLibFacade.m */,
 				65F0B6D713DF4C6B00D0980C /* MarkdownMacPrefix.h */,
 				65F0B6F313DF4D9800D0980C /* glib.h */,
+				65F89E8013E379ED006A34B8 /* Configuration */,
 				65F0B8B513DF6D4700D0980C /* Generated Sources */,
 				08FB7795FE84155DC02AAC07 /* Source */,
 				C6A0FF2B0290797F04C91782 /* Documentation */,
@@ -220,6 +222,14 @@
 			name = "Generated Sources";
 			sourceTree = "<group>";
 		};
+		65F89E8013E379ED006A34B8 /* Configuration */ = {
+			isa = PBXGroup;
+			children = (
+				65F89E8113E379ED006A34B8 /* Release10.6+.xcconfig */,
+			);
+			path = Configuration;
+			sourceTree = "<group>";
+		};
 		C6A0FF2B0290797F04C91782 /* Documentation */ = {
 			isa = PBXGroup;
 			children = (
@@ -257,9 +267,9 @@
 /* End PBXLegacyTarget section */
 
 /* Begin PBXNativeTarget section */
-		4AFA466113E3624F00CFA132 /* Library */ = {
+		4AFA466113E3624F00CFA132 /* libMultiMarkdown */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 4AFA467013E3624F00CFA132 /* Build configuration list for PBXNativeTarget "Library" */;
+			buildConfigurationList = 4AFA467013E3624F00CFA132 /* Build configuration list for PBXNativeTarget "libMultiMarkdown" */;
 			buildPhases = (
 				4AFA467713E3630600CFA132 /* Generate Parser */,
 				4AFA466013E3624F00CFA132 /* Headers */,
@@ -271,7 +281,7 @@
 			dependencies = (
 				4AFA467913E3633800CFA132 /* PBXTargetDependency */,
 			);
-			name = Library;
+			name = libMultiMarkdown;
 			productName = multimarkdown;
 			productReference = 4AFA466213E3624F00CFA132 /* libMultiMarkdown.a */;
 			productType = "com.apple.product-type.library.static";
@@ -319,7 +329,7 @@
 			projectRoot = "";
 			targets = (
 				8DD76FA90486AB0100D96B5E /* MultiMarkdown */,
-				4AFA466113E3624F00CFA132 /* Library */,
+				4AFA466113E3624F00CFA132 /* libMultiMarkdown */,
 				65F0B88813DF6C0D00D0980C /* Peg */,
 				65F0B8EA13DF714E00D0980C /* Run Tests */,
 			);
@@ -544,21 +554,11 @@
 		};
 		4AFA467313E3624F00CFA132 /* Release10.6+ */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 65F89E8113E379ED006A34B8 /* Release10.6+.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
-				COPY_PHASE_STRIP = YES;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = MarkdownMacPrefix.h;
-				GCC_VERSION = "";
-				"GCC_VERSION[arch=x86_64]" = com.apple.compilers.llvm.clang.1_0;
 				HEADER_SEARCH_PATHS = .;
-				MACOSX_DEPLOYMENT_TARGET = 10.7;
-				OTHER_CFLAGS = "-DSTANDALONE_MAC_VERSION=1";
 				PRODUCT_NAME = MultiMarkdown;
-				SDKROOT = macosx;
 			};
 			name = "Release10.6+";
 		};
@@ -581,25 +581,12 @@
 		};
 		651A542913E20D2400BCB02A /* Release10.6+ */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 65F89E8113E379ED006A34B8 /* Release10.6+.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = (
-					i386,
-					x86_64,
-				);
-				COPY_PHASE_STRIP = NO;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEPLOYMENT_POSTPROCESSING = YES;
-				GCC_MODEL_TUNING = G5;
-				GCC_PREFIX_HEADER = MarkdownMacPrefix.h;
-				"GCC_VERSION[arch=x86_64]" = com.apple.compilers.llvm.clang.1_0;
 				HEADER_SEARCH_PATHS = .;
 				INSTALL_PATH = /usr/local/bin;
-				MACOSX_DEPLOYMENT_TARGET = 10.6;
-				OTHER_CFLAGS = "-DSTANDALONE_MAC_VERSION=1";
 				PRODUCT_NAME = multimarkdown;
-				SEPARATE_STRIP = YES;
-				STRIP_INSTALLED_PRODUCT = YES;
 			};
 			name = "Release10.6+";
 		};
@@ -690,7 +677,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		4AFA467013E3624F00CFA132 /* Build configuration list for PBXNativeTarget "Library" */ = {
+		4AFA467013E3624F00CFA132 /* Build configuration list for PBXNativeTarget "libMultiMarkdown" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				4AFA467113E3624F00CFA132 /* Debug */,
@@ -698,6 +685,7 @@
 				4AFA467313E3624F00CFA132 /* Release10.6+ */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		65F0B88F13DF6C3E00D0980C /* Build configuration list for PBXLegacyTarget "Peg" */ = {
 			isa = XCConfigurationList;
