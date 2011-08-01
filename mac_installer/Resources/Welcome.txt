@@ -1,8 +1,6 @@
 Title:	Installer Welcome Message
 
-This custom installer will install **MultiMarkdown** and the necessary support
-files. This includes the **glib2** library, as well as some support files for
-creating LaTeX output from MultiMarkdown.
+This custom installer will install **MultiMarkdown** and several convenience scripts to serve as shortcuts for using MultiMarkdown from the command line.
 
 
 For more information, please check out the MultiMarkdown [web

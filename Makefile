@@ -78,7 +78,7 @@ win-installer:
 	./multimarkdown LICENSE > windows_installer/LICENSE.html
 	zip -r windows_installer/MultiMarkdown-Windows-$(VERSION).zip windows_installer/MMD-windows*.exe -x windows_installer/MultiMarkdown*.zip
 
-mac-installer: $(PROGRAM)
+mac-installer: #$(PROGRAM)
 	mkdir -p mac_installer/Package_Root/usr/local/bin
 	mkdir -p mac_installer/Support_Root/Library/Application\ Support
 	cp multimarkdown scripts/mmd* mac_installer/Package_Root/usr/local/bin/
