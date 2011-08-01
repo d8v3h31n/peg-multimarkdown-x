@@ -60,7 +60,7 @@ MetaDataKeyValue = a:MetaDataKey
                 $$->children = b;
             }
 
-MetaDataKey = < AlphanumericAscii ( Sp ( AlphanumericAscii | '_' | ' ' | '-')+)* >
+MetaDataKey = < !([A-Za-z]+ "://")  AlphanumericAscii ( Sp ( AlphanumericAscii | '_' | ' ' | '-')+)* >
 {
     char *label = label_from_string(yytext,0);
     $$ = mk_str(label);
@@ -68,11 +68,13 @@ MetaDataKey = < AlphanumericAscii ( Sp ( AlphanumericAscii | '_' | ' ' | '-')+)*
     $$->key = METAKEY;
 }
 
+SingleLineMetaKeyValue = MetaDataKey Sp ':' Sp (!Newline .)*
+
 MetaDataValue = a:StartList
                 ((< (!Newline .)* > { a = cons(mk_str(yytext), a); })
-                ((Newline &(!BlankLine !MetaDataKeyValue Sp RawLine))
+                ((Newline &(!BlankLine !SingleLineMetaKeyValue Sp RawLine))
                     { a = cons(mk_str("\n"), a);} | Newline)
-                (!BlankLine !MetaDataKeyValue Sp RawLine
+                (!BlankLine !SingleLineMetaKeyValue Sp RawLine
                     { a = cons(mk_str(yytext), a);} )* )
                 { $$ = mk_str_from_list(a,false);
                     trim_trailing_whitespace($$->contents.str);
@@ -82,8 +84,8 @@ MetaDataValue = a:StartList
 Block =     BlankLine*
             ( BlockQuote
             | Verbatim
-            | DefinitionList
-            | Glossary
+            | &{ !extension(EXT_COMPATIBILITY) } DefinitionList
+            | &{ !extension(EXT_COMPATIBILITY) } Glossary
             | Note
             | Reference
             | HorizontalRule
@@ -92,7 +94,7 @@ Block =     BlankLine*
             | BulletList
             | HtmlBlock
             | StyleBlock
-            | Table
+            | &{ !extension(EXT_COMPATIBILITY) } Table
             | &{ !extension(EXT_COMPATIBILITY) } ImageBlock
             | !(Sp? HtmlBlockOpenDiv) Para
             | Plain )
@@ -102,8 +104,8 @@ HeadingSectionBlock =
             !Heading
             ( BlockQuote
             | Verbatim
-            | DefinitionList
-            | Glossary
+            | &{ !extension(EXT_COMPATIBILITY) } DefinitionList
+            | &{ !extension(EXT_COMPATIBILITY) } Glossary
             | Note
             | Reference
             | HorizontalRule
@@ -111,7 +113,7 @@ HeadingSectionBlock =
             | BulletList
             | HtmlBlock
             | StyleBlock
-            | Table
+            | &{ !extension(EXT_COMPATIBILITY) } Table
             | &{ !extension(EXT_COMPATIBILITY) } ImageBlock
             | !(Sp? HtmlBlockOpenDiv) Para
             | Plain )
@@ -460,17 +462,17 @@ Inlines  =  a:StartList ( !Endline Inline { a = cons($$, a); }
             { $$ = mk_list(LIST, a); }
 
 Inline  = Str
-        | MathSpan
+        | &{ !extension(EXT_COMPATIBILITY) } MathSpan
         | Endline
         | UlOrStarLine
         | Space
         | Strong
         | Emph
-        | CitationReference
+        | &{ !extension(EXT_COMPATIBILITY) } CitationReference
         | Image
         | Link
         | NoteReference
- #       | InlineNote           # Not used in MultiMarkdown
+ #      | InlineNote           # Not used in Markdown/MultiMarkdown
         | Code
         | MarkdownHtmlTagOpen
         | RawHtml
@@ -663,7 +665,10 @@ AutoLinkEmail = '<' ( "mailto:" )? < [-A-Za-z0-9+_]+ '@' ( !Newline !'>' . )+ > 
                 }
 
 Reference = a:StartList NonindentSpace !"[]" l:Label ':' Spnl s:RefSrc
-        t:RefTitle (Attributes { a = cons($$,a);})? BlankLine+
+        t:RefTitle
+		( &{ !extension(EXT_COMPATIBILITY) } 
+			(Attributes { a = cons($$,a);})? )?
+		BlankLine+
         { 
             char *label;
             GString *text = g_string_new("");
@@ -728,11 +733,14 @@ RefTitle =  ( RefTitleSingle | RefTitleDouble | RefTitleParens | EmptyTitle )
 
 EmptyTitle = < "" >
 
-RefTitleSingle = Spnl '\'' < ( !( '\'' Sp Newline | Newline | '\'' Sp AlphanumericAscii+ '=' ) . )* > '\''
+RefTitleSingle = Spnl '\'' < ( !( '\'' Sp Newline | Newline |
+	&{ !extension(EXT_COMPATIBILITY) } '\'' Sp AlphanumericAscii+ '=' ) . )* > '\''
 
-RefTitleDouble = Spnl '"' < ( !('"' Sp Newline | Newline | '"' Sp AlphanumericAscii+ '=' ) . )* > '"'
+RefTitleDouble = Spnl '"' < ( !('"' Sp Newline | Newline |
+	&{ !extension(EXT_COMPATIBILITY) } '"' Sp AlphanumericAscii+ '=' ) . )* > '"'
 
-RefTitleParens = Spnl '(' < ( !(')' Sp Newline | Newline | ')' Sp AlphanumericAscii+ '=' ) . )* > ')'
+RefTitleParens = Spnl '(' < ( !(')' Sp Newline | Newline |
+	&{ !extension(EXT_COMPATIBILITY) } ')' Sp AlphanumericAscii+ '=' ) . )* > ')'
 
 References = a:StartList
              ( b:Reference { a = cons(b, a); } | SkipBlock )*
@@ -773,7 +781,7 @@ Nonspacechar =  !Spacechar !Newline .
 Newline =       '\n' | '\r' '\n'?
 Sp =            Spacechar*
 Spnl =          Sp (Newline Sp)?
-SpecialChar =   '*' | '_' | '`' | '&' | '[' | ']' | '(' | ')' | '<' | '!' | '#' | '\\' | ExtendedSpecialChar
+SpecialChar =   '*' | '_' | '`' | '&' | '[' | ']' | '(' | ')' | '<' | '!' | '#' | '\\' | '\'' | '"' | ExtendedSpecialChar
 NormalChar =    !( SpecialChar | Spacechar | Newline ) .
 NonAlphanumeric = [\000-\057\072-\100\133-\140\173-\177]
 Alphanumeric = [0-9A-Za-z] | '\200' | '\201' | '\202' | '\203' | '\204' | '\205' | '\206' | '\207' | '\210' | '\211' | '\212' | '\213' | '\214' | '\215' | '\216' | '\217' | '\220' | '\221' | '\222' | '\223' | '\224' | '\225' | '\226' | '\227' | '\230' | '\231' | '\232' | '\233' | '\234' | '\235' | '\236' | '\237' | '\240' | '\241' | '\242' | '\243' | '\244' | '\245' | '\246' | '\247' | '\250' | '\251' | '\252' | '\253' | '\254' | '\255' | '\256' | '\257' | '\260' | '\261' | '\262' | '\263' | '\264' | '\265' | '\266' | '\267' | '\270' | '\271' | '\272' | '\273' | '\274' | '\275' | '\276' | '\277' | '\300' | '\301' | '\302' | '\303' | '\304' | '\305' | '\306' | '\307' | '\310' | '\311' | '\312' | '\313' | '\314' | '\315' | '\316' | '\317' | '\320' | '\321' | '\322' | '\323' | '\324' | '\325' | '\326' | '\327' | '\330' | '\331' | '\332' | '\333' | '\334' | '\335' | '\336' | '\337' | '\340' | '\341' | '\342' | '\343' | '\344' | '\345' | '\346' | '\347' | '\350' | '\351' | '\352' | '\353' | '\354' | '\355' | '\356' | '\357' | '\360' | '\361' | '\362' | '\363' | '\364' | '\365' | '\366' | '\367' | '\370' | '\371' | '\372' | '\373' | '\374' | '\375' | '\376' | '\377'
@@ -985,7 +993,8 @@ RawCitationReference = "[#" < ( !Newline !']' . )+ > ']'
                    { $$ = mk_str(yytext); }
 
 
-AutoLabels = a:StartList ( b:Heading
+AutoLabels = ( &{ !extension(EXT_COMPATIBILITY) && !extension(EXT_NO_LABELS)}
+	a:StartList ( b:Heading
             { 
                 GString *label = g_string_new("");
                 char *lab;
@@ -1026,9 +1035,10 @@ AutoLabels = a:StartList ( b:Heading
                 g_string_free(label,true);
                 free_element_list(c);}
             | SkipBlock )*
-            { labels = a; }
+            { labels = a; })
 
-DefinitionList =  a:StartList (
+DefinitionList =  a:StartList &(TermLine+ ':')
+                (
                     (Term { a = cons($$, a); } )+
                     (Definition { a = cons($$, a);})+
                     BlankLine*
@@ -1036,6 +1046,8 @@ DefinitionList =  a:StartList (
                 { $$ = mk_list(LIST, a);
                     $$->key = DEFLIST;
                 }
+
+TermLine = !':' !BlankLine (!Newline .)* Newline
 
 Term =  a:StartList !BlankLine !':'
         (!Newline !Endline Inline {a = cons($$, a);} )+ Newline

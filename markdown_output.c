@@ -38,6 +38,8 @@ static bool html_footer = FALSE;
 static int odf_type = 0;
 static bool in_list = FALSE;
 static bool no_latex_footnote = FALSE;
+static bool am_printing_html_footnote = FALSE;
+static int footnote_counter_to_print = 0;
 
 static void print_html_string(GString *out, char *str, bool obfuscate);
 static void print_html_element_list(GString *out, element *list, bool obfuscate);
@@ -185,7 +187,7 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
     int lev;
     char *label;
     element *attribute;
-    element *locator;
+    element *locator = NULL;
     char *height;
     char *width;
     switch (elt->key) {
@@ -258,7 +260,9 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
             (strcmp(elt->contents.link->identifier, "") == 0) ) {
             g_string_append_printf(out, "\"");
         } else {
-            g_string_append_printf(out, "\" id=\"%s\"",elt->contents.link->identifier);
+            if (!(extension(EXT_COMPATIBILITY))) {
+				g_string_append_printf(out, "\" id=\"%s\"",elt->contents.link->identifier);
+			}
         }
         if (strlen(elt->contents.link->title) > 0) {
             g_string_append_printf(out, " title=\"");
@@ -344,6 +348,12 @@ static void print_html_element(GString *out, element *elt, bool obfuscate) {
         pad(out, 2);
         g_string_append_printf(out, "<p>");
         print_html_element_list(out, elt->children, obfuscate);
+		if (am_printing_html_footnote && ( elt->next == NULL)) {
+			g_string_append_printf(out, " <a href=\"#fnref:%d\" title=\"return to article\" class=\"reversefootnote\">&#160;&#8617;</a>", footnote_counter_to_print);
+			/* Only print once. For now, it's the first paragraph, until
+				I can figure out to make it the last paragraph */
+			am_printing_html_footnote = FALSE;
+		}
         g_string_append_printf(out, "</p>");
         padded = 0;
         break;
@@ -719,8 +729,11 @@ static void print_html_endnotes(GString *out) {
         } else {
             g_string_append_printf(out, "<li id=\"fn:%d\">\n", counter);
             padded = 2;
+			am_printing_html_footnote = TRUE;
+			footnote_counter_to_print = counter;
             print_html_element_list(out, note_elt, false);
-            g_string_append_printf(out, " <a href=\"#fnref:%d\" title=\"return to article\" class=\"reversefootnote\">&#160;&#8617;</a>", counter);
+			am_printing_html_footnote = FALSE;
+			footnote_counter_to_print = 0;
             pad(out, 1);
             g_string_append_printf(out, "</li>");
         }
@@ -1202,7 +1215,7 @@ static void print_latex_element(GString *out, element *elt) {
                     }
                 }
             }
-            if (elt->children->contents.str == NULL) {
+            if ((elt->children != NULL) && (elt->children->contents.str == NULL)) {
                 elt->children->contents.str = strdup(elt->contents.str);
                 add_endnote(elt->children);
             }
@@ -1705,7 +1718,7 @@ void print_odf_element(GString *out, element *elt) {
     char *label;
     char *height;
     char *width;
-    element *locator;
+    element *locator = NULL;
     int old_type = 0;
     switch (elt->key) {
     case SPACE:
