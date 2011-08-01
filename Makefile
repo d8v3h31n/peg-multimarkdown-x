@@ -1,6 +1,6 @@
 ALL : multimarkdown
 
-VERSION=3.0.dev
+VERSION=3.1b1
 
 PROGRAM=multimarkdown
 
@@ -8,7 +8,7 @@ PROGRAM=multimarkdown
 # the i386 architecture, causing an error.  Can try adding -arch i686 to 
 # CFLAGS
 
-CFLAGS ?= -Wall -O3 -ansi -arch i686
+CFLAGS ?= -Wall -O3 -ansi
 
 OBJS=markdown_parser.o markdown_output.o markdown_lib.o
 PEGDIR=peg-0.1.4
