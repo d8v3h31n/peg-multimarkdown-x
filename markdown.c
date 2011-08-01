@@ -35,7 +35,7 @@ static int extensions;
 
  ***********************************************************************/
 
-#define VERSION "3.0.2"
+#define VERSION "3.1b1"
 #define COPYRIGHT "portions Copyright (c) 2010-2011 Fletcher T. Penney.\n" \
                   "original Copyright (c) 2008-2009 John MacFarlane.  License GPLv2+ or MIT.\n" \
                   "This is free software: you are free to change and redistribute it.\n" \
@@ -82,6 +82,7 @@ int main(int argc, char * argv[]) {
     static gboolean opt_compatibility = FALSE;
     static gboolean opt_batchmode = FALSE;
     static gchar *opt_extract_meta = FALSE;
+    static gboolean opt_no_labels = FALSE;
 
     static GOptionEntry entries[] =
     {
@@ -105,6 +106,7 @@ int main(int argc, char * argv[]) {
       { "notes", 0, 0, G_OPTION_ARG_NONE, &opt_notes, "use notes extension (on by default)", NULL },
       { "nonotes", 0, 0, G_OPTION_ARG_NONE, &opt_no_notes, "do not use notes extension", NULL },
       { "process-html", 0, 0, G_OPTION_ARG_NONE, &opt_process_html, "process MultiMarkdown inside of raw HTML", NULL },
+      { "nolabels", 0, 0, G_OPTION_ARG_NONE, &opt_no_labels, "do not look for possible cross-references - improves speed", NULL},
       { NULL }
     };
 
@@ -149,13 +151,16 @@ int main(int argc, char * argv[]) {
         extensions = extensions | EXT_FILTER_HTML;
     if (opt_filter_styles)
         extensions = extensions | EXT_FILTER_STYLES;
+    if (opt_no_labels)
+        extensions = extensions | EXT_NO_LABELS;
 
     /* Compatibility mode turns off extensions and most 
         MultiMarkdown-specific features */
-    if (opt_compatibility)
+    if (opt_compatibility) {
         extensions = 0x000000;
-    if (opt_compatibility)
         extensions = extensions | EXT_COMPATIBILITY;
+        extensions = extensions | EXT_NO_LABELS;
+    }
 
     if (opt_to == NULL)
         output_format = HTML_FORMAT;

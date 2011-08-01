@@ -1,6 +1,6 @@
 ALL : multimarkdown
 
-VERSION=3.0.2
+VERSION=3.1b1
 
 PROGRAM=multimarkdown
 
@@ -50,6 +50,10 @@ test: $(PROGRAM)
 mmdtest: $(PROGRAM)
 	cd MarkdownTest; \
 	./MarkdownTest.pl --Script=../$(PROGRAM) --testdir=MultiMarkdownTests
+
+compattest: $(PROGRAM)
+	cd MarkdownTest; \
+	./MarkdownTest.pl --Script=../$(PROGRAM) --Tidy --testdir=CompatibilityTests --Flags="-c"
 
 latextest: $(PROGRAM)
 	cd MarkdownTest; \
