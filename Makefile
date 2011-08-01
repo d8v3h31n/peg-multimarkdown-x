@@ -18,10 +18,10 @@ $(LEG):
 	CC=gcc make -C $(PEGDIR)
 
 %.o : %.c markdown_peg.h
-	$(CC) -c `pkg-config --cflags glib-2.0` $(CFLAGS) -o $@ $<
+	$(CC) -c  $(CFLAGS) -o $@ $<
 
 $(PROGRAM) : markdown.c $(OBJS)
-	$(CC) `pkg-config --cflags glib-2.0` `pkg-config --libs glib-2.0` $(CFLAGS) -o $@ $(OBJS) $<
+	$(CC)  $(CFLAGS) -o $@ $(OBJS) $<
 
 markdown_parser.c : markdown_parser.leg $(LEG) markdown_peg.h parsing_functions.c utility_functions.c
 	$(LEG) -o $@ $<
@@ -41,25 +41,25 @@ clean:
 distclean: clean
 	make -C $(PEGDIR) spotless
 
-test: $(PROGRAM)
+test: # $(PROGRAM)
 	cd MarkdownTest; \
 	./MarkdownTest.pl --Script=../$(PROGRAM) --Tidy  --Flags="-c"
 
-mmdtest: $(PROGRAM)
+mmdtest: # $(PROGRAM)
 	cd MarkdownTest; \
 	./MarkdownTest.pl --Script=../$(PROGRAM) --testdir=MultiMarkdownTests
 
-compattest: $(PROGRAM)
+compattest: # $(PROGRAM)
 	cd MarkdownTest; \
 	./MarkdownTest.pl --Script=../$(PROGRAM) --Tidy --testdir=CompatibilityTests --Flags="-c"
 
-latextest: $(PROGRAM)
+latextest: # $(PROGRAM)
 	cd MarkdownTest; \
 	./MarkdownTest.pl --Script=../$(PROGRAM) --testdir=MultiMarkdownTests --Flags="-t latex" --ext=".tex"; \
 	./MarkdownTest.pl --Script=../$(PROGRAM) --testdir=BeamerTests --Flags="-t latex" --ext=".tex"; \
 	./MarkdownTest.pl --Script=../$(PROGRAM) --testdir=MemoirTests --Flags="-t latex" --ext=".tex"
 
-xslttest: $(PROGRAM)
+xslttest: # $(PROGRAM)
 	cd MarkdownTest; \
 	./MarkdownTest.pl --Script=/bin/cat --testdir=MultiMarkdownTests \
 	--TrailFlags="| ../Support/bin/mmd2tex-xslt" --ext=".tex"; \
