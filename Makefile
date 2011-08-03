@@ -4,13 +4,23 @@ VERSION=3.1b1
 
 PROGRAM=multimarkdown
 
-# If you used fink to install gib2-dev, it might have been compiled for
-# the i386 architecture, causing an error.  Can try adding -arch i686 to 
-# CFLAGS
+UNAME=$(shell uname)
 
-CFLAGS ?= -Wall -O3 -ansi
+ifeq ($(UNAME), Darwin)
+define FINALNOTES
+ ***\n\
+*** WARNING: Since you are on Darwin, you probably meant to use the Xcode version instead.\n\
+*** It does lots of nice magic like producing a version of the binary that is capable\n\
+*** of running on multiple versions of Mac OS X and with a variety of CPU architectures.\n\
+***
+endef
+else
+	FINALNOTES=Build complete.
+endif
+	
+CFLAGS ?= -Wall -O3 -ansi -include GLibFacade.h -I ./ -D MD_USE_GET_OPT=1
 
-OBJS=markdown_parser.o markdown_output.o markdown_lib.o
+OBJS=markdown_parser.o markdown_output.o markdown_lib.o GLibFacade.o
 PEGDIR=peg-0.1.4
 LEG=$(PEGDIR)/leg
 
@@ -18,10 +28,11 @@ $(LEG):
 	CC=gcc make -C $(PEGDIR)
 
 %.o : %.c markdown_peg.h
-	$(CC) -c  $(CFLAGS) -o $@ $<
+	$(CC) -c $(CFLAGS) -o $@ $<
 
 $(PROGRAM) : markdown.c $(OBJS)
-	$(CC)  $(CFLAGS) -o $@ $(OBJS) $<
+	$(CC) $(CFLAGS) -o $@ $(OBJS) $<
+	@echo "$(FINALNOTES)"
 
 markdown_parser.c : markdown_parser.leg $(LEG) markdown_peg.h parsing_functions.c utility_functions.c
 	$(LEG) -o $@ $<
@@ -41,25 +52,25 @@ clean:
 distclean: clean
 	make -C $(PEGDIR) spotless
 
-test: # $(PROGRAM)
+test: $(PROGRAM)
 	cd MarkdownTest; \
-	./MarkdownTest.pl --Script=../$(PROGRAM) --Tidy  --Flags="-c"
+	./MarkdownTest.pl --Script=../$(PROGRAM) --Tidy  --Flags="--compatibility"
 
-mmdtest: # $(PROGRAM)
+mmdtest: $(PROGRAM)
 	cd MarkdownTest; \
 	./MarkdownTest.pl --Script=../$(PROGRAM) --testdir=MultiMarkdownTests
 
-compattest: # $(PROGRAM)
+compattest: $(PROGRAM)
 	cd MarkdownTest; \
-	./MarkdownTest.pl --Script=../$(PROGRAM) --Tidy --testdir=CompatibilityTests --Flags="-c"
+	./MarkdownTest.pl --Script=../$(PROGRAM) --testdir=CompatibilityTests --Flags="--compatibility"
 
-latextest: # $(PROGRAM)
+latextest: $(PROGRAM)
 	cd MarkdownTest; \
 	./MarkdownTest.pl --Script=../$(PROGRAM) --testdir=MultiMarkdownTests --Flags="-t latex" --ext=".tex"; \
 	./MarkdownTest.pl --Script=../$(PROGRAM) --testdir=BeamerTests --Flags="-t latex" --ext=".tex"; \
 	./MarkdownTest.pl --Script=../$(PROGRAM) --testdir=MemoirTests --Flags="-t latex" --ext=".tex"
 
-xslttest: # $(PROGRAM)
+xslttest: $(PROGRAM)
 	cd MarkdownTest; \
 	./MarkdownTest.pl --Script=/bin/cat --testdir=MultiMarkdownTests \
 	--TrailFlags="| ../Support/bin/mmd2tex-xslt" --ext=".tex"; \
