@@ -62,6 +62,7 @@
 /* Begin PBXFileReference section */
 		5A5A905A13E89C0F0079162B /* GLibFacade.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GLibFacade.h; sourceTree = "<group>"; };
 		5A5A905B13E89C0F0079162B /* GLibFacade.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GLibFacade.m; sourceTree = "<group>"; };
+		5A79BB2313E9DF8700E23E00 /* MultiMarkdownTool.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = MultiMarkdownTool.plist; sourceTree = "<group>"; };
 		65F0B66113DF47CC00D0980C /* markdown_lib.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = markdown_lib.c; sourceTree = "<group>"; };
 		65F0B66213DF47CC00D0980C /* markdown_lib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = markdown_lib.h; sourceTree = "<group>"; };
 		65F0B66313DF47CC00D0980C /* markdown_output.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = markdown_output.c; sourceTree = "<group>"; };
@@ -108,6 +109,7 @@
 		08FB7794FE84155DC02AAC07 /* MultiMarkdown */ = {
 			isa = PBXGroup;
 			children = (
+				5A79BB2313E9DF8700E23E00 /* MultiMarkdownTool.plist */,
 				65F0B6D713DF4C6B00D0980C /* MarkdownMacPrefix.h */,
 				5A5A905A13E89C0F0079162B /* GLibFacade.h */,
 				5A5A905B13E89C0F0079162B /* GLibFacade.m */,
@@ -325,6 +327,13 @@
 				GCC_PREFIX_HEADER = MarkdownMacPrefix.h;
 				HEADER_SEARCH_PATHS = .;
 				INSTALL_PATH = /usr/local/bin;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/build/MultiMarkdown.build/Release/libMultiMarkdown.build/Objects-normal/i386\"",
+					"\"$(SRCROOT)/build/MultiMarkdown.build/Release/libMultiMarkdown.build/Objects-normal/ppc\"",
+					"\"$(SRCROOT)/build/MultiMarkdown.build/Release/libMultiMarkdown.build/Objects-normal/x86_64\"",
+					"\"$(SRCROOT)/build/Release\"",
+				);
 				OTHER_CFLAGS = "-DSTANDALONE_MAC_VERSION=1";
 				PRODUCT_NAME = multimarkdown;
 			};
@@ -344,6 +353,13 @@
 				GCC_PREFIX_HEADER = MarkdownMacPrefix.h;
 				HEADER_SEARCH_PATHS = .;
 				INSTALL_PATH = /usr/local/bin;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/build/MultiMarkdown.build/Release/libMultiMarkdown.build/Objects-normal/i386\"",
+					"\"$(SRCROOT)/build/MultiMarkdown.build/Release/libMultiMarkdown.build/Objects-normal/ppc\"",
+					"\"$(SRCROOT)/build/MultiMarkdown.build/Release/libMultiMarkdown.build/Objects-normal/x86_64\"",
+					"\"$(SRCROOT)/build/Release\"",
+				);
 				"MACOSX_DEPLOYMENT_TARGET[arch=x86_64]" = 10.6;
 				OTHER_CFLAGS = "-DSTANDALONE_MAC_VERSION=1";
 				PRODUCT_NAME = multimarkdown;
