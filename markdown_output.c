@@ -22,7 +22,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
-#include <glib.h>
+#include "glib.h"
 #include "markdown_peg.h"
 #include "utility_functions.c"
 #include "odf.c"

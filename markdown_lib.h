@@ -1,6 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
-#include <glib.h>
+#include "glib.h"
 
 enum markdown_extensions {
     EXT_SMART            = 0x01,
