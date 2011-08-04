@@ -401,6 +401,135 @@
 			};
 			name = Release;
 		};
+		5A42489213EB0851008F045A /* Outdated Support */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = (
+					i386,
+					ppc,
+				);
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.4;
+				PREBINDING = NO;
+				SDKROOT = macosx10.5;
+				VALID_ARCHS = "i386 ppc ppc64 ppc7400 ppc970";
+			};
+			name = "Outdated Support";
+		};
+		5A42489313EB0851008F045A /* Outdated Support */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = (
+					ppc,
+					i386,
+					x86_64,
+				);
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_MODEL_TUNING = G5;
+				GCC_PREFIX_HEADER = MarkdownMacPrefix.h;
+				HEADER_SEARCH_PATHS = .;
+				INSTALL_PATH = /usr/local/bin;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/build/MultiMarkdown.build/Release/libMultiMarkdown.build/Objects-normal/i386\"",
+					"\"$(SRCROOT)/build/MultiMarkdown.build/Release/libMultiMarkdown.build/Objects-normal/ppc\"",
+					"\"$(SRCROOT)/build/MultiMarkdown.build/Release/libMultiMarkdown.build/Objects-normal/x86_64\"",
+					"\"$(SRCROOT)/build/Release\"",
+				);
+				"MACOSX_DEPLOYMENT_TARGET[arch=x86_64]" = 10.6;
+				OTHER_CFLAGS = "-DSTANDALONE_MAC_VERSION=1";
+				PRODUCT_NAME = multimarkdown;
+			};
+			name = "Outdated Support";
+		};
+		5A42489413EB0851008F045A /* Outdated Support */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				PRODUCT_NAME = Peg;
+				ZERO_LINK = NO;
+			};
+			name = "Outdated Support";
+		};
+		5A42489513EB0851008F045A /* Outdated Support */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				PRODUCT_NAME = "MultiMarkdown Tests";
+				ZERO_LINK = NO;
+			};
+			name = "Outdated Support";
+		};
+		5A4248AE13EB09F5008F045A /* 10.6+ */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.6;
+				PREBINDING = NO;
+				SDKROOT = macosx10.6;
+				VALID_ARCHS = "i386 x86_64";
+			};
+			name = "10.6+";
+		};
+		5A4248AF13EB09F5008F045A /* 10.6+ */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = (
+					ppc,
+					i386,
+					x86_64,
+				);
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_MODEL_TUNING = G5;
+				GCC_PREFIX_HEADER = MarkdownMacPrefix.h;
+				HEADER_SEARCH_PATHS = .;
+				INSTALL_PATH = /usr/local/bin;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/build/MultiMarkdown.build/Release/libMultiMarkdown.build/Objects-normal/i386\"",
+					"\"$(SRCROOT)/build/MultiMarkdown.build/Release/libMultiMarkdown.build/Objects-normal/ppc\"",
+					"\"$(SRCROOT)/build/MultiMarkdown.build/Release/libMultiMarkdown.build/Objects-normal/x86_64\"",
+					"\"$(SRCROOT)/build/Release\"",
+				);
+				"MACOSX_DEPLOYMENT_TARGET[arch=x86_64]" = 10.6;
+				OTHER_CFLAGS = "-DSTANDALONE_MAC_VERSION=1";
+				PRODUCT_NAME = multimarkdown;
+			};
+			name = "10.6+";
+		};
+		5A4248B013EB09F5008F045A /* 10.6+ */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				PRODUCT_NAME = Peg;
+				ZERO_LINK = NO;
+			};
+			name = "10.6+";
+		};
+		5A4248B113EB09F5008F045A /* 10.6+ */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				PRODUCT_NAME = "MultiMarkdown Tests";
+				ZERO_LINK = NO;
+			};
+			name = "10.6+";
+		};
 		65F0B88913DF6C0D00D0980C /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -451,6 +580,8 @@
 			buildConfigurations = (
 				1DEB928608733DD80010E9CD /* Debug */,
 				1DEB928708733DD80010E9CD /* Release */,
+				5A4248AF13EB09F5008F045A /* 10.6+ */,
+				5A42489313EB0851008F045A /* Outdated Support */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -460,6 +591,8 @@
 			buildConfigurations = (
 				1DEB928A08733DD80010E9CD /* Debug */,
 				1DEB928B08733DD80010E9CD /* Release */,
+				5A4248AE13EB09F5008F045A /* 10.6+ */,
+				5A42489213EB0851008F045A /* Outdated Support */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -469,6 +602,8 @@
 			buildConfigurations = (
 				65F0B88913DF6C0D00D0980C /* Debug */,
 				65F0B88A13DF6C0D00D0980C /* Release */,
+				5A4248B013EB09F5008F045A /* 10.6+ */,
+				5A42489413EB0851008F045A /* Outdated Support */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -478,6 +613,8 @@
 			buildConfigurations = (
 				65F0B8EB13DF714F00D0980C /* Debug */,
 				65F0B8EC13DF714F00D0980C /* Release */,
+				5A4248B113EB09F5008F045A /* 10.6+ */,
+				5A42489513EB0851008F045A /* Outdated Support */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
