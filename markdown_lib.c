@@ -208,3 +208,4 @@ char * extract_metadata_value(char *text, int extensions, char *key) {
     free_element_list(result);
     return value;
 }
+
