@@ -717,7 +717,7 @@ QuotedValue = '"' < (!'"' .)* > '"'
 
 UnQuotedValue = < (AlphanumericAscii | '.')+ >
 
-Label = '[' ( !'^' !'#' &{ extension(EXT_NOTES) } | &. &{ !extension(EXT_NOTES) } )
+Label = '[' !'[' ( !'^' !'#' &{ extension(EXT_NOTES) } | &. &{ !extension(EXT_NOTES) } )
         a:StartList
         ( !']' Inline { a = cons($$, a); } )*
         ']'
