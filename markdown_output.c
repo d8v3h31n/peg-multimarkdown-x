@@ -40,6 +40,7 @@ static bool in_list = FALSE;
 static bool no_latex_footnote = FALSE;
 static bool am_printing_html_footnote = FALSE;
 static int footnote_counter_to_print = 0;
+static int odf_list_needs_end_p = 0;
 
 static void print_html_string(GString *out, char *str, bool obfuscate);
 static void print_html_element_list(GString *out, element *list, bool obfuscate);
@@ -1921,6 +1922,10 @@ void print_odf_element(GString *out, element *elt) {
         }
         old_type = odf_type;
         odf_type = BULLETLIST;
+        if (odf_list_needs_end_p) {
+            g_string_append_printf(out, "%s", "</text:p>");
+            odf_list_needs_end_p = 0;
+        }
         g_string_append_printf(out, "%s", "<text:list>");
         print_odf_element_list(out, elt->children);
         g_string_append_printf(out, "%s", "</text:list>");
@@ -1933,6 +1938,10 @@ void print_odf_element(GString *out, element *elt) {
         }
         old_type = odf_type;
         odf_type = ORDEREDLIST;
+        if (odf_list_needs_end_p) {
+            g_string_append_printf(out, "%s", "</text:p>");
+            odf_list_needs_end_p = 0;
+        }
         g_string_append_printf(out, "%s", "<text:list>\n");
         print_odf_element_list(out, elt->children);
         g_string_append_printf(out, "%s", "</text:list>\n");
@@ -1942,10 +1951,12 @@ void print_odf_element(GString *out, element *elt) {
         g_string_append_printf(out, "<text:list-item>\n");
         if (elt->children->children->key != PARA) {
             g_string_append_printf(out, "<text:p text:style-name=\"P2\">");
+            odf_list_needs_end_p = 1;
         }
         print_odf_element_list(out, elt->children);
 
-        if ((list_contains_key(elt->children,BULLETLIST) ||
+       odf_list_needs_end_p = 0;
+       if ((list_contains_key(elt->children,BULLETLIST) ||
             (list_contains_key(elt->children,ORDEREDLIST)))) {
             } else {
                 if (elt->children->children->key != PARA) {
