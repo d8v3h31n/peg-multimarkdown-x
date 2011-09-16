@@ -1,7 +1,7 @@
 <project>
     <shortName>multimarkdown</shortName>
     <fullName>MultiMarkdown</fullName>
-    <version>3.0b8</version>
+    <version>3.2</version>
     <installerFilename>MMD-${platform_name}-${product_version}.${platform_exec_suffix}</installerFilename>
     <readmeFile>README.txt</readmeFile>
     <licenseFile>../LICENSE</licenseFile>
@@ -72,12 +72,6 @@
                     <name>programfileswindows</name>
                     <platforms>windows</platforms>
                     <distributionFileList>
-                        <distributionFile>
-                            <origin>intl.dll</origin>
-                        </distributionFile>
-                        <distributionFile>
-                            <origin>libglib-2.0-0.dll</origin>
-                        </distributionFile>
                         <distributionFile>
                             <origin>mmd.bat</origin>
                         </distributionFile>
