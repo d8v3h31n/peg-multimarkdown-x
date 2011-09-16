@@ -1,7 +1,6 @@
 ALL : multimarkdown
 
 VERSION=3.2
-
 PROGRAM=multimarkdown
 
 UNAME=$(shell uname)
@@ -9,9 +8,10 @@ UNAME=$(shell uname)
 ifeq ($(UNAME), Darwin)
 define FINALNOTES
  ***\n\
-*** WARNING: Since you are on Darwin, you probably meant to use the Xcode version instead.\n\
-*** It does lots of nice magic like producing a version of the binary that is capable\n\
-*** of running on multiple versions of Mac OS X and with a variety of CPU architectures.\n\
+*** WARNING: Since you are on Darwin, you probably meant to use the Xcode\n\
+*** version instead.\n\
+*** It produces a version of the binary that is capable of running on\n\
+*** multiple versions of Mac OS X and on PPC, i386, or x86_64 machines.\n\
 ***
 endef
 else
@@ -58,21 +58,21 @@ test: $(PROGRAM)
 	cd MarkdownTest; \
 	./MarkdownTest.pl --Script=../$(PROGRAM) --Tidy  --Flags="--compatibility"
 
-mmdtest: $(PROGRAM)
+mmd-test: $(PROGRAM)
 	cd MarkdownTest; \
 	./MarkdownTest.pl --Script=../$(PROGRAM) --testdir=MultiMarkdownTests
 
-compattest: $(PROGRAM)
+compat-test: $(PROGRAM)
 	cd MarkdownTest; \
 	./MarkdownTest.pl --Script=../$(PROGRAM) --testdir=CompatibilityTests --Flags="--compatibility"
 
-latextest: $(PROGRAM)
+latex-test: $(PROGRAM)
 	cd MarkdownTest; \
 	./MarkdownTest.pl --Script=../$(PROGRAM) --testdir=MultiMarkdownTests --Flags="-t latex" --ext=".tex"; \
 	./MarkdownTest.pl --Script=../$(PROGRAM) --testdir=BeamerTests --Flags="-t latex" --ext=".tex"; \
 	./MarkdownTest.pl --Script=../$(PROGRAM) --testdir=MemoirTests --Flags="-t latex" --ext=".tex"
 
-xslttest: $(PROGRAM)
+xslt-test: $(PROGRAM)
 	cd MarkdownTest; \
 	./MarkdownTest.pl --Script=/bin/cat --testdir=MultiMarkdownTests \
 	--TrailFlags="| ../Support/bin/mmd2tex-xslt" --ext=".tex"; \
@@ -84,12 +84,30 @@ xslttest: $(PROGRAM)
 leak-check: $(PROGRAM)
 	valgrind --leak-check=full ./multimarkdown TEST.markdown > TEST.html
 
-win-installer:
+
+# Compile multimarkdown.exe and prep files necessary for installer
+
+windows: $(PROGRAM)
+	rm *.o
+	/usr/bin/i586-mingw32msvc-cc -c -Wall -O3 -ansi markdown*.c GLibFacade.c
+	/usr/bin/i586-mingw32msvc-cc markdown*.o GLibFacade.o \
+	-Wl,--dy,--warn-unresolved-symbols,-lglib-2.0 -o multimarkdown.exe
+	mkdir -p windows_installer_
+	cp multimarkdown.exe windows_installer/
 	cp README.markdown windows_installer/README.txt
 	./multimarkdown LICENSE > windows_installer/LICENSE.html
-	zip -r windows_installer/MultiMarkdown-Windows-$(VERSION).zip windows_installer/MMD-windows*.exe -x windows_installer/MultiMarkdown*.zip
 
-mac-installer: #$(PROGRAM)
+# After building the installer with BitRock, this creates a properly named
+# zipfile
+
+win-installer:
+	zip -r windows_installer/MultiMarkdown-Windows-$(VERSION).zip windows_installer/MMD-windows-$(VERSION).exe -x windows_installer/MultiMarkdown*.zip
+
+
+# Build Mac installer - requires that you first build multimarkdown itself,
+# either with "make" or with Xcode
+
+mac-installer: 
 	mkdir -p mac_installer/Package_Root/usr/local/bin
 	mkdir -p mac_installer/Support_Root/Library/Application\ Support
 	cp multimarkdown scripts/mmd* mac_installer/Package_Root/usr/local/bin/
@@ -117,7 +135,6 @@ mac-installer: #$(PROGRAM)
 	--id net.fletcherpenney.multimarkdown.pkg \
 	--out "MultiMarkdown-Mac-$(VERSION).pkg";
 	
-#	cp -r Support mac_installer/Support_Root/Library/Application\ Support/MultiMarkdown
 
 # Requires installation of the platypus command line tool to create
 # a drag and drop application for Mac OS X
@@ -129,14 +146,20 @@ drop:
 	/usr/local/bin/platypus -D -a 'MMD to OPML' -o 'Text Window' -p '/bin/sh' -V '3.0'  -I 'net.fletcherpenney.MMD2OPML' -X '*' -T '****|fold'  -N 'PATH=/usr/local/bin'  -c 'scripts/mmd2opml' 'drag/MMD2OPML.app'; \
 	/usr/local/bin/platypus -D -a 'MMD to ODF' -o 'Text Window' -p '/bin/sh' -V '3.0'  -I 'net.fletcherpenney.MMD2ODF' -X '*' -T '****|fold'  -N 'PATH=/usr/local/bin'  -c 'scripts/mmd2odf' 'drag/MMD2ODF.app'; 
 
+# Create HTML and PDF (if latex installed) documentation
 docs: $(PROGRAM)
 	cd documentation; \
 	../Support/Utilities/mmd_merge.pl index.txt > manual.txt; \
+	mkdir -p ../manual; \
 	../multimarkdown manual.txt > ../manual/index.html; \
 	../multimarkdown -b -t latex manual.txt; \
 	latexmk manual.tex; \
 	latexmk -c manual.tex; \
 	mv manual.pdf ../manual/mmd-manual.pdf; \
+	rm ../documentation/manual.t*;
+
+
+# For me to push updated documentation to my github site
+docs-live: docs
 	cd ../manual; git add mmd-manual.pdf index.html; \
 	git commit -m "update manual"; git push origin gh-pages; \
-	rm ../documentation/manual.t*;
