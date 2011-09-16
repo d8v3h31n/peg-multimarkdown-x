@@ -1,4 +1,6 @@
 .DS_Store
+build/*
+speed/*
 
 test.*
 testing/*
@@ -25,3 +27,6 @@ peg-0.1.4/leg
 /drag/
 
 /manual/
+
+*.pbxuser
+*.perspectivev3
