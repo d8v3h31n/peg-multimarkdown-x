@@ -74,6 +74,11 @@ installed. For example, on ubuntu:
 
 For other linux distributions, you will need to do something similar.
 
+**NOTE**: On Mac OS  X, you no longer have to use  the Glib2 libraries, thanks
+to work  by Daniel Jalkut.  If you  use the glibfree  branch, you can  use the
+Xcode  project to  build without  Glib2! If  you want  to use  Glib2 for  some
+reason, you can follow the instructions below.
+
 On Mac OS X, please note that you will need to install the Developer Tools.
 You then need to install a few libraries. I used [homebrew]:
 

@@ -15,6 +15,10 @@ Additional MultiMarkdown files
 Copyright (c) 2005-2011 Fletcher T. Penney
 Copyright (c) 2011 Daniel Jalkut, licensed explicitly MIT.
 
+Modifications to remove reliance on Glib2
+Copyright (c) 2011 Daniel Jalkut, licensed explicitly MIT.
+
+
 The GPL
 
 This program is free software; you can redistribute it and/or modify
