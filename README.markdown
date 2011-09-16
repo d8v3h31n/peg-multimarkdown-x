@@ -15,6 +15,12 @@ MacFarlane's [peg-markdown]. It makes use of a parsing expression grammar
 (PEG), and is written in C. It should compile for most any (major) operating
 system.
 
+This "danielpunkass" branch of peg-multimarkdown aims to rid the project of its 
+dependency on glib, in particular for GString, GSList, and the command line options
+parser. This branch achieves a variety of miracles by imposing precompiled header 
+trickery, reimplementing signature-identical functions from glib, etc. The target
+"multimarkdown" is intended to be built via the MultiMarkdown.xcodeproj project
+that this branch adds to the tree.
 
 # Installation #
 

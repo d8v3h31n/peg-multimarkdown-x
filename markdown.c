@@ -4,7 +4,8 @@
   (c) 2008 John MacFarlane (jgm at berkeley dot edu).
   
   portions Copyright (c) 2010-2011 Fletcher T. Penney
-
+  portions Copyright (c) 2011 Daniel Jalkut
+  
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License or the MIT
   license.  See LICENSE for details.
@@ -21,7 +22,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
-#include <glib.h>
+#include <getopt.h>
+#include "glib.h"
 #include "markdown_peg.h"
 
 static int extensions;
@@ -35,8 +37,9 @@ static int extensions;
 
  ***********************************************************************/
 
-#define VERSION "3.1b1"
+#define VERSION "3.2"
 #define COPYRIGHT "portions Copyright (c) 2010-2011 Fletcher T. Penney.\n" \
+				  "portions Copyright (c) 2011 Daniel Jalkut, MIT licensed.\n" \
                   "original Copyright (c) 2008-2009 John MacFarlane.  License GPLv2+ or MIT.\n" \
                   "This is free software: you are free to change and redistribute it.\n" \
                   "There is NO WARRANTY, to the extent permitted by law."
@@ -50,7 +53,39 @@ void version(const char *progname)
          COPYRIGHT);
 }
 
+#define MD_ARGUMENT_FLAG(name, flagChar, flagValue, outPointer, desc, argPlaceholder)	{ name, no_argument, outPointer, outPointer ? flagValue : flagChar }
+#define MD_ARGUMENT_STRING(name, flagChar, outPointer, desc, argPlaceholder)	{ name, required_argument, NULL, flagChar }
+
+/* With getopt we don't get the same fancy automatic usage (I don't think?) so for now we're faking it ... */
+static void printUsage() {
+	printf("Usage:\
+  multimarkdown [OPTION...] [FILE...]\n\
+\n\
+Help Options:\n\
+  -h, --help              Show help options\n\
+\n\
+Application Options:\n\
+  -v, --version           print version and exit\n\
+  -o, --output=FILE       send output to FILE (default is stdout)\n\
+  -t, --to=FORMAT         convert to FORMAT (default is html)\n\
+  -x, --extensions        use all syntax extensions\n\
+  --filter-html           filter out raw HTML (except styles)\n\
+  --filter-styles         filter out HTML styles\n\
+  -c, --compatibility     markdown compatibility mode\n\
+  -b, --batch             process multiple files automatically\n\
+  -e, --extract           extract and display specified metadata\n\
+\n\
+Syntax extensions\n\
+  --smart --nosmart       toggle smart typography extension\n\
+  --notes --nonotes       toggle notes extension\n\
+  --process-html          process MultiMarkdown inside of raw HTML\n\
+\n\
+Converts text in specified files (or stdin) from markdown to FORMAT.\n\
+Available FORMATs:  html, latex, memoir, beamer, odf, opml\n");
+}
+
 int main(int argc, char * argv[]) {
+	
     int numargs;            /* number of filename arguments */
     int i;
 
@@ -84,49 +119,67 @@ int main(int argc, char * argv[]) {
     static gchar *opt_extract_meta = FALSE;
     static gboolean opt_no_labels = FALSE;
 
-    static GOptionEntry entries[] =
-    {
-      { "version", 'v', 0, G_OPTION_ARG_NONE, &opt_version, "print version and exit", NULL },
-      { "output", 'o', 0, G_OPTION_ARG_STRING, &opt_output, "send output to FILE (default is stdout)", "FILE" },
-      { "to", 't', 0, G_OPTION_ARG_STRING, &opt_to, "convert to FORMAT (default is html)", "FORMAT" },
-      { "extensions", 'x', 0, G_OPTION_ARG_NONE, &opt_allext, "use all syntax extensions", NULL },
-      { "filter-html", 0, 0, G_OPTION_ARG_NONE, &opt_filter_html, "filter out raw HTML (except styles)", NULL },
-      { "filter-styles", 0, 0, G_OPTION_ARG_NONE, &opt_filter_styles, "filter out HTML styles", NULL },
-      { "compatibility", 'c', 0, G_OPTION_ARG_NONE, &opt_compatibility, "markdown compatibility mode", NULL },
-      { "batch", 'b', 0, G_OPTION_ARG_NONE, &opt_batchmode, "process multiple files automatically", NULL },
-      { "extract", 'e', 0, G_OPTION_ARG_STRING, &opt_extract_meta, "extract and display specified metadata", NULL },
+	static struct option entries[] =
+	{
+	  MD_ARGUMENT_FLAG( "help", 'h', 1, NULL, "Show help options", NULL ),
+	  MD_ARGUMENT_FLAG( "version", 'v', 1, &opt_version, "print version and exit", NULL ),
+      MD_ARGUMENT_STRING( "output", 'o', &opt_output, "send output to FILE (default is stdout)", "FILE" ),
+      MD_ARGUMENT_STRING( "to", 't', &opt_to, "convert to FORMAT (default is html)", "FORMAT" ),
+      MD_ARGUMENT_FLAG( "extensions", 'x', 1, &opt_allext, "use all syntax extensions", NULL ),
+      MD_ARGUMENT_FLAG( "filter-html", 0, 1, &opt_filter_html, "filter out raw HTML (except styles)", NULL ),
+      MD_ARGUMENT_FLAG( "filter-styles", 0, 1, &opt_filter_styles, "filter out HTML styles", NULL ),
+      MD_ARGUMENT_FLAG( "compatibility", 'c', 1, &opt_compatibility, "markdown compatibility mode", NULL ),
+      MD_ARGUMENT_FLAG( "batch", 'b', 1, &opt_batchmode, "process multiple files automatically", NULL ),
+      MD_ARGUMENT_STRING( "extract", 'e', &opt_extract_meta, "extract and display specified metadata", NULL ),
+      MD_ARGUMENT_FLAG( "smart", 0, 1, &opt_smart, "use smart typography extension (on by default)", NULL ),
+      MD_ARGUMENT_FLAG( "nosmart", 0, 1, &opt_no_smart, "do not use smart typography extension", NULL ),
+      MD_ARGUMENT_FLAG( "notes", 0, 1, &opt_notes, "use notes extension (on by default)", NULL ),
+      MD_ARGUMENT_FLAG( "nonotes", 0, 1, &opt_no_notes, "do not use notes extension", NULL ),
+      MD_ARGUMENT_FLAG( "process-html", 0, 1, &opt_process_html, "process MultiMarkdown inside of raw HTML", NULL ),
       { NULL }
     };
 
-    /* Options to active syntax extensions.  These appear separately in --help. */
-    static GOptionEntry ext_entries[] =
-    {
-      { "smart", 0, 0, G_OPTION_ARG_NONE, &opt_smart, "use smart typography extension (on by default)", NULL },
-      { "nosmart", 0, 0, G_OPTION_ARG_NONE, &opt_no_smart, "do not use smart typography extension", NULL },
-      { "notes", 0, 0, G_OPTION_ARG_NONE, &opt_notes, "use notes extension (on by default)", NULL },
-      { "nonotes", 0, 0, G_OPTION_ARG_NONE, &opt_no_notes, "do not use notes extension", NULL },
-      { "process-html", 0, 0, G_OPTION_ARG_NONE, &opt_process_html, "process MultiMarkdown inside of raw HTML", NULL },
-      { "nolabels", 0, 0, G_OPTION_ARG_NONE, &opt_no_labels, "do not look for possible cross-references - improves speed", NULL},
-      { NULL }
-    };
+	char ch;
+	while ((ch = getopt_long(argc, argv, "hvo:t:xcbe:", entries, NULL)) != -1) {
+		 switch (ch) {
+			case 'h':
+				printUsage();
+				return EXIT_SUCCESS;
+				break;
+			case 'v':
+				opt_version = true;
+				break;
+			case 'o':
+				opt_output = malloc(strlen(optarg) + 1);
+				strcpy(opt_output, optarg);
+				break;
+			case 't':
+				opt_to = malloc(strlen(optarg) + 1);
+				strcpy(opt_to, optarg);
+				break;
+			case 'x':
+				opt_allext = true;
+				break;
+			case 'c':
+				opt_compatibility = true;
+				break;
+			case 'b':
+				opt_batchmode = true;
+				break;
+			case 'e':
+				opt_extract_meta = malloc(strlen(optarg) + 1);
+				strcpy(opt_extract_meta, optarg);
+				break;
+		 }
+	}
 
-    GError *error = NULL;
-    GOptionContext *context;
-    GOptionGroup *ext_group;
-
-    context = g_option_context_new ("[FILE...]");
-    g_option_context_add_main_entries (context, entries, NULL);
-    ext_group = g_option_group_new ("extensions", "Syntax extensions", "show available syntax extensions", NULL, NULL);
-    g_option_group_add_entries (ext_group, ext_entries);
-    g_option_context_add_group (context, ext_group);
-    g_option_context_set_description (context, "Converts text in specified files (or stdin) from markdown to FORMAT.\n"
-                                               "Available FORMATs:  html, latex, memoir, beamer, odf, opml");
-    if (!g_option_context_parse (context, &argc, &argv, &error)) {
-        g_print ("option parsing failed: %s\n", error->message);
-        exit (1);
-    }
-    g_option_context_free(context);
-
+	 argc -= optind;
+	 argv += optind;		 
+	
+	/* We expect argc and argv to still point just one below the start of remaining args */
+	argc++;
+	argv--;
+	
     /* Process command-line options and arguments. */
 
     if (opt_version) {
@@ -180,7 +233,6 @@ int main(int argc, char * argv[]) {
         fprintf(stderr, "%s: Unknown output format '%s'\n", progname, opt_to);
         exit(EXIT_FAILURE);
     }
-
 
     numargs = argc - 1;
 

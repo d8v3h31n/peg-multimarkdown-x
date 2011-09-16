@@ -1,6 +1,6 @@
 /* markdown_peg.h */
 #include "markdown_lib.h"
-#include <glib.h>
+#include "glib.h"
 
 extern char *strdup(const char *string);
 
