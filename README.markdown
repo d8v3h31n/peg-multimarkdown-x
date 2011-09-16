@@ -15,12 +15,10 @@ MacFarlane's [peg-markdown]. It makes use of a parsing expression grammar
 (PEG), and is written in C. It should compile for most any (major) operating
 system.
 
-This "danielpunkass" branch of peg-multimarkdown aims to rid the project of its 
-dependency on glib, in particular for GString, GSList, and the command line options
-parser. This branch achieves a variety of miracles by imposing precompiled header 
-trickery, reimplementing signature-identical functions from glib, etc. The target
-"multimarkdown" is intended to be built via the MultiMarkdown.xcodeproj project
-that this branch adds to the tree.
+Thanks to work by Daniel Jalikut, MMD no longer requires GLib2 as a
+dependency. This should make it easier to compile on various operating
+systems.
+
 
 # Installation #
 
@@ -36,64 +34,51 @@ You can also install MultiMarkdown with the package manager [MacPorts] with the 
 
 	sudo port install multimarkdown
 
-If you don't know what any of that means, just [grab the installer][downloads].
+Or using [homebrew]:
+
+	brew install multimarkdown
+
+**NOTE**: I don't maintain either of these ports/packages and can't vouch that
+they are up to date or working properly.
+
+If you don't know what any of that means, just
+[grab the installer][downloads].
+
+
+If you want to compile for yourself, be sure you have the Developer Tools
+installed, and then follow the directions for [Linux].
+
+If you want to make your own installer, you can use the `make mac-installer`
+command after compiling the `multimarkdown` binary itself.
+
 
 ## Windows ##
 
 The easiest way to get peg-multimarkdown running on Windows is to download the
-precompiled binary from the [downloads] page. There's a bat file you can run
-that will move the included dll files, the executable, and a couple of
-convenience scripts to `C:\WINDOWS\system32`. If there's an easy way to make a
-proper installer, I am open to the idea, but only if it's pretty easy to do
-(preferably from the command line!). Also, if I should be installing these
-files somewhere else, please let me know.
+installer from the [downloads page][downloads]. It is created with the help of
+BitRock's software.
 
 If you want to compile this yourself, you do it in the same way that you would
 install peg-markdown for Windows. The instructions are on the
-peg-multimarkdown
-[wiki](https://github.com/fletcher/peg-multimarkdown/wiki/Building-for-Windows).
-I was able to compile for Windows fairly easily using Ubuntu linux following
+peg-multimarkdown [wiki]
+(https://github.com/fletcher/peg-multimarkdown/wiki/Building-for-Windows). I
+was able to compile for Windows fairly easily using Ubuntu linux following
 those instructions. I have not tried to actually compile on a Windows machine.
 
-(For those who are interested, I actually created an EC2 instance on Amazon
-and installed the necessary software to compile. It was pretty easy and
-probably cost me $0.02...)
+As a shortcut, if running on a linux machine you can use:
 
-Once you have the binary compiled, you can use the `windows-installer` branch
-and the `make installer` command to package the files in the
-`windows_installer` directory into a zip file for use as a make-shift
-installation package.
+	make windows
+
+This creates the `multimarkdown.exe` binary. You can then install this
+manually.
+
+The `make win-installer` command is what I use to package up the BitRock
+installer into a zipfile. You probably won't need it.
 
 
 ## Linux ##
 
-The easiest way is probably to compile it yourself. You need to have `glib2`
-installed. For example, on ubuntu:
-
-	sudo apt-get install libglib2.0-dev
-
-For other linux distributions, you will need to do something similar.
-
-**NOTE**: On Mac OS  X, you no longer have to use  the Glib2 libraries, thanks
-to work  by Daniel Jalkut.  If you  use the glibfree  branch, you can  use the
-Xcode  project to  build without  Glib2! If  you want  to use  Glib2 for  some
-reason, you can follow the instructions below.
-
-On Mac OS X, please note that you will need to install the Developer Tools.
-You then need to install a few libraries. I used [homebrew]:
-
-	brew install pkg-config glib gettext
-
-You can also use [MacPorts]:
-
-    port install pkgconfig glib gettext
-    
-Using [fink] is possible, though it may cause some machine architecture
-incompatibilities:
-
-	fink install glib2-shlibs glib2-dev
-
-Once you have the libraries installed, you can either download the source from
+You can either download the source from
 [peg-multimarkdown], or (preferentially) you can use git:
 
 	git clone git://github.com/fletcher/peg-multimarkdown.git
@@ -105,13 +90,12 @@ then install the binary wherever you like.
 
 	make
 	make test
-	make mmdtest
-	make latextest
+	make mmd-test
+	make latex-test
+	make compat-test
 
-If you're on a Mac, and want to make your own installer, you can run `make
-installer` if you use the `mac-installer` branch of the github project. Then
-open the `Make OS X Installer` file and build the installer using the
-`PackageMaker` application.
+**NOTE** As of version 3.2, the tests including obfuscated email addresses
+will also fail due to a change in how random numbers are generated.
 
 
 # Usage #
@@ -404,13 +388,13 @@ would not be possible without his work. Additionally, he was very gracious in
 giving me some pointers when I was getting started with trying to modify his
 software.
 
+Thanks to Daniel Jalikut for his work on enabling MultiMarkdown to run without relying on GLib2.  This makes it much more flexible!
+
 Thanks to John Gruber for the original [Markdown]. 'Nuff said.
 
 And thanks to the many contributors and users of the original MultiMarkdown
 that helped me refine the syntax and search out bugs.
 
-The `glib2` and `intl` libraries are part of [GTK+]. They are licensed under
-the GNU LGPL 2.1.
 
 [peg-markdown]:			https://github.com/jgm/peg-markdown
 [Markdown]:				http://daringfireball.net/projects/markdown/
