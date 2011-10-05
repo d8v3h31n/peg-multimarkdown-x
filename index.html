@@ -4,7 +4,7 @@
 <head>
 	<meta name="latexinput" content="mmd-memoir-header"/>
 	<title>MultiMarkdown User's Guide</title>
-	<meta name="subtitle" content="Version 3.0"/>
+	<meta name="subtitle" content="Version 3.2"/>
 	<meta name="author" content="Fletcher T. Penney"/>
 	<meta name="affiliation" content="http://fletcherpenney.net/mmd/"/>
 	<link type="text/css" rel="stylesheet" href="http://fletcherpenney.net/css/document.css"/>
@@ -2012,13 +2012,22 @@ free to contribute to fixing it up on the <a href="https://github.com/fletcher/p
 <pre><code>/bin/bash: line 2: multimarkdown: command not found
 </code></pre>
 
-<p>then you need to set the path properly in your preferences to include <code>/usr/local/bin</code> as shown in the <a href="#prefs">screenshot</a>.</p>
+<p>then you need to set the path properly in your preferences to include <code>/usr/local/bin</code> as shown in the screenshot:</p>
 
 <figure>
-<img src="TextMate-prefs.png" alt="This is a screenshot of the relevant preferences" id="prefs" style="height:402px;width:450px;" />
+<img src="TextMate-prefs.png" alt="This is a screenshot of the relevant preferences" />
 <figcaption>This is a screenshot of the relevant preferences</figcaption></figure>
 
 
+
+<h4 id="whenitypemultimarkdown-vigetcommandnotfound">When I type multimarkdown -v I get &#8220;command not found&#8221;</h4>
+
+<p>You must have permissions to access /usr/local/bin and /usr/local/lib to use MMD.</p>
+
+<p>To fix, type:
+sudo chmod go+rx /usr/local and similarly for the sub folders.</p>
+
+<p>Put in your administrator password and try multimarkdown -v again.</p>
 
 <h3 id="windowsfaq">Windows FAQ</h3>
 
@@ -2269,6 +2278,13 @@ an <code>em-dash</code>.</p>
 <p>The syntax of MultiMarkdown can be a challenge for beginners especially when
 it comes to using Table and Link syntax. The challenge comes in understanding
 how it looks <em>after</em> the conversion.</p>
+
+<p>The official MultiMarkdown text editor for Mac is <a href="http://multimarkdown.com/">MultiMarkdown Composer</a>, distributed by MultiMarkdown Software, LLC on the
+Mac App Store. MultiMarkdown Composer is a text editor for Mac that is
+designed from the ground up around the MultiMarkdown syntax. It is designed to
+make writing in MultiMarkdown even easier than it already is, with automatic
+syntax highlighting, built in previews, easy export to any format that is
+supported by MultiMarkdown, and more!</p>
 
 <p>For Mac users, you can download a free program NValt
 (<a href="http://brettterpstra.com/code/">http://brettterpstra.com/code/</a>) that contains a preview mode. Thus, you can
@@ -2551,6 +2567,10 @@ started on MMD 3.0!)</li>
 <li>David Sparks</li>
 <li>Katie Floyd</li>
 <li>Daniel Müller</li>
+<li>Daniel Jalkut (special thanks for helping to remove glib dependency!)</li>
+<li>Jon Skovron</li>
+<li>Jake Walker</li>
+<li>Michael Heilemann</li>
 </ul>
 
 <p>and others I have surely forgotten&#8230;.</p>
@@ -2565,7 +2585,7 @@ the GNU LGPL 2.1. Also, it relies on <a href="http://piumarta.com/software/peg/"
 <ol>
 
 <li id="fn:1">
-<p>Here is the text of the footnote itself.</p> <a href="#fnref:1" title="return to article" class="reversefootnote">&#160;&#8617;</a>
+<p>Here is the text of the footnote itself. <a href="#fnref:1" title="return to article" class="reversefootnote">&#160;&#8617;</a></p>
 </li>
 
 </ol>
