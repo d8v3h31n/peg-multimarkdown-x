@@ -23,7 +23,7 @@
 
 /* Begin PBXBuildFile section */
 		4AFA467413E3625F00CFA132 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4AFA466913E3624F00CFA132 /* Foundation.framework */; };
-		4AFA467513E362AC00CFA132 /* GLibFacade.m in Sources */ = {isa = PBXBuildFile; fileRef = 651A528213E1C30100BCB02A /* GLibFacade.m */; };
+		4AFA467513E362AC00CFA132 /* GLibFacade.c in Sources */ = {isa = PBXBuildFile; fileRef = 651A528213E1C30100BCB02A /* GLibFacade.c */; };
 		4AFA467613E362B500CFA132 /* markdown_parser.c in Sources */ = {isa = PBXBuildFile; fileRef = 65F0B8B113DF6D4000D0980C /* markdown_parser.c */; };
 		4AFA467A13E363FA00CFA132 /* markdown_lib.c in Sources */ = {isa = PBXBuildFile; fileRef = 65F0B66113DF47CC00D0980C /* markdown_lib.c */; };
 		4AFA467D13E3640600CFA132 /* markdown_output.c in Sources */ = {isa = PBXBuildFile; fileRef = 65F0B66313DF47CC00D0980C /* markdown_output.c */; };
@@ -50,7 +50,7 @@
 			isa = PBXContainerItemProxy;
 			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 4AFA466113E3624F00CFA132 /* libMultiMarkdown */;
+			remoteGlobalIDString = 4AFA466113E3624F00CFA132;
 			remoteInfo = libMultiMarkdown;
 		};
 /* End PBXContainerItemProxy section */
@@ -75,7 +75,7 @@
 		4AFA466913E3624F00CFA132 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		651A525B13E1BEFE00BCB02A /* TODO.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = TODO.txt; sourceTree = "<group>"; };
 		651A528113E1C30100BCB02A /* GLibFacade.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GLibFacade.h; sourceTree = "<group>"; };
-		651A528213E1C30100BCB02A /* GLibFacade.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GLibFacade.m; sourceTree = "<group>"; };
+		651A528213E1C30100BCB02A /* GLibFacade.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = GLibFacade.c; sourceTree = "<group>"; };
 		65F0B66113DF47CC00D0980C /* markdown_lib.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = markdown_lib.c; sourceTree = "<group>"; };
 		65F0B66213DF47CC00D0980C /* markdown_lib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = markdown_lib.h; sourceTree = "<group>"; };
 		65F0B66313DF47CC00D0980C /* markdown_output.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = markdown_output.c; sourceTree = "<group>"; };
@@ -135,7 +135,7 @@
 			children = (
 				651A525B13E1BEFE00BCB02A /* TODO.txt */,
 				651A528113E1C30100BCB02A /* GLibFacade.h */,
-				651A528213E1C30100BCB02A /* GLibFacade.m */,
+				651A528213E1C30100BCB02A /* GLibFacade.c */,
 				65F0B6D713DF4C6B00D0980C /* MarkdownMacPrefix.h */,
 				65F0B6F313DF4D9800D0980C /* glib.h */,
 				65F89E8013E379ED006A34B8 /* Configuration */,
@@ -375,7 +375,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4AFA467513E362AC00CFA132 /* GLibFacade.m in Sources */,
+				4AFA467513E362AC00CFA132 /* GLibFacade.c in Sources */,
 				4AFA467613E362B500CFA132 /* markdown_parser.c in Sources */,
 				4AFA467A13E363FA00CFA132 /* markdown_lib.c in Sources */,
 				4AFA467D13E3640600CFA132 /* markdown_output.c in Sources */,
