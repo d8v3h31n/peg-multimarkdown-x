@@ -2274,7 +2274,7 @@ void print_element_list(GString *out, element *elt, int format, int exts) {
 
 void print_html_header(GString *out, element *elt, bool obfuscate) {
     g_string_append_printf(out,
-"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>\n<!DOCTYPE html>\n<html xmlns=\"http://www.w3.org/1999/xhtml\">\n<head>\n");
+"<!DOCTYPE html>\n<html>\n<head>\n\t<meta charset=\"utf-8\"/>\n");
 
     print_html_element_list(out, elt->children, obfuscate);
     g_string_append_printf(out, "</head>\n<body>\n");    
