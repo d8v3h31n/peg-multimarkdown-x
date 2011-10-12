@@ -161,5 +161,7 @@ docs: $(PROGRAM)
 
 # For me to push updated documentation to my github site
 docs-live: docs
+	cp manual/mmd-manual.pdf ../manual; \
+	cp manual/index.html ../manual; \
 	cd ../manual; git add mmd-manual.pdf index.html; \
 	git commit -m "update manual"; git push origin gh-pages; \
