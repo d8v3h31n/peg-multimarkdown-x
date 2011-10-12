@@ -1,7 +1,7 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
 <head>
+	<meta charset="utf-8"/>
 	<meta name="latexinput" content="mmd-memoir-header"/>
 	<title>MultiMarkdown User's Guide</title>
 	<meta name="subtitle" content="Version 3.2"/>
@@ -602,11 +602,11 @@ the command line in the <code>multimarkdown</code> source directory.</p>
 <h4 id="multimarkdownandfinderquicklook">MultiMarkdown and Finder &#8220;Quick Look&#8221;</h4>
 
 <p>Starting in Mac OS 10.5, the Finder has the ability to show a &#8220;Quick Look&#8221;
-preview of the contents of a file. I have two Quick Look generators that allow
-the finder to preview the contents of a MultiMarkdown text file as an HTML
-preview. One works on plain text files, and one works on OPML files.</p>
+preview of the contents of a file. I have a Quick Look generator that allows
+the Finder to preview the contents of a MultiMarkdown text file (or OPML file)
+as an HTML preview.</p>
 
-<p>Available for download from <a href="https://github.com/fletcher/qlmultimarkdown/downloads">github</a>.</p>
+<p>Available for download from <a href="https://github.com/fletcher/MMD-QuickLook/downloads">github</a>.</p>
 
 <h3 id="usingmultimarkdowninwindows">Using MultiMarkdown in Windows</h3>
 
@@ -2068,7 +2068,7 @@ metadata.</p>
 necessary &#8212; a &#8220;snippet&#8221; doesn&#8217;t work. Simply include some metadata to force
 complete document generation.</p>
 
-<p>This is true for the QuickLook Generators as well.</p>
+<p>This is true for the QuickLook Generator as well.</p>
 
 <h3 id="latexfaq">LaTeX FAQ</h3>
 
@@ -2218,9 +2218,11 @@ installed in order to use it.</p>
 <h4 id="howdoilinktoanimage">How do I link to an image?</h4>
 
 <p>If you want to link to an image included in your document, you should define
-the image using the reference syntax:</p>
+the image using the reference syntax. It must also be in it&#8217;s own paragraph. Then create an explicit link to the label (lowercase, no spaces, no special characters):</p>
 
-<pre><code>This is an image ![Alt Text][image label].
+<pre><code>This is an image
+
+![Alt Text][image label].
 
 [image label]: /path/to/image.png &quot;This is a title&quot;
 
